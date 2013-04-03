@@ -2,7 +2,7 @@
 
 /*
  * File:     yacc.y
- * Author:   Bruce Dearing   100036623
+ * Author:   BD
  * Date:     2012/21/11
  * Version:  1.0
  *
