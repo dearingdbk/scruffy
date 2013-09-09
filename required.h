@@ -12,7 +12,7 @@
 #define MAX_NESTED 10
 
 /** GLOBAL VARIABLES **/
-int in_switch[MAX_NESTED];
+int in_switch[MAX_NESTED] = {0};
 int case_cnt[MAX_NESTED];
 int default_hit[MAX_NESTED];
 int pos = -1;
@@ -37,8 +37,11 @@ int cur_line_num = 0;
                     }\
                     cur_line_num = yyloc.first_line;
 
-#define SWITCH_BREAK if (in_switch[pos] && default_hit[pos] != 1) case_cnt[pos]--;\
-                     else default_hit[pos] = 2;
+#define SWITCH_BREAK if (pos >= 0 && in_switch[pos])\
+                     {\
+                         if (default_hit[pos] != 1) case_cnt[pos]--;\
+                         else default_hit[pos] = 2;\
+                     }
 
 #define EXIT_SWITCH  if (case_cnt[pos] > 0)\
                      {\
@@ -50,6 +53,7 @@ int cur_line_num = 0;
                          printf("%d: Switch statement missing a default case.\n"\
                                  , in_switch[pos]);\
                      }\
+                     in_switch[pos] = 0;\
                      pos--;
 
 

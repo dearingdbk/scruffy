@@ -1,23 +1,37 @@
-
 int
 main (int argc, char *argv[])
 {
-  short char t;
+  char t;
   printf("this line is going to be longer than 80 charachters hopefully it will provide the info I need");
 
-  int fred = 5 + 6;
+  while (0)
+  {
+    break;
+  }
+  int fred = 'g';
+  while(1){
     switch (fred)
     {
       case 'g':
           switch (fred)
           {
-              case 'h':
-                  fred = fred + 5;    
+              case 'g':
+              {    
+                  fred = 'h';
+                  printf("\n HEY \n");
+                  continue;
+              }
           }
       break;
       case 'f':
       fred = fred + 5;
       default:
+      return;
+    }
+  }
+    printf("MADE IT HERE \n");
+    while(0)
+    {
       break;
     }
     return 0;
