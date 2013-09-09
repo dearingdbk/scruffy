@@ -9,28 +9,47 @@
 /** DEFINITIONS **/
 #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
 #define YYERROR_VERBOSE
+#define MAX_NESTED 10
 
 /** GLOBAL VARIABLES **/
-int case_cnt = 0;
-int in_switch = 0;
+int in_switch[MAX_NESTED];
+int case_cnt[MAX_NESTED];
+int default_hit[MAX_NESTED];
+int pos = -1;
 int cur_line_num = 0;
-int default_hit = 0;
+
 
 /** MACRO DEFINITIONS **/
-#define CASE_CNT if (in_switch)case_cnt++;\
+#define CASE_CNT if (in_switch[pos])case_cnt[pos]++;\
                  cur_line_num = yylloc.first_line;
 
-#define ENTER_SWITCH cur_line_num = yylloc.first_line;\
-                     in_switch = yyloc.first_line;
+#define ENTER_SWITCH pos++; cur_line_num = yylloc.first_line;\
+                     in_switch[pos] = yyloc.first_line;\
+                     case_cnt[pos] = 0;\
+                     default_hit[pos] = 0;
 
-#define DEFAULT_CNT if (in_switch)default_hit = 1;\
-                    if (case_cnt)\
+#define DEFAULT_CNT if (in_switch[pos])default_hit[pos] = 1;\
+                    if (case_cnt[pos])\
                     {\
                         printf("%d: Switch statement case Fall Through.\n"\
                                , cur_line_num);\
+                        case_cnt[pos]--;\
                     }\
                     cur_line_num = yyloc.first_line;
 
-#define SWITCH_BREAK if (in_switch && !default_hit) case_cnt--;
+#define SWITCH_BREAK if (in_switch[pos] && default_hit[pos] != 1) case_cnt[pos]--;\
+                     else default_hit[pos] = 2;
 
-#define EXIT_SWITCH 
+#define EXIT_SWITCH  if (case_cnt[pos] > 0)\
+                     {\
+                         printf("%d: Switch statement case Fall Through.\n"\
+                                 , cur_line_num);\
+                     }\
+                     if (default_hit[pos] != 2)\
+                     {\
+                         printf("%d: Switch statement missing a default case.\n"\
+                                 , in_switch[pos]);\
+                     }\
+                     pos--;
+
+

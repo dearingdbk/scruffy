@@ -9,4 +9,3 @@ lex.yy.c: y.tab.h
 
 y.tab.h: required.h 
 	yacc -d -v yacc.y
-

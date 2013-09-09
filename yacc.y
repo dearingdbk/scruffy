@@ -1,4 +1,3 @@
-
 /** ANSI C Yacc grammar 
 *   YACC file for ANSI C grammar
 *
@@ -515,7 +514,7 @@ expression_statement
 selection_statement
 	: IF '(' expression ')' statement ELSE statement
 	| IF '(' expression ')' statement
-	| SWITCH '(' expression ')' {ENTER_SWITCH} statement {if (case_cnt > 0)printf("WHAT!? %d\n", cur_line_num); in_switch = 0;}
+	| SWITCH '(' expression ')' {ENTER_SWITCH} statement {EXIT_SWITCH}
 	;
 
 iteration_statement
@@ -555,5 +554,3 @@ declaration_list
 	;
 
 %%
-
-
