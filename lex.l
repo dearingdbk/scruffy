@@ -40,9 +40,23 @@ static void comment(void);
 static int check_type(void);
 %}
 %option yylineno
+%x COMMENT
+%x INCLUDE
+%x DEFINE
 
 %%
-"/*"                                    { comment(); }
+^"#"[ \t]*"include" { BEGIN(INCLUDE); }
+<INCLUDE>.
+<INCLUDE>\n         { BEGIN(INITIAL); }
+
+^"#"[ \t]*"define"  { BEGIN(DEFINE); }
+<DEFINE>[^\\]\n     { BEGIN(INITIAL); }
+<DEFINE>.|\n         
+
+"/*"                    { BEGIN(COMMENT);}
+<COMMENT>"*/"           { BEGIN(INITIAL);}
+<COMMENT>([^*]|\n)+|.
+<COMMENT><<EOF>>        { printf("%d: Unterminated comment\n",yylineno); return 0; }
 "//".*                                    { /* consume //-comment */ }
 
 "auto"  				{ return(AUTO); }
@@ -164,7 +178,7 @@ int yywrap(void)        /* called at end of input */
     return 1;           /* terminate now */
 }
 
-static void comment(void)
+/*static void comment(void)
 {
     int c;
 
@@ -181,7 +195,7 @@ static void comment(void)
                 break;
         }
     yyerror("unterminated comment");
-}
+}*/
 
 static int check_type(void)
 {
