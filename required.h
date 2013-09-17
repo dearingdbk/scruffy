@@ -31,9 +31,10 @@ int cur_line_num = 0;
 #define DEFAULT_CNT if (in_switch[pos])default_hit[pos] = 1;\
                     if (case_cnt[pos])\
                     {\
-                        printf("%d: Switch statement case Fall Through.\n"\
+                        fprintf(stderr, "%d: Switch statement case Fall Through.\n"\
                                , cur_line_num);\
                         case_cnt[pos]--;\
+                        fflush(stdout);\
                     }\
                     cur_line_num = yyloc.first_line;
 

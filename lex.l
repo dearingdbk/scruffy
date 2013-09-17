@@ -41,13 +41,6 @@ QZ  [A-Z_0-9()]
 /* END Definitions. */
 
 
-void yyerror(const char *);  /* prints grammar violation message */
-extern int sym_type(const char *);  /* returns type from symbol table */
-static void comment(void);
-static int check_type(void);
-char* fix_string(char* str);
-
-#define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
 
 struct symbol
 {
@@ -56,31 +49,42 @@ struct symbol
     int line_num;
     struct symbol *next;
 };
-/*
-struct entry 
-{
-    struct entry *next;
-    int flag;
-    int line_num;
-};
-*/
- struct symbol symbol_table[NUM_HASH];
- struct symbol *lookup(char* str);
- void add_entry(int line_num, int flag, char* str);
- static unsigned symhash(char *sym);
+
+/* START Function Definitions */
+int reset_line_num(char *str);
+void yyerror(const char *);  /* prints grammar violation message */
+static void comment(void);
+static int check_type(void);
+char* fix_string(char* str);
+struct symbol symbol_table[NUM_HASH];
+struct symbol *lookup(char* str);
+void add_entry(int line_num, int flag, char* str);
+static unsigned symhash(char *sym);
+/* END Function Definitions */
+
 %}
 
-
+/*
+ * Parser options
+ *
+ * yylineno: The %yylineno option tells flex to define an integer 
+ *           variable called yylineno and to maintain the current line 
+ *           line number in it. Eevery time the scanner reads a '\n',
+ *           it increments yylineno, and if the scanner backs up over
+ *           a '\n', it decrements it.
+ */
 %option yylineno
 
 /* START Exclusive Start State definitions. */
 %x COMMENT
 %x INCLUDE
 %x DEFINE
-%s TYPE_DEF
-%x STRKT
+%x NUMBER
 /* END Exclusive Start State definitions. */
 
+/* START Inclusive Start State definitions. */
+%s TYPE_DEF
+/* END Inclusive Start State definitions. */
 %%
 
 ^"#"[ \t]*"include"     { BEGIN(INCLUDE); }
@@ -88,14 +92,20 @@ struct entry
 <INCLUDE>\n             { BEGIN(INITIAL); }
 
 ^"#"[ \t]*"define"      { BEGIN(DEFINE); }
-<DEFINE>[^\\]\n         { BEGIN(INITIAL); }
 <DEFINE>.|\n         
+<DEFINE>[^\\]\n         { BEGIN(INITIAL); }
+
+^"# "                   { BEGIN(NUMBER);}
+<NUMBER>[0-9]+          { yyset_lineno(reset_line_num(yytext)); {int c; while((c = input()) && c != '\n') ; if (c == '\n') unput('\n') ;}}
+<NUMBER>\n              { BEGIN(INITIAL); }
+<NUMBER>.
 
 "/*"                    { BEGIN(COMMENT); }
 <COMMENT>"*/"           { BEGIN(INITIAL);}
 <COMMENT><<EOF>>        { printf("%d: Unterminated comment\n",yylineno); return EOF; }
 <COMMENT>([^*]|\n)+|.
-"//".*                  { printf("%d: // comments are not portable C89 code, replace with /* ... */\n", yylineno); }
+
+"//".*                  /* Eat up single line comments. */
 
 <TYPE_DEF>[a-zA-Z_0-9]+";"$        { add_entry(yylineno, TYPEDEF_NAME, yytext); BEGIN(INITIAL); unput(';');}
 
@@ -213,10 +223,11 @@ struct entry
 
 %%
 
-int yywrap(void)        /* called at end of input */
-{
+
+ int yywrap(void)        /* called at end of input */
+ {
     return 1;           /* terminate now */
-}
+ }
 
 /*static void comment(void)
 {
@@ -345,4 +356,24 @@ char* fix_string(char* string)
     return ret_str;
 }
 
-
+int reset_line_num(char *str)
+{
+    int len = strlen(str);
+    int i;
+    int result = 0;
+    const char* tmp = strdup(str);
+    
+    
+    if (isdigit(tmp[0]))
+    {   printf("BITCH PLEASE %c\n", tmp[0]);
+            result = atoi(tmp);
+    }
+    if (result == 0)
+    {
+        printf("text was %s\n", str);
+        return yylineno;
+    }
+    else
+        printf("text was %s\n yylineno was %d\n now it is %d\n", str, yylineno, result);
+        return result;
+}
