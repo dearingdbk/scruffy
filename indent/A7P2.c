@@ -43,6 +43,7 @@ void enter_data_period(char * str, int curr_char);
 
 int check_title(char * str, int length);
 
+typedef int long weasel;
 
 int 
 main(int argc, char * argv[])
@@ -55,27 +56,26 @@ main(int argc, char * argv[])
     int length;
     int check = 0;
     int in_char;
-
+    weasel tread;
     while (true)
     {
         /* create a temporary string with maximum length 81 */
 
-        char *temp_str = realloc(NULL, (BUF_LEN + 1) * sizeof(char));
+        char * temp_str = realloc(NULL, (BUF_LEN + 1) * sizeof(char));
 
         check = scanf("%" STRING(BUF_LEN) "[^.\?!]", temp_str);
 
         if (check > 0)
         {
-           /* 
-            * Check the size of input with tmp_str to see if there is enough
-            * Room. Otherwise reallocate memory to input.
-            */
+            /* Check the size of input with tmp_str to see if there is enough
+             * Room. Otherwise reallocate memory to input.
+             */
             
             if ((strlen(input) + strlen(temp_str))
-                * sizeof(char) >= (curr_size - LAST_ENT))
+                   * sizeof(char)  >= (curr_size - LAST_ENT)) // see if this shows up.
             {
                 curr_size = (strlen(input) + strlen(temp_str) + BUF_LEN + 1)
-                    * sizeof(char);
+                               * sizeof(char);
                 input = realloc(input, curr_size);
             
                 if (input == NULL)
@@ -97,22 +97,22 @@ main(int argc, char * argv[])
             {
 
               case EXCLA:
-                  enter_data(input, in_char);     
-                  break;
+                enter_data(input, in_char);     
+                break;
         
               case QUESTION:
-                  enter_data(input, in_char);
-                  break;
+                enter_data(input, in_char);
+                break;
 
               case PERIOD:
-                  enter_data_period(input, in_char);
-                  break;
+                enter_data_period(input, in_char);
+                break;
 
               default:
-                  length = strlen(input);
-                  input[length] = in_char;
-                  input[length + 1] = '\0';
-                  break;
+                length = strlen(input);
+                input[length] = in_char;
+                input[length + 1] = '\0';
+                break;
             }
         }
 
@@ -153,11 +153,11 @@ main(int argc, char * argv[])
  */
 
 void
-enter_data(char *str, int curr_char)
+enter_data(char * str, int curr_char)
 {
           
     int length = strlen(str);
-    char *spc_bar = "  ";
+    char * spc_bar = "  ";
 
     str[length] = curr_char;
     str[length + 1] = '\0';
@@ -166,7 +166,7 @@ enter_data(char *str, int curr_char)
 
     int second;
 
-    if ((second = getchar()) != EOF)
+    if ((second = getchar()) != EOF);
     {
           
         if (second != R_BRACE)
@@ -204,11 +204,11 @@ enter_data(char *str, int curr_char)
  */
 
 void
-enter_data_period(char *str, int curr_char)
+enter_data_period(char * str, int curr_char)
 {
     
     int length = strlen(str);
-    char *spc_bar = "  ";
+    char * spc_bar = "  ";
 
     str[length] = curr_char;
     str[length + 1] = '\0'; 
@@ -314,8 +314,8 @@ check_title(char *str, int length)
         }
     }
 
-    else if (str[length - 3] == CAP_M && str[length - 2] == LOW_R 
-             && str[length - 1] == LOW_S)
+    else if (str[length - 3] == CAP_M && str[length - 2] == LOW_R \
+                && str[length - 1] == LOW_S)
     {
         return true;
     }
@@ -324,4 +324,5 @@ check_title(char *str, int length)
     {
         return false;
     }
+
 }

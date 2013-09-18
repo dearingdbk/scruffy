@@ -60,6 +60,6 @@ diff \
 
 rm $temp_in $temp_out $1
 
-exit 1i
+exit 1
 
 #--changed-group-format='%df%(f=l?:,%dl)c%dF%(F=L?:,%dL)

@@ -1,29 +1,26 @@
-%{
-
-%}
-
-
-
+/*
+ * File:     remove_single_comments.l
+ * Author:   Bruce Dearing   100036623
+ * Date:     2013/18/09
+ * Version:  1.0
+ *
+ * Purpose:  a Lex tokenizer which strips out single lined star comments. 
+ */
 %option yylineno
 
-/* START Exclusive Start State definitions. */
-%x COMMENT
-/* END Exclusive Start State definitions. */
 
 %%
 
-[ \t]*"/*".*"*/"                    /*{ BEGIN(COMMENT); }*/
+[ \t]*"/*".*"*/"        /*Strip out single line comments. */
 .                       { printf("%s", yytext);}
 %%
 
 main(int argc, char **argv)
 {
-      yylex();
+          yylex();
 }
 
-int yywrap(void)        /* called at end of input */
+int yywrap(void) /* called at end of input */
 {
-          return 1;           /* terminate now */
+              return 1; /* terminate now */
 }
-
-
