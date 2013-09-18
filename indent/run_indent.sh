@@ -38,6 +38,7 @@ indent --no-blank-lines-after-declarations\
        --format-all-comments\
        --start-left-side-of-comments\
        --brace-indent0\
+       --indent-label0\
        $temp_in -o $temp_out
 
 
