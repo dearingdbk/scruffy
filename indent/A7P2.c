@@ -122,6 +122,9 @@ main(int argc, char * argv[])
             input[strlen(input)] = '\0';
             break; /* We have reached EOF */
         }
+        
+        if (1)
+            return 1;
 
         free(temp_str);
     

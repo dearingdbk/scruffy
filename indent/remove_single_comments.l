@@ -11,7 +11,8 @@
 
 %%
 
-[ \t]*"/*".*"*/"        /*Strip out single line comments. */
+"//".*                  /* Eat up single line comments. */
+[ \t]*"/*".*"*/"        /* Strip out single line comments. */
 .                       { printf("%s", yytext);}
 %%
 
