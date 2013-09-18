@@ -1,6 +1,9 @@
 #! /bin/sh
 
-cat $1 | ./remove_single_comments > test.c
+temp_in=$1.$$.c
+temp_out=$1.$$.out
+
+cat $1 | ./remove_single_comments > $temp_in
 
 indent --no-blank-lines-after-declarations\
        --blank-lines-after-procedures\
@@ -36,7 +39,7 @@ indent --no-blank-lines-after-declarations\
        -fca\
        --start-left-side-of-comments\
        --indent-label0\
-       test.c -o test.out
+       $temp_in -o $temp_out
 
 
 diff \
@@ -53,7 +56,10 @@ diff \
 %>
 ' \
        --unchanged-group-format="" \
-       -B -Z --suppress-blank-empty test.c test.out
+       -B -Z --suppress-blank-empty $temp_in $temp_out
 
-exit 1
+rm $temp_in $temp_out $1
+
+exit 1i
+
 #--changed-group-format='%df%(f=l?:,%dl)c%dF%(F=L?:,%dL)
