@@ -10,7 +10,6 @@ indent --no-blank-lines-after-declarations\
        --no-blank-lines-after-commas\
        --break-before-boolean-operator\
        --braces-after-if-line\
-       --brace-indent0\
        --braces-after-struct-decl-line\
        --comment-indentation33\
        --declaration-comment-column33\
@@ -36,9 +35,9 @@ indent --no-blank-lines-after-declarations\
        --no-tabs\
        --format-first-column-comments\
        --comment-delimiters-on-blank-lines\
-       -fca\
+       --format-all-comments\
        --start-left-side-of-comments\
-       --indent-label0\
+       --brace-indent0\
        $temp_in -o $temp_out
 
 
@@ -58,7 +57,7 @@ diff \
        --unchanged-group-format="" \
        -B -Z --suppress-blank-empty $temp_in $temp_out
 
-rm $temp_in $temp_out $1
+rm $temp_in $temp_out $1 
 
 exit 1
 
