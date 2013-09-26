@@ -1,7 +1,16 @@
 #! /bin/sh
+# File:     scruffy.sh
+# Author:   Bruce Dearing   100036623
+# Date:     2013/09/25
+# Version:  1.0
 
-temp_in=$1.$$.c
-temp_out=$1.$$.out
+# Purpose:  Main script runs the multipart process  of formatting and 
+#           checking of files. Initially it creates two temp files 
+
+
+
+temp_in=$(mktemp -t 'XXXXXXXXXXX.c')
+temp_out=$(mktemp -t 'XXXXXXXXXXX.out')
 
 expand $1 > $temp_in
 cp $temp_in $temp_out
