@@ -6,26 +6,53 @@
 
 # Purpose:  Main script runs the multipart process  of formatting and 
 #           checking of files. Initially it creates two temp files 
+#           temp_in which will contain the expanded form of the file
+#           to be checked and temp_out which will contain a formatted
+#           version of the file to compare against.
+#           
+#           use case sh scruffy.sh <file_to_be_checked>
+#
 
 
+# Temp files created here.
 
 temp_in=$(mktemp -t 'XXXXXXXXXXX.c')
 temp_out=$(mktemp -t 'XXXXXXXXXXX.out')
+
+# Set temp_in and temp_out with un-tabbed versions of checked file.
 
 expand $1 > $temp_in
 cp $temp_in $temp_out
 
 
+##############################################################################
+#                       INDENTATION PORTION CHECK                            #
+# Check that the file has proper indentation levels throughout.              #
+##############################################################################
+
+# Run the un-tabbed version of file through vim with commands to 
+# properly indent the program file. The commands are contained in
+# indent/vim_commands.scr
+
 vim -e -s $temp_in < indent/vim_commands.scr
 
 
+# Running vim on the file also adds in tab characters for spacing
+# the file is once again run through expand to un-tabify the input.
+# then the file is compared against the original un-tabbed version
+# of the check file.
+# Then that output is piped through indentR which parses the diff output
+# into a usable form.
+# the diff setup here is similar to the normal output from diff with a few
+# exceptions the line format has been edited to output only the text.
+
 expand $temp_in | diff \
     --old-line-format='%l
-' \
+' \                        # Output only the old text and a newline.
     --new-line-format='%l
-' \
+' \                        # Output only the new text and a newline.
     --old-group-format='%df%(f=l?:,%dl)d%dE
-%<' \
+%<' \                     
     --new-group-format='%dea%dF%(F=L?:,%dL)
 %>' \
     --changed-group-format='%df%(f=l?:,%dl)c%dF%(F=L?:,%dL)
@@ -35,6 +62,17 @@ expand $temp_in | diff \
     --unchanged-group-format="" \
     -Z $temp_out - | ./indentR
 
+
+##############################################################################
+#                           FORMAT PORTION                                   #
+# Check that the file has the proper the formatting throughout.              # 
+##############################################################################
+
+
+# Run the file through expand again to remove tabs. That output is then piped
+# into a parsing program which strips out single line comments.
+# This allows for single line comments in code, and enables the check of 
+# multiline comments for proper spacing and format.
 
 expand $1 | ./remove_single_comments > $temp_in
 
@@ -95,8 +133,14 @@ diff \
 
 
 
+##############################################################################
+#                          COMMON ERROR / STYLE CHECKS                       #
+# Checks document for common coding errors and style errors. (in progress)   #
+##############################################################################
+
+
+
 rm $temp_in $temp_out
 
 exit 1
 
-#--changed-group-format='%df%(f=l?:,%dl)c%dF%(F=L?:,%dL)
