@@ -14,10 +14,47 @@
 #
 
 
+# Check that indentR and remove_single_comments exist. If they do not
+# create them.
+
+if [ ! -e remove_single_comments -o ! -e indentR ]
+then
+    make
+    make clean
+
+    if [ ! -e remove_single_comments -o ! -e indentR ]
+    then
+        exit 0
+    fi
+fi
+
+# Check that an argument was supplied to the program and that it is a file.
+
+if [ $# -eq 0 ]
+then
+    exit 0
+else
+    if [ ! -e $1 ]
+    then
+        exit 0
+    fi
+fi
+
+
 # Temp files created here.
 
 temp_in=$(mktemp -t 'XXXXXXXXXXX.c')
 temp_out=$(mktemp -t 'XXXXXXXXXXX.out')
+
+
+# Verify the tmp files were created.
+
+if [ ! -e $temp_in -o ! -e $temp_out ]
+then
+    echo Unable to create tmp files.
+    exit 0
+fi
+
 
 # Set temp_in and temp_out with un-tabbed versions of checked file.
 
@@ -34,8 +71,12 @@ cp $temp_in $temp_out
 # properly indent the program file. The commands are contained in
 # indent/vim_commands.scr
 
+if [ ! `which vim` -o ! -e indent/vim_commands.scr ]
+then
+    rm $1 $temp_in $temp_out
+    exit 0
+fi
 vim -e -s $temp_in < indent/vim_commands.scr
-
 
 # Running vim on the file also adds in tab characters for spacing
 # the file is once again run through expand to un-tabify the input.
@@ -48,11 +89,11 @@ vim -e -s $temp_in < indent/vim_commands.scr
 
 expand $temp_in | diff \
     --old-line-format='%l
-' \                        # Output only the old text and a newline.
+' \
     --new-line-format='%l
-' \                        # Output only the new text and a newline.
+' \
     --old-group-format='%df%(f=l?:,%dl)d%dE
-%<' \                     
+%<' \
     --new-group-format='%dea%dF%(F=L?:,%dL)
 %>' \
     --changed-group-format='%df%(f=l?:,%dl)c%dF%(F=L?:,%dL)
@@ -76,60 +117,66 @@ expand $temp_in | diff \
 
 expand $1 | ./remove_single_comments > $temp_in
 
-indent --no-blank-lines-after-declarations\
-    --blank-lines-after-procedures\
-    --no-blank-lines-after-commas\
-    --break-before-boolean-operator\
-    --braces-after-if-line\
-    --braces-after-struct-decl-line\
-    --comment-indentation33\
-    --declaration-comment-column33\
-    --dont-cuddle-else\
-    --cuddle-do-while\
-    --continuation-indentation4\
-    --case-indentation2\
-    --case-brace-indentation0\
-    --leave-optional-blank-lines\
-    --continue-at-parentheses\
-    --break-before-boolean-operator\
-    --indent-level4\
-    --honour-newlines\
-    --space-after-cast\
-    --line-comments-indentation1\
-    --declaration-indentation0\
-    --no-space-after-function-call-names\
-    --procnames-start-lines\
-    --space-after-for\
-    --space-after-while\
-    --struct-brace-indentation0\
-    --space-special-semicolon\
-    --no-tabs\
-    --format-first-column-comments\
-    --comment-delimiters-on-blank-lines\
-    --format-all-comments\
-    --start-left-side-of-comments\
-    --brace-indent0\
-    --indent-label0\
-    --line-length79\
-    $temp_in -o $temp_out
+if [ `which indent` ]
+then
+    indent --no-blank-lines-after-declarations\
+        --blank-lines-after-procedures\
+        --no-blank-lines-after-commas\
+        --break-before-boolean-operator\
+        --braces-after-if-line\
+        --braces-after-struct-decl-line\
+        --comment-indentation33\
+        --declaration-comment-column33\
+        --dont-cuddle-else\
+        --cuddle-do-while\
+        --continuation-indentation4\
+        --case-indentation2\
+        --case-brace-indentation0\
+        --leave-optional-blank-lines\
+        --continue-at-parentheses\
+        --break-before-boolean-operator\
+        --indent-level4\
+        --honour-newlines\
+        --space-after-cast\
+        --line-comments-indentation1\
+        --declaration-indentation0\
+        --no-space-after-function-call-names\
+        --procnames-start-lines\
+        --space-after-for\
+        --space-after-while\
+        --struct-brace-indentation0\
+        --space-special-semicolon\
+        --no-tabs\
+        --format-first-column-comments\
+        --comment-delimiters-on-blank-lines\
+        --format-all-comments\
+        --start-left-side-of-comments\
+        --brace-indent0\
+        --indent-label0\
+        --line-length79\
+        $temp_in -o $temp_out
 
 
-diff \
-    --old-line-format='%l
-' \
-    --new-line-format='%l
-' \
-    --old-group-format='%df%(f=l?:,%dl)d%dE
-%<' \
-    --new-group-format='%dea%dF%(F=L?:,%dL)
-%>' \
-    --changed-group-format='%df:
-%<---
-%>
-' \
-    --unchanged-group-format="" \
-    -w -Z -B --suppress-blank-empty\
-    $temp_in $temp_out
+    diff \
+        --old-line-format='%l
+    ' \
+        --new-line-format='%l
+    ' \
+        --old-group-format='%df%(f=l?:,%dl)d%dE
+    %<' \
+        --new-group-format='%dea%dF%(F=L?:,%dL)
+    %>' \
+        --changed-group-format='%df:
+    %<---
+    %>
+    ' \
+        --unchanged-group-format=""\
+        -w -Z -B --suppress-blank-empty\
+        $temp_in $temp_out
+
+else
+    echo indent program not available!
+fi
 
 
 
@@ -140,7 +187,7 @@ diff \
 
 
 
-rm $temp_in $temp_out
+rm $temp_in $temp_out #$1
 
 exit 1
 

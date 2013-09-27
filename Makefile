@@ -23,5 +23,5 @@ clean:
 		indent/check_indent.yy.c \
 		format/remove_single_comments.yy.c
 
-remove: clean
+remove:
 	rm indentR remove_single_comments
