@@ -11,6 +11,7 @@ yylloc.first_column = yycolumn; yylloc.last_column = yycolumn+yyleng-1; \
 yycolumn += yyleng;
 
 #define RESET(x) x = 0
+#define ZERO = 0
 
 #include <string.h>
 #include "check_indent.tab.h"
@@ -60,6 +61,7 @@ void handle_text(diff_output *current);
 
 <NEW_SPACE>\n           {RESET(yycolumn); }
 <NEW_SPACE>^" "*        {current.new_spaces = (yycolumn); BEGIN(READ_TO_END); }
+<NEW_SPACE>^.           {RESET(current.new_spaces); BEGIN(READ_TO_END); }
 
 <<EOF>>                              {return EOF;}
 [0-9]+","[0-9]+[a-z][0-9]+","[0-9]+  {set_multi(&current, yytext); BEGIN(ORIG_SPACE);}
