@@ -187,7 +187,7 @@ fi
 
 
 
-rm $temp_in $temp_out #$1
+rm $temp_in $temp_out $1
 
 exit 1
 
