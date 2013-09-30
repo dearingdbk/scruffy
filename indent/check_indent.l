@@ -53,6 +53,9 @@ void handle_text(diff_output *current);
 <ORIG_SPACE>^" "*       {current.orig_spaces = (yycolumn);\
                          handle_text(&current);\
                          BEGIN(READ_TO_END);}
+<ORIG_SPACE>^.          {RESET(current.orig_spaces);\
+                        handle_text(&current);\
+                        BEGIN(READ_TO_END);}
 
 <READ_TO_END>"---"      {BEGIN(NEW_SPACE);}
 <READ_TO_END>"$$$"      {output_results(&current); BEGIN INITIAL;}
