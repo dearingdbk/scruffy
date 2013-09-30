@@ -66,8 +66,7 @@ void handle_text(diff_output *current);
 [0-9]+[a-z][0-9]+                    {set_single(&current, yytext); BEGIN(ORIG_SPACE);}
 
 \n                      {RESET(yycolumn);}
-.                       {printf("YEAYH %s\n", yytext);}
-
+.
 %%
 main(int argc, char **argv)
 {

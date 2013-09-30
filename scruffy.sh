@@ -40,7 +40,6 @@ else
     fi
 fi
 
-
 # Temp files created here.
 
 temp_in=$(mktemp -t 'XXXXXXXXXXX.c')
@@ -157,22 +156,21 @@ then
         $temp_in -o $temp_out
 
 
-    diff \
-        --old-line-format='%l
-    ' \
-        --new-line-format='%l
-    ' \
-        --old-group-format='%df%(f=l?:,%dl)d%dE
-    %<' \
-        --new-group-format='%dea%dF%(F=L?:,%dL)
-    %>' \
-        --changed-group-format='%df:
-    %<---
-    %>
-    ' \
-        --unchanged-group-format=""\
-        -w -Z -B --suppress-blank-empty\
-        $temp_in $temp_out
+diff \
+    --old-line-format='%l
+' \
+    --new-line-format='%l
+' \
+    --old-group-format='%df%(f=l?:,%dl)d%dE
+%<' \
+    --new-group-format='%dea%dF%(F=L?:,%dL)
+%>' \
+    --changed-group-format='%df:
+%<---
+%>' \
+    --unchanged-group-format=""\
+    -w -Z -B --suppress-blank-empty\
+    $temp_in $temp_out
 
 else
     echo indent program not available!
