@@ -164,10 +164,11 @@ diff \
     --old-group-format='%df%(f=l?:,%dl)d%dE
 %<' \
     --new-group-format='%dea%dF%(F=L?:,%dL)
-%>' \
+%>'\
     --changed-group-format='%df:
 %<---
-%>' \
+%>
+'\
     --unchanged-group-format=""\
     -w -Z -B --suppress-blank-empty\
     $temp_in $temp_out
