@@ -14,6 +14,10 @@
 #
 
 
+# GLOBAL VARIABLE DEFINITIONS
+
+
+
 # Check that indentR and remove_single_comments exist. If they do not
 # create them.
 
@@ -152,7 +156,7 @@ then
         --start-left-side-of-comments\
         --brace-indent0\
         --indent-label0\
-        --line-length79\
+        --line-length80\
         $temp_in -o $temp_out
 
 
@@ -184,6 +188,16 @@ fi
 # Checks document for common coding errors and style errors. (in progress)   #
 ##############################################################################
 
+# Awk statement to check for lines longer than MAX_LINE_LEN characters long.
+
+awk '
+{
+    if (length($0) > 79) 
+    {
+        gsub(/^[ \t]+/,"");
+        printf "%d:\n\t%s\n\n%s\n\n", NR, $0, "Line is longer than 79 characters."
+    }
+}' $1
 
 
 rm $temp_in $temp_out $1
