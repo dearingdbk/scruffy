@@ -11,7 +11,8 @@ yylloc.first_column = yycolumn; yylloc.last_column = yycolumn+yyleng-1; \
 yycolumn += yyleng;
 
 #define RESET(x) x = 0
-#define ZERO = 0
+#define MAX_LENGTH 80
+#define DECIMAL 10
 
 #include <string.h>
 #include "check_indent.tab.h"
@@ -87,23 +88,23 @@ int yywrap(void) /* called at end of input */
 void set_multi(diff_output *current, char *text)
 {
     char *tmp = strdup(text);
-    current->orig_start = strtol(tmp, &tmp, 10);
+    current->orig_start = strtol(tmp, &tmp, DECIMAL);
     tmp++;
-    current->orig_end = strtol(tmp, &tmp, 10);
+    current->orig_end = strtol(tmp, &tmp, DECIMAL);
     tmp++;
-    current->new_start = strtol(tmp, &tmp, 10);
+    current->new_start = strtol(tmp, &tmp, DECIMAL);
     tmp++;
-    current->new_end = strtol(tmp, &tmp, 10);
+    current->new_end = strtol(tmp, &tmp, DECIMAL);
 
 }
 
 void set_single(diff_output *current, char *text)
 {
     char *tmp = strdup(text);
-    current->orig_start = strtol(tmp, &tmp, 10);
+    current->orig_start = strtol(tmp, &tmp, DECIMAL);
     current->orig_end = current->orig_start;
     tmp++;
-    current->new_start = strtol(tmp, &tmp, 10);
+    current->new_start = strtol(tmp, &tmp, DECIMAL);
     current->new_end = current->new_start;
 
 }
@@ -114,7 +115,7 @@ void output_results(diff_output *current)
     if (current->orig_start == current->orig_end)
     {
         printf("%d:\n\t%s\n\nCode at indentation level %d "
-                "not at correct indentation (%d).\n\n", 
+                "not at correct indentation [%d].\n\n", 
                 current->orig_start,
                 current->text,
                 current->orig_spaces, 
@@ -122,8 +123,9 @@ void output_results(diff_output *current)
     }
     else
     {
-        printf("%d - %d:\n\t%s\n\t\tcode continues...\n\nCode at indentation level %d "
-                "not at correct indentation (%d).\n\n",
+        printf("%d - %d:\n\t%s\n\t\tcode continues...\n\n"
+               "Code at indentation level %d "
+               "not at correct indentation [%d].\n\n",
                 current->orig_start,
                 current->orig_end,
                 current->text,
@@ -140,17 +142,19 @@ void handle_text(diff_output *current)
 {
     int index = 0;
     int c;
-    char tmp[200];
+    char tmp[MAX_LENGTH];
     while (1)
     {
         c = input();
-        if (c == '\n')
+        if (c == '\n' || c == EOF)
         {
             break;
         }
         else
         {
             tmp[index++] = c;
+            if (index == MAX_LENGTH)
+                break;
         }
     }
     tmp[index] = '\0';
