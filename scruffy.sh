@@ -107,6 +107,28 @@ expand $temp_in | diff \
     -Z $temp_out - | ./indentR
 
 
+
+
+##############################################################################
+#                          COMMON ERROR / STYLE CHECKS                       #
+# Checks document for common coding errors and style errors. (in progress)   #
+##############################################################################
+
+# Awk statement to check for lines longer than MAX_LINE_LEN characters long.
+
+awk '
+{
+    if (length($0) > 79) 
+    {
+        gsub(/^[ \t]+/,"");
+        printf "%d:\n\t%s\n\n%s\n\n", NR, $0, "Line is longer than 79 characters."
+    }
+}' $1
+
+./common_errors < $1
+
+
+
 ##############################################################################
 #                           FORMAT PORTION                                   #
 # Check that the file has the proper the formatting throughout.              # 
@@ -160,44 +182,27 @@ then
         $temp_in -o $temp_out
 
 
-diff \
-    --old-line-format='%l
+    diff \
+        --old-line-format='%l
 ' \
-    --new-line-format='%l
+        --new-line-format='%l
 ' \
-    --old-group-format='%df%(f=l?:,%dl)d%dE
+        --old-group-format='%df%(f=l?:,%dl)d%dE
 %<' \
-    --new-group-format='%dea%dF%(F=L?:,%dL)
+        --new-group-format='%dea%dF%(F=L?:,%dL)
 %>'\
-    --changed-group-format='%df:
+        --changed-group-format='%df:
 %<---
 %>
 '\
-    --unchanged-group-format=""\
-    -w -Z -B --suppress-blank-empty\
-    $temp_in $temp_out
+        --unchanged-group-format=""\
+        -w -Z -B --suppress-blank-empty\
+        $temp_in $temp_out
 
 else
     echo indent program not available!
 fi
 
-
-
-##############################################################################
-#                          COMMON ERROR / STYLE CHECKS                       #
-# Checks document for common coding errors and style errors. (in progress)   #
-##############################################################################
-
-# Awk statement to check for lines longer than MAX_LINE_LEN characters long.
-
-awk '
-{
-    if (length($0) > 79) 
-    {
-        gsub(/^[ \t]+/,"");
-        printf "%d:\n\t%s\n\n%s\n\n", NR, $0, "Line is longer than 79 characters."
-    }
-}' $1
 
 
 rm $temp_in $temp_out $1
