@@ -23,7 +23,6 @@ void handle_conditional(char *str, int line);
 
 %option yylineno
 
-
 %x COMMENT
 
 %%
@@ -33,6 +32,7 @@ void handle_conditional(char *str, int line);
 <COMMENT><<EOF>>        { printf("%d: Unterminated comment\n",yylineno); return EOF; }
 <COMMENT>([^*]|\n)+|.
 
+
 "//".*                  /* Eat up single line comments. */
 
 ^[ \t]*
@@ -41,7 +41,7 @@ void handle_conditional(char *str, int line);
 "for"                   |
 "if"                    { handle_conditional(yytext, yyleng); }
 
-(?:[ \t]*).*"struct"[^\n]*"{"     {  printf("%d:\n\n\t%s\n\n'{' should be on a new line.\n\n",
+.*"struct"[^\n]*"{"     {  printf("%d:\n\n\t%s\n\n'{' should be on a new line.\n\n",
                                   yylineno, trim(yytext));
                         }
 
@@ -195,9 +195,6 @@ void handle_conditional(char *str, int len)
         }
         c = input();   
     }
-
-
-    printf("Result is %s\n", result_str);
 }
 
 
@@ -207,18 +204,10 @@ char *trim(char *str)
     char *tmp;
     tmp = strdup(str);
 
-    // Trim leading space
     while(isspace(*tmp)) tmp++;
 
     if(*tmp == '\0')
         return tmp;
 
-  /*  // Trim trailing space
-    end = str + strlen(str) - 1;
-    while(end > str && isspace(*end)) end--;
-
-    // Write new null terminator
-    *(end+1) = 0;
-    */
     return tmp;;
 }
