@@ -79,8 +79,7 @@ void reset_text()
 
 void handle_conditional(char *str, int len)
 {
-    int c, d;
-    int index;
+    int c, d, index;
     int cur_line = yylineno;
     int cur_column = yycolumn - 9;
     int lparen = 0;
@@ -141,7 +140,7 @@ void handle_conditional(char *str, int len)
                         yylineno, result_str);
                 return;
               }
-          }
+            }
             break;
 
           case '"':
@@ -149,7 +148,8 @@ void handle_conditional(char *str, int len)
             break;
         
           case '\'':
-            in_sing_quote = 1 - in_sing_quote;
+            if (!in_quote)
+                in_sing_quote = 1 - in_sing_quote;
             break;
 
           case '\\':
@@ -209,5 +209,5 @@ char *trim(char *str)
     if(*tmp == '\0')
         return tmp;
 
-    return tmp;;
+    return tmp;
 }

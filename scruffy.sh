@@ -23,8 +23,8 @@
 
 if [ ! -e remove_single_comments -o ! -e indentR -o ! -e common_errors ]
 then
-    make
-    make clean
+    make --quiet || { echo 'Failed to build required programs!' >&2; exit 1; }
+    make --quiet clean
 
     if [ ! -e remove_single_comments -o ! -e indentR -o ! -e common_errors ]
     then
