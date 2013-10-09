@@ -104,7 +104,7 @@ expand $temp_in | diff \
 %>$$$
 ' \
     --unchanged-group-format="" \
-    -Z $temp_out - | ./indentR
+     $temp_out - | ./indentR
 
 
 
@@ -196,7 +196,7 @@ then
 %>
 '\
         --unchanged-group-format=""\
-        -w -Z -B --suppress-blank-empty\
+        -w -B --suppress-blank-empty\
         $temp_in $temp_out
 
 else
