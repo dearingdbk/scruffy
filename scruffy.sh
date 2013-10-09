@@ -21,12 +21,12 @@
 # Check that indentR and remove_single_comments exist. If they do not
 # create them.
 
-if [ ! -e remove_single_comments -o ! -e indentR ]
+if [ ! -e remove_single_comments -o ! -e indentR -o ! -e common_errors ]
 then
     make
     make clean
 
-    if [ ! -e remove_single_comments -o ! -e indentR ]
+    if [ ! -e remove_single_comments -o ! -e indentR -o ! -e common_errors ]
     then
         exit 0
     fi

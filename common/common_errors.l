@@ -17,6 +17,7 @@ yycolumn += yyleng;
 #include <string.h>
 #include "common_errors.tab.h"
 
+char *trim(char *str);
 void handle_conditional(char *str, int line);
 %}
 
@@ -37,8 +38,12 @@ void handle_conditional(char *str, int line);
 ^[ \t]*
 
 "while"                 | 
-"for"                   | 
+"for"                   |
 "if"                    { handle_conditional(yytext, yyleng); }
+
+(?:[ \t]*).*"struct"[^\n]*"{"     {  printf("%d:\n\n\t%s\n\n'{' should be on a new line.\n\n",
+                                  yylineno, trim(yytext));
+                        }
 
 \n                      { RESET(yycolumn); }
 .                       { /* append_text(yytext, yyleng); */ }
@@ -193,4 +198,27 @@ void handle_conditional(char *str, int len)
 
 
     printf("Result is %s\n", result_str);
+}
+
+
+
+char *trim(char *str)
+{
+    char *tmp;
+    tmp = strdup(str);
+
+    // Trim leading space
+    while(isspace(*tmp)) tmp++;
+
+    if(*tmp == '\0')
+        return tmp;
+
+  /*  // Trim trailing space
+    end = str + strlen(str) - 1;
+    while(end > str && isspace(*end)) end--;
+
+    // Write new null terminator
+    *(end+1) = 0;
+    */
+    return tmp;;
 }
