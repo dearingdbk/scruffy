@@ -41,7 +41,7 @@ void handle_conditional(char *str, int line);
 "for"                   |
 "if"                    { handle_conditional(yytext, yyleng); }
 
-.*"struct"[^\n]*"{"     {  printf("%d:\n\n\t%s\n\n'{' should be on a new line.\n\n",
+.*"struct"[^\n=]*"{"     {  printf("%d:\n\n\t%s\n\n'{' should be on a new line.\n\n",
                                   yylineno, trim(yytext));
                         }
 
@@ -154,7 +154,9 @@ void handle_conditional(char *str, int len)
 
           case '\\':
             if (!in_sing_quote)
-              input();
+              d = input();
+              if (d == '\n')
+                  unput(d);
             break;
 
           case '\n':

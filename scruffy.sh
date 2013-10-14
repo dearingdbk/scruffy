@@ -17,30 +17,34 @@
 # GLOBAL VARIABLE DEFINITIONS
 
 
+# Check that an argument was supplied to the program and that it is a file.
+
+if [ $# -eq 0 ]
+    then
+        echo 'No file name specified.'
+        exit 1
+else
+    if [ ! -e $1 ]
+        then
+            echo 'File supplied does not exist.'
+            exit 1
+    fi
+fi
+
 
 # Check that indentR and remove_single_comments exist. If they do not
 # create them.
 
 if [ ! -e remove_single_comments -o ! -e indentR -o ! -e common_errors ]
 then
-    make --quiet || { echo 'Failed to build required programs!' >&2; exit 1; }
+    make --quiet || { echo 'Failed to build required programs!' >&2; rm -f $1; exit 1; }
     make --quiet clean
 
     if [ ! -e remove_single_comments -o ! -e indentR -o ! -e common_errors ]
     then
-        exit 0
-    fi
-fi
-
-# Check that an argument was supplied to the program and that it is a file.
-
-if [ $# -eq 0 ]
-then
-    exit 0
-else
-    if [ ! -e $1 ]
-    then
-        exit 0
+        echo 'Failed to build required programs!'
+        rm -f $1
+        exit 1
     fi
 fi
 
@@ -55,7 +59,7 @@ temp_out=$(mktemp -t 'XXXXXXXXXXX.out')
 if [ ! -e $temp_in -o ! -e $temp_out ]
 then
     echo Unable to create tmp files.
-    exit 0
+    exit 1
 fi
 
 
@@ -77,7 +81,8 @@ cp $temp_in $temp_out
 if [ ! `which vim` -o ! -e indent/vim_commands.scr ]
 then
     rm $1 $temp_in $temp_out
-    exit 0
+    echo 'Vim not installed'
+    exit 1
 fi
 vim -e -s $temp_in < indent/vim_commands.scr
 
@@ -200,7 +205,9 @@ then
         $temp_in $temp_out
 
 else
-    echo indent program not available!
+    echo 'indent program not available!'
+    rm $temp_in $temp_out $1
+    exit 1
 fi
 
 
