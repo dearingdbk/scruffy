@@ -65,7 +65,7 @@ fi
 
 # Set temp_in and temp_out with un-tabbed versions of checked file.
 
-expand $1 > $temp_in
+expand $1 | sed "s/[ \t]*$//" > $temp_in
 cp $temp_in $temp_out
 
 
@@ -109,7 +109,7 @@ expand $temp_in | diff \
 %>$$$
 ' \
     --unchanged-group-format="" \
-     $temp_out - | ./indentR
+    $temp_out - | ./indentR
 
 
 
