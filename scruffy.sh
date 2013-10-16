@@ -35,12 +35,14 @@ fi
 # Check that indentR and remove_single_comments exist. If they do not
 # create them.
 
-if [ ! -e remove_single_comments -o ! -e indentR -o ! -e common_errors ]
+if [ ! -e remove_single_comments -o ! -e indentR -o ! -e common_errors \
+     -o ! -e check_declarations ]
 then
     make --quiet || { echo 'Failed to build required programs!' >&2; rm -f $1; exit 1; }
     make --quiet clean
 
-    if [ ! -e remove_single_comments -o ! -e indentR -o ! -e common_errors ]
+    if [ ! -e remove_single_comments -o ! -e indentR -o ! -e common_errors \
+        -o ! -e check_declarations ]
     then
         echo 'Failed to build required programs!'
         rm -f $1
@@ -132,7 +134,7 @@ awk '
 
 ./common_errors < $1
 
-
+./check_declarations < $1
 
 ##############################################################################
 #                           FORMAT PORTION                                   #
@@ -210,7 +212,6 @@ else
     exit 1
 fi
 
-./check_declarations < $1
 
 rm $temp_in $temp_out $1
 

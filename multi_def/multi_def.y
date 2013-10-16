@@ -14,7 +14,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 extern char *tmp;
-
+void refactor();
+char *trim(char *str);
 #define YYERROR_VERBOSE
 #define MAX_TRYS 1000
 void yyerror(const char *str)
@@ -279,7 +280,7 @@ inbit_declarator_list
     ;
 
 inbit_declarator
-    : declarator '=' initializer {printf("%d,%d\n\n%s\n\n%s\n\n", yylloc.first_line,yylloc.first_column, &tmp, "Initialized variables in a multiple variable declaration statement.");}
+    : declarator '=' initializer {refactor(); /*printf("%d,%d\n\n%s\n\n%s\n\n", yylloc.first_line,yylloc.first_column, &tmp, "Initialized variables in a multiple variable declaration statement.");*/}
     | declarator
 
 init_declarator
@@ -594,3 +595,27 @@ declaration_list
     ;
 
 %%
+
+void refactor()
+{
+    char *rtnstr = strdup((const char*) &tmp);
+    rtnstr = trim(rtnstr);
+
+    printf("%d,%d\n\n\t%s\n\n%s\n\n", 
+            yylloc.first_line,
+            yylloc.first_column,
+            rtnstr, 
+            "Initialized variables in a multiple "
+            "variable declaration statement.");
+}
+
+char *trim(char *str)
+{
+    char *newstr;
+        newstr = strdup(str);
+
+    while(isspace(*newstr)) newstr++;
+
+    return newstr;
+}
+
