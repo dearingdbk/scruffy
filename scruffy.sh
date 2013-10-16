@@ -210,7 +210,7 @@ else
     exit 1
 fi
 
-
+./check_declarations < $1
 
 rm $temp_in $temp_out $1
 
