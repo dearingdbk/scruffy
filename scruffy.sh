@@ -15,7 +15,7 @@
 
 
 # GLOBAL VARIABLE DEFINITIONS
-
+MAX_LINES=2000
 
 # Check that an argument was supplied to the program and that it is a file.
 
@@ -66,9 +66,28 @@ fi
 
 
 # Set temp_in and temp_out with un-tabbed versions of checked file.
+# Piped through sed to remove trailing whitespace.
 
 expand $1 | sed "s/[ \t]*$//" > $temp_in
 cp $temp_in $temp_out
+
+
+##############################################################################
+#                          FILE LENGTH CHECK                                 #
+# Check that the file has less than the maximum number of lines.             #
+##############################################################################
+
+# The first line of error output will be if the file exceeds the max file
+# length as determined by $MAX_LINES. Following checkstyles reasoning the
+# maximum number of lines a file can have is 2000.
+
+size=`wc -l $1 | cut -d' ' -f1`  # Retrieve newline count of checked file.
+
+if [ $size -gt $MAX_LINES ]
+then
+    echo $1 \\n \\nFile length is $size lines '['max allowed is $MAX_LINES']'.\
+        \\n\\n
+fi
 
 
 ##############################################################################
@@ -211,7 +230,6 @@ else
     rm $temp_in $temp_out $1
     exit 1
 fi
-
 
 rm $temp_in $temp_out $1
 
