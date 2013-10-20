@@ -2,7 +2,6 @@
 *   YACC file for ANSI C grammar
 *
 */
-%defines
 %locations
 %{
 #ifndef MULTI_DEF_TAB_H
