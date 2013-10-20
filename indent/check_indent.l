@@ -15,7 +15,11 @@ yycolumn += yyleng;
 #define DECIMAL 10
 
 #include <string.h>
+#ifndef CHECK_INDENT_TAB_H
+#define CHECK_INDENT_TAB_H
 #include "check_indent.tab.h"
+#endif
+
 typedef struct 
 {
     int orig_start;

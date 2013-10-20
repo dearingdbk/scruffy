@@ -6,7 +6,10 @@
 %{
 
 #include <stdio.h>
+#ifndef CHECK_INDENT_TAB_H
+#define CHECK_INDENT_TAB_H
 #include "check_indent.tab.h"
+#endif
 
 void yyerror(const char *s)
 {

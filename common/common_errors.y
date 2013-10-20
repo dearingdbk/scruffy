@@ -6,7 +6,10 @@
 %{
 
 #include <stdio.h>
+#ifndef COMMON_ERRORS_TAB_H
+#define COMMON_ERRORS_TAB_H
 #include "common_errors.tab.h"
+#endif
 
 void yyerror(const char *s)
 {

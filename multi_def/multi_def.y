@@ -8,7 +8,10 @@
 %expect 2
 %expect-rr 0
 %{
-#include "multi_def.tab.h"
+#ifndef MULTI_DEF_TAB_H
+#define MULTI_DEF_TAB_H
+#include "multi_def.tab.h" 
+#endif
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

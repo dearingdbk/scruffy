@@ -15,7 +15,10 @@ yycolumn += yyleng;
 #define TRUE 1
 #define MAX_STRING 1024
 #include <string.h>
+#ifndef COMMON_ERRORS_TAB_H
+#define COMMON_ERRORS_TAB_H
 #include "common_errors.tab.h"
+#endif
 
 char *trim(char *str);
 void handle_conditional(char *str, int line);

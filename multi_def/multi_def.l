@@ -42,7 +42,10 @@ void reset_text();
 
 /* START Include files. */
 #include <stdio.h>
+#ifndef MULTI_DEF_TAB_H
+#define MULTI_DEF_TAB_H
 #include "multi_def.tab.h"
+#endif
 /* END Include files. */
 
 /* START Definitions. */
