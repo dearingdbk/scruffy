@@ -268,18 +268,26 @@ declaration_specifiers
     | alignment_specifier declaration_specifiers
     | alignment_specifier
     ;
+/*****************************************************
+ *****************************************************
+  CHANGE OF MULTI_DELCARATION GRAMMAR
+ *****************************************************/
 
 init_declarator_list
     : init_declarator 
-    | inbit_declarator_list ',' inbit_declarator 
+    | multi_declarator_list ',' multi_declarator 
     ;
 
-inbit_declarator_list
-    : inbit_declarator
-    | inbit_declarator_list ',' inbit_declarator
+ /*****************************************************
+  END CHANGE OF MULTI_DELCARATION GRAMMAR
+ *****************************************************/
+
+multi_declarator_list
+    : multi_declarator
+    | multi_declarator_list ',' multi_declarator
     ;
 
-inbit_declarator
+multi_declarator
     : declarator '=' initializer { print_message(); }
     | declarator
 

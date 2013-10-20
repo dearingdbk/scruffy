@@ -222,7 +222,7 @@ then
 %>
 '\
         --unchanged-group-format=""\
-        -w -B --suppress-blank-empty\
+        -b --suppress-blank-empty\
         $temp_in $temp_out
 
 else
