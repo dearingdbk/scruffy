@@ -4,13 +4,9 @@
 */
 %defines
 %locations
-%glr-parser
-%expect 2
-%expect-rr 0
 %{
 #ifndef MULTI_DEF_TAB_H
 #define MULTI_DEF_TAB_H
-#include "multi_def.tab.h" 
 #endif
 #include <stdio.h>
 #include <string.h>
@@ -273,7 +269,7 @@ declaration_specifiers
     ;
 /*****************************************************
  *****************************************************
-  CHANGE OF MULTI_DELCARATION GRAMMAR
+  CHANGE OF MULTI_DECLARATION GRAMMAR
  *****************************************************/
 
 init_declarator_list
@@ -282,7 +278,7 @@ init_declarator_list
     ;
 
  /*****************************************************
-  END CHANGE OF MULTI_DELCARATION GRAMMAR
+  END CHANGE OF MULTI_DECLARATION GRAMMAR
  *****************************************************/
 
 multi_declarator_list
