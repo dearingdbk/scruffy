@@ -616,8 +616,7 @@ void print_message()
             yylloc.first_line,
             yylloc.first_column,
             rtnstr, 
-            "Initialized variables in a multiple "
-            "variable declaration statement.");
+            "Variable initialized in a multi-variable declaration.");
 }
 
 char *trim(char *str)
