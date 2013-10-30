@@ -88,7 +88,7 @@ int strpos = 0;
 %x COMMENT
 %x INCLUDE
 %x DEFINE
-%x NUMBER
+%s STRUCT
 /* END Exclusive Start State definitions. */
 
 /* START Inclusive Start State definitions. */
@@ -123,6 +123,8 @@ int strpos = 0;
 
 <TYPE_DEF>[a-zA-Z_0-9]+";"$        { add_entry(yylineno, TYPEDEF_NAME, yytext); BEGIN(INITIAL); yyless(yyleng - 1);}
 
+<STRUCT>{L}{A}*[ \t]*"{"    |
+<STRUCT>"}"[ \t]*{L}{A}*     { add_entry(yylineno, TYPEDEF_NAME, yytext);                BEGIN(INITIAL); yyless(yyleng - 1); }
 
 "auto"  				{ return(AUTO); }
 "bool"                  { return(BOOL); }
@@ -151,7 +153,7 @@ int strpos = 0;
 "signed"				{ return(SIGNED); }
 "sizeof"				{ return(SIZEOF); }
 "static"				{ return(STATIC); }
-"struct"				{ return(STRUCT); }
+"struct"				{ BEGIN(STRUCT); return(STRUCT); }
 "switch"				{ return(SWITCH); }
 "typedef"				{ BEGIN(TYPE_DEF); return(TYPEDEF);}
 "union"					{ return(UNION); }
@@ -250,6 +252,8 @@ int strpos = 0;
 
 static int check_type(void)
 {
+
+    /* NEED TO ADD SUPPORT FOR BAD TYPEDEF NAMES TOO */ 
     struct symbol *cur_entry = lookup(yytext);
 
     if (cur_entry == NULL)
@@ -263,7 +267,10 @@ static int check_type(void)
     case ENUMERATION_CONSTANT:        /* previously defined */
         return ENUMERATION_CONSTANT;
     default:                          /* includes undefined */
-        return IDENTIFIER;
+        if (isupper(yytext[0]) || isdigit(yytext[0]))
+            return BIDENTIFIER;
+        else
+            return IDENTIFIER;
     }
 }
 

@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 extern char *tmp;
+extern char *yytext;
 void print_msg(int line, int column, char *str);
 char *trim(char *str);
 #define YYERROR_VERBOSE
@@ -37,6 +38,7 @@ char *trim(char *str);
 #define NEBC "Do not include executable statements before the first case\
  label."
 #define MBS "Missing Break statement."
+#define BSTMT "Name must match pattern '^[a-z][a-zA-Z0-9_]*$'."
 
 void yyerror(const char *str)
 {
@@ -68,7 +70,7 @@ main()
 
 %}
 
-%token  IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
+%token  BIDENTIFIER IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
 %token	PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token	AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token	SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
@@ -89,7 +91,7 @@ main()
 %%
 
 primary_expression
-    : IDENTIFIER
+    : IDENTIFIER  /* Once a #define solution is comp replace with good_bad_ident */
     | constant
     | string
     | '(' expression ')'
@@ -335,7 +337,7 @@ type_specifier
 struct_or_union_specifier
     : struct_or_union '{' struct_declaration_list '}'
     | struct_or_union IDENTIFIER '{' struct_declaration_list '}'
-    | struct_or_union IDENTIFIER
+    | struct_or_union good_bad_ident
     ;
 
 struct_or_union
@@ -417,7 +419,7 @@ declarator
     ;
 
 direct_declarator
-    : IDENTIFIER
+    : good_bad_ident
     | '(' declarator ')'
     | direct_declarator '[' ']'
     | direct_declarator '[' '*' ']'
@@ -431,6 +433,11 @@ direct_declarator
     | direct_declarator '(' parameter_type_list ')'
     | direct_declarator '(' ')'
     | direct_declarator '(' identifier_list ')'
+    ;
+
+good_bad_ident
+    : IDENTIFIER
+    | BIDENTIFIER  { print_msg(yylloc.first_line, 0, BSTMT); }
     ;
 
 pointer
