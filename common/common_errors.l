@@ -27,8 +27,15 @@ void handle_conditional(char *str, int line);
 %option yylineno
 
 %x COMMENT
+%x DEFINE
+%x STRING
 
 %%
+
+^"#"[ \t]*"define"      { BEGIN(DEFINE);}
+<DEFINE>.|\n
+<DEFINE>[^\\]\n         { RESET(yycolumn); BEGIN(INITIAL); }
+
 
 "/*"                    { BEGIN(COMMENT); }
 <COMMENT>"*/"           { BEGIN(INITIAL);}
