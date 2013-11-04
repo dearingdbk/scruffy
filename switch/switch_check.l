@@ -38,11 +38,14 @@ void add_entry(int line_num, int flag, char* str);
 static unsigned symhash(char *sym);
 void append(char *str, int len);
 void reset_text();
+char* rem_end_bracket(char *str);
+char* rem_begin_bracket(char *str);
 /* END Function Definitions */
 
 /* START Include files. */
 #include <stdio.h>
 #include "switch_check.tab.h"
+#include "functions.h"
 /* END Include files. */
 
 /* START Definitions. */
@@ -89,10 +92,12 @@ int strpos = 0;
 %x INCLUDE
 %x DEFINE
 %s STRUCT
+
 /* END Exclusive Start State definitions. */
 
 /* START Inclusive Start State definitions. */
 %s TYPE_DEF
+%s STRUCT_BLOCK
 /* END Inclusive Start State definitions. */
 %%
 
@@ -121,10 +126,22 @@ int strpos = 0;
 ^"#"[ \t]*"pragma".*    |
 ^"#"                    ;  /* Eat up preprocessor directives. */
 
-<TYPE_DEF>[a-zA-Z_0-9]+";"$        { add_entry(yylineno, TYPEDEF_NAME, yytext); BEGIN(INITIAL); yyless(yyleng - 1);}
+<TYPE_DEF>[a-zA-Z_0-9]+";"$     { add_entry(yylineno, TYPEDEF_NAME, yytext);
+                                  BEGIN(INITIAL);
+                                  yyless(yyleng - 1);
+                                }
 
-<STRUCT>{L}{A}*[ \t]*"{"    |
-<STRUCT>"}"[ \t]*{L}{A}*     { add_entry(yylineno, TYPEDEF_NAME, yytext);                BEGIN(INITIAL); yyless(yyleng - 1); }
+
+<STRUCT>"{"                     { BEGIN(STRUCT_BLOCK); }
+<STRUCT>{L}{A}*                 { add_entry(yylineno, TYPEDEF_NAME,       
+                                  rem_end_bracket(yytext));  
+                                   BEGIN(INITIAL);
+                                }
+ /*<STRUCT>{L}{A}*         { add_entry(yylineno, TYPEDEF_NAME, 
+                                  rem_begin_bracket(yytext));
+                                  BEGIN(INITIAL);
+                                }*/
+<STRUCT_BLOCK>"}"               { BEGIN(STRUCT); }
 
 "auto"  				{ return(AUTO); }
 "bool"                  { return(BOOL); }
@@ -252,8 +269,6 @@ int strpos = 0;
 
 static int check_type(void)
 {
-
-    /* NEED TO ADD SUPPORT FOR BAD TYPEDEF NAMES TOO */ 
     struct symbol *cur_entry = lookup(yytext);
 
     if (cur_entry == NULL)
@@ -267,10 +282,7 @@ static int check_type(void)
     case ENUMERATION_CONSTANT:        /* previously defined */
         return ENUMERATION_CONSTANT;
     default:                          /* includes undefined */
-        if (isupper(yytext[0]) || isdigit(yytext[0]))
-            return BIDENTIFIER;
-        else
-            return IDENTIFIER;
+        return IDENTIFIER;
     }
 }
 
@@ -278,12 +290,17 @@ static int check_type(void)
 /* Symbol Table Implementation */
 
 
-void add_entry(int line_num, int flag, char* str)
+void 
+add_entry(int line_num, int flag, char* str)
 {
     char *tmp = fix_string(str);
     struct symbol *new_entry;
     struct symbol *cur_entry = lookup(tmp);
 
+    if (isupper(tmp[0]) || isdigit(tmp[0]))
+    {
+        print_bad_ident(line_num, yycolumn, tmp);
+    }
     if (cur_entry == NULL)
     {
         /* exit with an error here */return ;
@@ -301,6 +318,7 @@ void add_entry(int line_num, int flag, char* str)
     }
     else
     {
+        /* NEED TO ALLOC MEMORY */
         new_entry->next = cur_entry->next;
         new_entry->line_num = line_num;
         new_entry->flag = flag;
@@ -309,7 +327,8 @@ void add_entry(int line_num, int flag, char* str)
 }
 
 
-static unsigned symhash(char *sym)
+static unsigned 
+symhash(char *sym)
 {
     unsigned int hash = 0;
     unsigned c;
@@ -321,14 +340,17 @@ static unsigned symhash(char *sym)
 }
 
 
-struct symbol *lookup(char* str)
+struct symbol*
+lookup(char* str)
 {
     unsigned int index = symhash(str) % NUM_HASH;
     struct symbol *cur_entry = &symbol_table[index];
     int scount = NUM_HASH;
     /* how many have we looked at */
-    while(--scount >= 0) {
-        if(cur_entry->name && !strcmp(cur_entry->name, str)) return cur_entry;
+    while(--scount >= 0)
+    {
+        if(cur_entry->name && !strcmp(cur_entry->name, str)) 
+            return cur_entry;
         if(!cur_entry->name)
         {
             cur_entry->name = strdup(str);
@@ -346,7 +368,8 @@ struct symbol *lookup(char* str)
 }
 
 
-char* fix_string(char* string)
+char* 
+fix_string(char* string)
 {
     int i;
     int len = strlen(string);
@@ -362,7 +385,8 @@ char* fix_string(char* string)
 }
 
 
-void append(char *str, int len)
+void 
+append(char *str, int len)
 {
     int i;
     if (strpos + len >= 1024)
@@ -375,8 +399,42 @@ void append(char *str, int len)
     tmp[strpos] = '\0';
 }
 
-void reset_text()
+void 
+reset_text()
 {
     tmp[0] = '\0';
     strpos = 0;
+}
+
+char*
+rem_end_bracket(char *str)
+{
+    char *newstr;
+    newstr = strdup(str);
+    int i;
+    for (i = 0; i < yyleng; i++)
+    {
+        if (isspace(newstr[i]) || newstr[i] == '{')
+        {
+            newstr[i] = '\0';
+            break;
+        }
+    }
+    
+    return newstr;
+    /*while(*newstr != ' ' || *newstr != '{')
+        newstr++;*/
+
+}
+
+char* 
+rem_begin_bracket(char *str)
+{
+    char *newstr;
+    newstr = strdup(str);
+
+    while(isspace(*newstr) || *newstr == '}')
+            newstr++;
+
+    return newstr;
 }
