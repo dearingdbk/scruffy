@@ -30,7 +30,7 @@ QZ  [A-Z_0-9()]
 
 %{
 /* START Function Definitions */
-int reset_line_num(char *str);
+//int reset_line_num(char *str);
 static int check_type(void);
 char* fix_string(char* str);
 struct symbol *lookup(char* str);
@@ -356,7 +356,7 @@ char* fix_string(char* string)
     return ret_str;
 }
 
-int reset_line_num(char *str)
+/*int reset_line_num(char *str)
 {
     int len = strlen(str);
     int i;
@@ -375,7 +375,7 @@ int reset_line_num(char *str)
     else
         return result;
 }
-
+*/
 void append(char *str, int len)
 {
     int i;

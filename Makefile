@@ -20,9 +20,9 @@ indent/check_indent.tab.h:
 	bison --defines=indent/check_indent.tab.h \
 		--output=indent/check_indent.tab.c  indent/check_indent.y
 
-common_errors: common/common_errors.yy.c
+common_errors: common/common_errors.yy.c functions/functions.o
 	gcc  common/common_errors.yy.c common/common_errors.tab.c \
-		-lfl -o common_errors
+		-lfl functions/functions.o -o common_errors
 
 common/common_errors.yy.c: common/common_errors.tab.h
 	lex -o common/common_errors.yy.c common/common_errors.l 
@@ -42,6 +42,9 @@ multi_def/multi_def.tab.h:
 	bison --defines=multi_def/multi_def.tab.h \
 		--output=multi_def/multi_def.tab.c multi_def/multi_def.y
 
+functions/functions.o:
+	gcc -o functions/functions.o -c functions/functions.c
+
 clean:
 	rm -f indent/check_indent.tab.* \
 		indent/check_indent.yy.c \
@@ -49,7 +52,8 @@ clean:
 		common/common_errors.tab.* \
 		common/common_errors.yy.c \
 		multi_def/multi_def.yy.c \
-		multi_def/multi_def.tab.*
+		multi_def/multi_def.tab.* \
+		functions/functions.o
 
 remove: clean
 	rm -f indentR \

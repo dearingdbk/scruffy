@@ -3,6 +3,7 @@
 int yycolumn = 0;
 /* START Include files. */
 #include <stdio.h>
+#include "../functions/functions.h"
 /* END Include files. */
 
 /* START Definitions. */
@@ -18,9 +19,9 @@ yycolumn += yyleng;
 #ifndef COMMON_ERRORS_TAB_H
 #define COMMON_ERRORS_TAB_H
 #include "common_errors.tab.h"
+#include "../functions/functions.h"
 #endif
-
-char *trim(char *str);
+char *tmp;  // Not required except for functions.h
 void handle_conditional(char *str, int line);
 %}
 
@@ -68,24 +69,6 @@ int yywrap(void) /* called at end of input */
 {
     return 1; /* terminate now */
 }
-
-/*
-void append_text(char *str, int len)
-{   
-    int i;
-    for (i = 0; i < len; i++)
-    {
-        tmp[strpos++] = str[i];
-    }
-    tmp[strpos] = '\0';
-}
-
-void reset_text()
-{
-    strpos = 0;
-    tmp[0] = '\0';
-}
-*/
 
 void handle_conditional(char *str, int len)
 {
@@ -209,17 +192,3 @@ void handle_conditional(char *str, int len)
     }
 }
 
-
-
-char *trim(char *str)
-{
-    char *tmp;
-    tmp = strdup(str);
-
-    while(isspace(*tmp)) tmp++;
-
-    if(*tmp == '\0')
-        return tmp;
-
-    return tmp;
-}

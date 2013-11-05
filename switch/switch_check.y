@@ -1,13 +1,13 @@
 /*
- * File:     switch-check.y
- * Author:   Bruce Dearing  100036623
- * Date:     2013/10/27
- * Version:  1.0
+ * File: switch-check.y
+ * Author: Bruce Dearing 100036623
+ * Date: 2013/10/27
+ * Version: 1.0
  *
- * Purpose:  ANSI C Yacc grammar, to parse tokens received from the 
- *           lex scanner switch_check.l
- *           Grammar has been re-written to identify common style errors
- *           present in C code and alert the user.
+ * Purpose: ANSI C Yacc grammar, to parse tokens received from the
+ * lex scanner switch_check.l
+ * Grammar has been re-written to identify common style errors
+ * present in C code and alert the user.
  */
 
 %locations
@@ -44,7 +44,7 @@ extern char *yytext;
 
 void yyerror(const char *str)
 {
-   /* 
+   /*
     * Purposely do nothing here, we want to error quietly
     * to allow greater flexibility within this parser.
     */
@@ -53,8 +53,8 @@ void yyerror(const char *str)
 
 main()
 {
-   /* 
-    * The parser returns a value of zero 
+   /*
+    * The parser returns a value of zero
     * if the parse succeeds and nonzero if not.
     * Here we continue parsing even on error up to
     * MAX_TRYS.
@@ -66,28 +66,28 @@ main()
           index++;
        else
             break;
-   } 
+   }
 
 }
 
 %}
 
-%token  BIDENTIFIER IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
-%token	PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
-%token	AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
-%token	SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
-%token	XOR_ASSIGN OR_ASSIGN
-%token	TYPEDEF_NAME ENUMERATION_CONSTANT
+%token BIDENTIFIER IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
+%token        PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
+%token        AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
+%token        SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
+%token        XOR_ASSIGN OR_ASSIGN
+%token        TYPEDEF_NAME ENUMERATION_CONSTANT
 
-%token	TYPEDEF EXTERN STATIC AUTO REGISTER INLINE
-%token	CONST RESTRICT VOLATILE
-%token	BOOL CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE VOID
-%token	COMPLEX IMAGINARY 
-%token	STRUCT UNION ENUM ELLIPSIS
+%token        TYPEDEF EXTERN STATIC AUTO REGISTER INLINE
+%token        CONST RESTRICT VOLATILE
+%token        BOOL CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE VOID
+%token        COMPLEX IMAGINARY
+%token        STRUCT UNION ENUM ELLIPSIS
 
-%token	CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
+%token        CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 
-%token	ALIGNAS ALIGNOF ATOMIC GENERIC NORETURN STATIC_ASSERT THREAD_LOCAL
+%token        ALIGNAS ALIGNOF ATOMIC GENERIC NORETURN STATIC_ASSERT THREAD_LOCAL
 
 %start translation_unit
 %%
@@ -101,12 +101,12 @@ primary_expression
     ;
 
 constant
-    : I_CONSTANT		/* includes character_constant */
+    : I_CONSTANT                /* includes character_constant */
     | F_CONSTANT
-    | ENUMERATION_CONSTANT	/* after it has been defined as such */
+    | ENUMERATION_CONSTANT        /* after it has been defined as such */
     ;
 
-enumeration_constant		/* before it has been defined as such */
+enumeration_constant                /* before it has been defined as such */
     : IDENTIFIER
     ;
 
@@ -259,7 +259,7 @@ expression
     ;
 
 constant_expression
-    : conditional_expression	/* with constraints */
+    : conditional_expression        /* with constraints */
     ;
 
 declaration
@@ -286,8 +286,8 @@ declaration_specifiers
  */
 
 init_declarator_list
-    : init_declarator 
-    | multi_declarator_list ',' multi_declarator 
+    : init_declarator
+    | multi_declarator_list ',' multi_declarator
     ;
 
 multi_declarator_list
@@ -309,7 +309,7 @@ init_declarator
     ;
 
 storage_class_specifier
-    : TYPEDEF	/* identifiers must be flagged as TYPEDEF_NAME */
+    : TYPEDEF        /* identifiers must be flagged as TYPEDEF_NAME */
     | EXTERN
     | STATIC
     | THREAD_LOCAL
@@ -329,11 +329,11 @@ type_specifier
     | UNSIGNED
     | BOOL
     | COMPLEX
-    | IMAGINARY	  	/* non-mandated extension */
+    | IMAGINARY                 /* non-mandated extension */
     | atomic_type_specifier
     | struct_or_union_specifier
     | enum_specifier
-    | TYPEDEF_NAME		/* after it has been defined as such */
+    | TYPEDEF_NAME                /* after it has been defined as such */
     ;
 
 struct_or_union_specifier
@@ -353,7 +353,7 @@ struct_declaration_list
     ;
 
 struct_declaration
-    : specifier_qualifier_list ';'	/* for anonymous struct/union */
+    : specifier_qualifier_list ';'        /* for anonymous struct/union */
     | specifier_qualifier_list struct_declarator_list ';'
     | static_assert_declaration
     ;
@@ -389,7 +389,7 @@ enumerator_list
     | enumerator_list ',' enumerator
     ;
 
-enumerator	/* identifiers must be flagged as ENUMERATION_CONSTANT */
+enumerator        /* identifiers must be flagged as ENUMERATION_CONSTANT */
     : enumeration_constant '=' constant_expression
     | enumeration_constant
     ;
@@ -422,9 +422,9 @@ declarator
 
 direct_declarator
     : IDENTIFIER { if (isupper(yytext[0]) || isdigit(yytext[0]))
-                   { 
+                   {
                       
-                      print_bad_ident(yylloc.first_line, 
+                      print_bad_ident(yylloc.first_line,
                          yylloc.first_column, yytext);
                    }
                  }
@@ -556,13 +556,13 @@ labeled_statement
     : IDENTIFIER ':' statement
     ;
 
-/* 
+/*
  * CHANGE OF COMPOUND STATEMENT GRAMMAR
  */
 
 compound_statement
     : '{' '}' {print_msg(yylloc.first_line, 0, ECB);}
-    | '{'  block_item_list '}'
+    | '{' block_item_list '}'
     ;
 
 /*
@@ -609,7 +609,7 @@ selection_statement
     ;
 
 switch_block
-    : switch_stmts switch_cases 
+    : switch_stmts switch_cases
     | error /* Catches acceptible code error executable statements at switch end */
     ;
 
@@ -619,8 +619,8 @@ switch_cases
     ;
 
 case_after_default
-    : case_block { print_msg(yylloc.first_line, 0, DCL);} 
-    | 
+    : case_block { print_msg(yylloc.first_line, 0, DCL);}
+    |
     ;
 
 switch_end
@@ -628,10 +628,10 @@ switch_end
     | { print_msg(yylloc.first_line, 0, SWD); }
     ;
 
- /* 
+ /*
   * According to the ISO C Standard,
-  * ISO/IEC 9899:201x 
-  * subclause 6.8.4.2 paragraph 4 
+  * ISO/IEC 9899:201x
+  * subclause 6.8.4.2 paragraph 4
   */
 switch_stmts
     : stmts { print_msg(yylloc.first_line, 0, NEBC); }
@@ -658,7 +658,7 @@ switch_statement
 
 
 case_block
-    : CASE constant_expression ':' case_stmts case_end 
+    : CASE constant_expression ':' case_stmts case_end
     | case_block CASE constant_expression ':' case_stmts case_end
     ;
 
@@ -722,5 +722,3 @@ declaration_list
     ;
 
 %%
-
-

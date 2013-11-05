@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #define MAX_STRING 1024
+#define BAD_IDENT_MSG 50
+#define MAGIC_NUM_MSG 25
 //extern char *tmp;
 char tmp[MAX_STRING];
 int strpos = 0;
@@ -27,12 +29,30 @@ print_bad_ident(int line, int column, char *str)
     char *rtnstr = strdup((const char*)&tmp);
     rtnstr = trim(rtnstr);
 
-    int len = strlen(str) + 50;
+    int len = strlen(str) + BAD_IDENT_MSG;
     char *msg = (char*) malloc(sizeof(char*) * len);
 
     msg = strcat(msg, "Name '");
     msg = strcat(msg, str);
     msg = strcat(msg, "' must match pattern '^[a-z][a-zA-Z0-9_]*$'.");
+
+    printf("%d,%d:\n\n\t%s\n\n%s\n\n", line, column, rtnstr, msg);
+
+    free(msg);
+}
+
+void
+print_magic_number(int line, int column, char *str)
+{
+    char *rtnstr = strdup((const char*)&tmp);
+    rtnstr = trim(rtnstr);
+
+    int len = strlen(str) + MAGIC_NUM_MSG;
+    char *msg = (char*) malloc(sizeof(char*) * len);
+
+    msg = strcat(msg, "'");
+    msg = strcat(msg, str);
+    msg = strcat(msg, "' is a magic number.");
 
     printf("%d,%d:\n\n\t%s\n\n%s\n\n", line, column, rtnstr, msg);
 
