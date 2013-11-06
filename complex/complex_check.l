@@ -32,8 +32,8 @@ QZ [A-Z_0-9()]
 
 /* START Include files. */
 #include <stdio.h>
-#include "switch_check.tab.h"
-#include "functions.h"
+#include "complex_check.tab.h"
+#include "../functions/functions.h"
 /* END Include files. */
 
 

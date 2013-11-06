@@ -18,7 +18,7 @@ WS  [ \t\v\f]
 
 /* START Include files. */
 //#include "magic_num.tab.h"
-#include "functions.h"
+#include "../functions/functions.h"
 /* END Include files. */
 
 /* START Definitions. */

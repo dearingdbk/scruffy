@@ -35,14 +35,14 @@ fi
 # Check that indentR and remove_single_comments exist. If they do not
 # create them.
 
-if [ ! -e remove_single_comments -o ! -e indentR -o ! -e common_errors \
-     -o ! -e check_declarations ]
+if [ ! -e indentR -o ! -e common_errors  -o ! -e complex_check \
+     -o ! -e magic_num ]
 then
     make --quiet || { echo 'Failed to build required programs!' >&2; rm -f $1; exit 1; }
     make --quiet clean
 
-    if [ ! -e remove_single_comments -o ! -e indentR -o ! -e common_errors \
-        -o ! -e check_declarations ]
+    if [ ! -e indentR -o ! -e common_errors  -o ! -e complex_check \
+        -o ! -e magic_num]
     then
         echo 'Failed to build required programs!'
         rm -f $1
@@ -153,7 +153,9 @@ awk '
 
 ./common_errors < $1
 
-./check_declarations < $1
+./complex_check < $1
+
+./magic_num < $1
 
 ##############################################################################
 #                           FORMAT PORTION                                   #
@@ -166,7 +168,9 @@ awk '
 # This allows for single line comments in code, and enables the check of 
 # multiline comments for proper spacing and format.
 
-expand $1 | ./remove_single_comments > $temp_in
+#expand $1 | ./remove_single_comments > $temp_in
+
+expand $1 | sed 's/\/\/.*//g' | sed 's/\/\*.*\*\///g' > $temp_in
 
 if [ `which indent` ]
 then

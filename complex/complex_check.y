@@ -17,13 +17,13 @@
 %{
 #ifndef SWITCH_CHECK_TAB_H
 #define SWITCH_CHECK_TAB_H
-#include "switch_check.tab.h"
+#include "complex_check.tab.h"
 #endif
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include "functions.h"
+#include "../functions/functions.h"
 //extern char *tmp;
 extern char *yytext;
 //extern void add_entry(int line_num, int flag, char* str);

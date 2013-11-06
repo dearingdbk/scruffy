@@ -7,9 +7,7 @@ int yycolumn = 0;
 /* END Include files. */
 
 /* START Definitions. */
-#define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
-yylloc.first_column = yycolumn; yylloc.last_column = yycolumn+yyleng-1; \
-yycolumn += yyleng;
+#define YY_USER_ACTION yycolumn += yyleng;
 
 #define RESET(x) x = 0
 #define FALSE 0
@@ -52,7 +50,7 @@ void handle_conditional(char *str, int line);
 "for"                   |
 "if"                    { handle_conditional(yytext, yyleng); }
 
-.*"struct"[^\n=]*"{"     {  printf("%d:\n\n\t%s\n\n'{' should be on a new line.\n\n",
+.*"struct"[^\n=]*"{"    {  printf("%d:\n\n\t%s\n\n'{' should be on a new line.\n\n",
                                   yylineno, trim(yytext));
                         }
 
@@ -75,13 +73,13 @@ void handle_conditional(char *str, int len)
     int c, d, index;
     int cur_line = yylineno;
     int cur_column = yycolumn - 9;
-    int lparen = 0;
-    int in_quote = 0;
-    int in_sing_quote = 0;
+    int lparen = FALSE;
+    int in_quote = FALSE;
+    int in_sing_quote = FALSE;
     int miss_spc;
     char result_str[MAX_STRING];
 
-    for (index = 0; index < len; index++ )
+    for (index = 0; index < len; index++)
     {
         result_str[index] = str[index];
     }
@@ -166,8 +164,11 @@ void handle_conditional(char *str, int len)
             }
             else
             {
-              result_str[index++] = c;
-              result_str[index] = '\0';
+              if (index < MAX_STRING - 1) 
+              {
+                  result_str[index++] = c;
+                  result_str[index] = '\0';
+              }
               int i;
               for (i = 0; i < cur_column; i++)
               {
@@ -183,7 +184,7 @@ void handle_conditional(char *str, int len)
             break;
         }
 
-        if (index < MAX_STRING)
+        if (index < MAX_STRING - 1)
         {
             result_str[index++] = c;
             result_str[index] = '\0';
