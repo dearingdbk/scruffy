@@ -3,7 +3,6 @@
 int yycolumn = 0;
 /* START Include files. */
 #include <stdio.h>
-#include "../functions/functions.h"
 /* END Include files. */
 
 /* START Definitions. */
@@ -14,11 +13,7 @@ int yycolumn = 0;
 #define TRUE 1
 #define MAX_STRING 1024
 #include <string.h>
-#ifndef COMMON_ERRORS_TAB_H
-#define COMMON_ERRORS_TAB_H
-#include "common_errors.tab.h"
 #include "../functions/functions.h"
-#endif
 char *tmp;  // Not required except for functions.h
 void handle_conditional(char *str, int line);
 %}

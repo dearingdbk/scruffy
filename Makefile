@@ -22,15 +22,15 @@ indent/check_indent.tab.h:
 		--output=indent/check_indent.tab.c  indent/check_indent.y
 
 common_errors: common/common_errors.yy.c functions/functions.o
-	gcc  common/common_errors.yy.c common/common_errors.tab.c \
+	gcc  common/common_errors.yy.c  \
 		-lfl functions/functions.o -o common_errors
 
-common/common_errors.yy.c: common/common_errors.tab.h
+common/common_errors.yy.c:
 	lex -o common/common_errors.yy.c common/common_errors.l 
 
-common/common_errors.tab.h:
-	bison --defines=common/common_errors.tab.h \
-		--output=common/common_errors.tab.c common/common_errors.y
+#common/common_errors.tab.h:
+#	bison --defines=common/common_errors.tab.h \
+#		--output=common/common_errors.tab.c common/common_errors.y
 
 #check_declarations: multi_def/multi_def.yy.c
 #	gcc multi_def/multi_def.yy.c multi_def/multi_def.tab.c \
