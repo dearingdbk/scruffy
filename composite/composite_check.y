@@ -17,7 +17,7 @@
 %{
 #ifndef SWITCH_CHECK_TAB_H
 #define SWITCH_CHECK_TAB_H
-#include "complex_check.tab.h"
+#include "composite_check.tab.h"
 #endif
 #include <stdio.h>
 #include <string.h>

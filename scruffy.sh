@@ -35,13 +35,13 @@ fi
 # Check that indentR and remove_single_comments exist. If they do not
 # create them.
 
-if [ ! -e indentR -o ! -e common_errors  -o ! -e complex_check \
+if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check \
      -o ! -e magic_num ]
 then
     make --quiet || { echo 'Failed to build required programs!' >&2; rm -f $1; exit 1; }
     make --quiet clean
 
-    if [ ! -e indentR -o ! -e common_errors  -o ! -e complex_check \
+    if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check \
         -o ! -e magic_num]
     then
         echo 'Failed to build required programs!'
@@ -153,7 +153,7 @@ awk '
 
 ./common_errors < $1
 
-./complex_check < $1
+./composite_check < $1
 
 ./magic_num < $1
 
