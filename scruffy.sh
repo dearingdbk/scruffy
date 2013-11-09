@@ -154,7 +154,7 @@ awk '
     }
 }' $1
 
-# common_errors checks for checks for whitespace violations, bracket 
+# common_errors checks for whitespace violations, bracket 
 # placement, etc.
 
 ./common_errors < $1
