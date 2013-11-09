@@ -51,6 +51,7 @@ int save_state;
 %x STRING
 %x EAT
 %x QUOTE
+%x ARRAY
 /* END Exclusive Start State definitions. */
 
 /* START Inclusive Start State definitions. */
@@ -99,6 +100,11 @@ int save_state;
                                 reset_text();
                             }
                           BEGIN(save_state); }
+
+"= {"                   { BEGIN(ARRAY); }
+
+<ARRAY>(.|\n)
+<ARRAY>"};"             { BEGIN(INITIAL); }
 
 [0-9]+                  { if (atoi(yytext) > 2)
                           {

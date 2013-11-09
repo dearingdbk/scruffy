@@ -42,7 +42,7 @@ then
     make --quiet clean
 
     if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check \
-        -o ! -e magic_num]
+        -o ! -e magic_num ]
     then
         echo 'Failed to build required programs!'
         rm -f $1
@@ -67,7 +67,7 @@ fi
 
 
 # Set temp_in and temp_out with un-tabbed versions of checked file.
-# Piped through stream editor command to remove trailing whitespace.
+# Piped through stream editor command to remove trailing white space.
 
 expand $1 | sed "s/[ \t]*$//" > $temp_in
 cp $temp_in $temp_out
@@ -79,7 +79,7 @@ cp $temp_in $temp_out
 ##############################################################################
 
 # The first line of error output will be if the file exceeds the max file
-# length as determined by $MAX_LINES. Following checkstyles reasoning the
+# length as determined by $MAX_LINES. Following check-styles reasoning the
 # maximum number of lines a file can have is 2000.
 
 size=`wc -l $1 | cut -d' ' -f1`  # Retrieve newline count of checked file.
@@ -154,13 +154,13 @@ awk '
     }
 }' $1
 
-# common_errors checks for whitespace violations, bracket 
+# common_errors checks for white space violations, bracket 
 # placement, etc.
 
 ./common_errors < $1
 
 # composite_check has a number of checks it performs against a modified 
-# ANSI C grammar. The code is tokenized and parsed as it normaly would be,
+# ANSI C grammar. The code is tokenized and parsed as it normally would be,
 # however, grammar rules and reductions have been added to make it possible
 # to check for:
 #   - Variable declarations on a multi-variable definition statement.
@@ -188,7 +188,7 @@ awk '
 # Run the file through expand again to remove tabs. That output is then piped
 # through two stream editor commands which work to strip out single line comments.
 # This allows for single line comments in code, and enables the check of 
-# multiline comments for proper spacing and format.
+# multi-line comments for proper spacing and format.
 
 expand $1 | sed 's/\/\/.*//g' | sed 's/\/\*.*\*\///g' > $temp_in
 
@@ -212,7 +212,7 @@ then
         --break-before-boolean-operator\
         --indent-level4\
         --honour-newlines\
-        --space-after-cast\
+        --no-space-after-casts\
         --line-comments-indentation1\
         --declaration-indentation0\
         --no-space-after-function-call-names\
@@ -229,6 +229,7 @@ then
         --brace-indent0\
         --indent-label0\
         --line-length80\
+        -nbad\
         $temp_in -o $temp_out
 
 

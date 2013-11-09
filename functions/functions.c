@@ -50,9 +50,9 @@ print_magic_number(int line, int column, char *str)
     int len = strlen(str) + MAGIC_NUM_MSG;
     char *msg = (char*) malloc(sizeof(char*) * len);
 
-    msg = strcat(msg, "'");
+    msg = strcat(msg, "Warning: '");
     msg = strcat(msg, str);
-    msg = strcat(msg, "' is a magic number.");
+    msg = strcat(msg, "' might be a magic number.");
 
     printf("%d,%d:\n\n\t%s\n\n%s\n\n", line, column, rtnstr, msg);
 
