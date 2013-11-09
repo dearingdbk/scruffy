@@ -32,8 +32,8 @@ else
 fi
 
 
-# Check that indentR and remove_single_comments exist. If they do not
-# create them.
+# Check that indentR, common_errors, composite_check, and magic_num exist.
+# If they do not create them.
 
 if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check \
      -o ! -e magic_num ]
@@ -61,12 +61,13 @@ temp_out=$(mktemp -t 'XXXXXXXXXXX.out')
 if [ ! -e $temp_in -o ! -e $temp_out ]
 then
     echo Unable to create tmp files.
+    rm -f $1
     exit 1
 fi
 
 
 # Set temp_in and temp_out with un-tabbed versions of checked file.
-# Piped through sed to remove trailing whitespace.
+# Piped through stream editor command to remove trailing whitespace.
 
 expand $1 | sed "s/[ \t]*$//" > $temp_in
 cp $temp_in $temp_out
@@ -102,7 +103,7 @@ fi
 if [ ! `which vim` -o ! -e indent/vim_commands.scr ]
 then
     rm $1 $temp_in $temp_out
-    echo 'Vim not installed'
+    echo 'Vim not installed, or command script missing'
     exit 1
 fi
 vim -e -s $temp_in < indent/vim_commands.scr
@@ -114,7 +115,9 @@ vim -e -s $temp_in < indent/vim_commands.scr
 # Then that output is piped through indentR which parses the diff output
 # into a usable form.
 # the diff setup here is similar to the normal output from diff with a few
-# exceptions the line format has been edited to output only the text.
+# exceptions the line format has been edited to output only the text, and
+# a end statement "$$$" has been added to signal to indentR that it has 
+# reached the end of output for an instance of difference.
 
 expand $temp_in | diff \
     --old-line-format='%l
@@ -151,9 +154,28 @@ awk '
     }
 }' $1
 
+# common_errors checks for checks for whitespace violations, bracket 
+# placement, etc.
+
 ./common_errors < $1
 
+# composite_check has a number of checks it performs against a modified 
+# ANSI C grammar. The code is tokenized and parsed as it normaly would be,
+# however, grammar rules and reductions have been added to make it possible
+# to check for:
+#   - Variable declarations on a multi-variable definition statement.
+#         i.e. int a, b, c = 4, d;  " c should be declared on it's own line.
+#   - Switch statement common errors.
+#   - Empty statements.
+#   - Empty code blocks.
+#   - Naming conventions of variables, structs, and functions.
+#        i.e. int a, numOfCats, num_dogs; is ok int A, NumOfCats, Num_dogs; is not.
+
 ./composite_check < $1
+
+
+# magic_num checks for unique integer values N where N > 2, which could (preferably) be 
+# replaced with named constants.
 
 ./magic_num < $1
 
