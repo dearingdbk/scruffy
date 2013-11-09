@@ -164,11 +164,9 @@ awk '
 
 
 # Run the file through expand again to remove tabs. That output is then piped
-# into a parsing program which strips out single line comments.
+# through two stream editor commands which work to strip out single line comments.
 # This allows for single line comments in code, and enables the check of 
 # multiline comments for proper spacing and format.
-
-#expand $1 | ./remove_single_comments > $temp_in
 
 expand $1 | sed 's/\/\/.*//g' | sed 's/\/\*.*\*\///g' > $temp_in
 
@@ -218,7 +216,7 @@ then
         --new-line-format='%l
 ' \
         --old-group-format='%df%(f=l?:,%dl)d%dE
-%<' \
+%<'\
         --new-group-format='%dea%dF%(F=L?:,%dL)
 %>'\
         --changed-group-format='%df:
