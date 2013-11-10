@@ -6,8 +6,8 @@
 #define MAX_STRING 1024
 #define BAD_IDENT_MSG 50
 #define MAGIC_NUM_MSG 25
-//extern char *tmp;
-char tmp[MAX_STRING];
+#define MAX_LINE_LEN 79
+char linebuf[MAX_STRING];
 int strpos = 0;
 
 /*
@@ -26,9 +26,12 @@ int strpos = 0;
 void
 print_bad_ident(int line, int column, char *str)
 {
-    char *rtnstr = strdup((const char*)&tmp);
+    char *rtnstr = strdup((const char*)&linebuf);
+    int orig_len = strlen(rtnstr);
     rtnstr = trim(rtnstr);
-
+    int new_len = strlen(rtnstr);
+    int delta = orig_len - new_len;
+    column = column - delta;
     int len = strlen(str) + BAD_IDENT_MSG;
     char *msg = (char*) malloc(sizeof(char*) * len);
 
@@ -36,7 +39,8 @@ print_bad_ident(int line, int column, char *str)
     msg = strcat(msg, str);
     msg = strcat(msg, "' must match pattern '^[a-z][a-zA-Z0-9_]*$'.");
 
-    printf("%d,%d:\n\n\t%s\n\n%s\n\n", line, column, rtnstr, msg);
+    printf("%d:\n\n\t%s\n\t%*s%s\n%s\n\n", line, rtnstr, column, " ", "^", msg);
+    //printf("%d,%d:\n\n\t%s\n\n%s\n\n", line, column, rtnstr, msg);
 
     free(msg);
 }
@@ -44,8 +48,12 @@ print_bad_ident(int line, int column, char *str)
 void
 print_magic_number(int line, int column, char *str)
 {
-    char *rtnstr = strdup((const char*)&tmp);
+    char *rtnstr = strdup((const char*)&linebuf);
+    int orig_len = strlen(rtnstr);
     rtnstr = trim(rtnstr);
+    int new_len = strlen(rtnstr);
+    int delta = orig_len - new_len;
+    column = column - delta;
 
     int len = strlen(str) + MAGIC_NUM_MSG;
     char *msg = (char*) malloc(sizeof(char*) * len);
@@ -54,7 +62,8 @@ print_magic_number(int line, int column, char *str)
     msg = strcat(msg, str);
     msg = strcat(msg, "' might be a magic number.");
 
-    printf("%d,%d:\n\n\t%s\n\n%s\n\n", line, column, rtnstr, msg);
+    printf("%d:\n\n\t%s\n\t%*s%s\n%s\n\n", line, rtnstr, column, " ", "^", msg);
+    //printf("%d,%d:\n\n\t%s\n\n%s\n\n", line, column, rtnstr, msg);
 
     free(msg);
 }
@@ -106,12 +115,16 @@ trim(char *str)
 void
 print_msg(int line, int column, char *str)
 {
-    char *rtnstr = strdup((const char*)&tmp);
+    char *rtnstr = strdup((const char*)&linebuf);
+    int orig_len = strlen(rtnstr);
     rtnstr = trim(rtnstr);
+    int new_len = strlen(rtnstr);
+    int delta = orig_len - new_len;
+    column = column - delta;
 
-    if ( column != 0 )
+    if ( column >= 0 )
     {
-        printf("%d,%d:\n\n\t%s\n\n%s\n\n", line, column, rtnstr, str);
+        printf("%d:\n\n\t%s\n\t%*s%s\n%s\n\n", line, rtnstr, column, " ", "^", str);
     }
     else
     {
@@ -121,27 +134,34 @@ print_msg(int line, int column, char *str)
 }
 
 void
-append(char *str, int len)
+append(int line, char *str, int len)
 {
     int i;
-    if (strpos + len >= 1024)
-        return;
+    if (len > MAX_STRING)
+        len = MAX_STRING;
     for (i = 0; i < len; i++)
     {
-        tmp[strpos++] = str[i];
-
+        linebuf[i] = str[i];
     }
-    tmp[strpos] = '\0';
+    linebuf[i] = '\0';
+    if (len > MAX_LINE_LEN)
+    {
+        print_msg(line, 0, "Line is longer than 79 characters");
+    }
 }
 
-
-void
-reset_text()
-{
+/*
+    void
+    reset_text(int line, int check)
+    {
+    if (strpos > 79 && check)
+    {
+    print_msg(line, 0, "Line is longer than 79 characters");
+    }
     tmp[0] = '\0';
     strpos = 0;
-}
-
+    }
+    */
 char*
 fix_string(char* string)
 {

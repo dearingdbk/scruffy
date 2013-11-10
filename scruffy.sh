@@ -143,16 +143,6 @@ expand $temp_in | diff \
 # Checks document for common coding errors and style errors. (in progress)   #
 ##############################################################################
 
-# Awk statement to check for lines longer than MAX_LINE_LEN characters long.
-
-awk '
-{
-    if (length($0) > 79) 
-    {
-        gsub(/^[ \t]+/,"");
-        printf "%d:\n\t%s\n\n%s\n\n", NR, $0, "Line is longer than 79 characters."
-    }
-}' $1
 
 # common_errors checks for white space violations, bracket 
 # placement, etc.
@@ -170,14 +160,14 @@ awk '
 #   - Empty code blocks.
 #   - Naming conventions of variables, structs, and functions.
 #        i.e. int a, numOfCats, num_dogs; is ok int A, NumOfCats, Num_dogs; is not.
-
+#   - Line length > 79.
 ./composite_check < $1
 
 
 # magic_num checks for unique integer values N where N > 2, which could (preferably) be 
 # replaced with named constants.
 
-./magic_num < $1
+#./magic_num < $1
 
 ##############################################################################
 #                           FORMAT PORTION                                   #

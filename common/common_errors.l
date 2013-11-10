@@ -15,6 +15,7 @@ int yycolumn = 0;
 #include <string.h>
 #include "../functions/functions.h"
 char *tmp;  // Not required except for functions.h
+char *linebuf;
 void handle_conditional(char *str, int line);
 %}
 
@@ -33,7 +34,9 @@ void handle_conditional(char *str, int line);
 
 "/*"                    { BEGIN(COMMENT); }
 <COMMENT>"*/"           { BEGIN(INITIAL);}
-<COMMENT><<EOF>>        { printf("%d: Unterminated comment\n",yylineno); return EOF; }
+<COMMENT><<EOF>>        { printf("%d: Unterminated comment\n",yylineno); 
+                          return EOF;
+                        }
 <COMMENT>([^*]|\n)+|.
 
 
@@ -50,7 +53,7 @@ void handle_conditional(char *str, int line);
                         }
 
 \n                      { RESET(yycolumn); }
-.                       { /* append_text(yytext, yyleng); */ }
+.                       {  }
 
 %%
 main(int argc, char **argv)

@@ -9,7 +9,7 @@ void print_msg(int line, int column, char *str);
 
 void reset_text();
 
-void append(char *str, int len);
+void append(int line, char *str, int len);
 
 char* fix_string(char* string);
 #endif

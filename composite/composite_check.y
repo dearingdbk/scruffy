@@ -41,7 +41,7 @@ extern char *yytext;
 #define NEBC "Do not include executable statements before the first case\
  label."
 #define MBS "Missing Break statement."
-
+#define LCC "Array initialization contains optional trailing comma."
 void yyerror(const char *str)
 {
    /*
@@ -94,7 +94,12 @@ main()
 
 primary_expression
     : IDENTIFIER
-    | constant
+    | constant  { if (atoi(yytext) > 2)
+                  {
+                     print_magic_number(yylloc.first_line, 
+                     yylloc.last_column, yytext); 
+                  }
+                }
     | string
     | '(' expression ')'
     | generic_selection
@@ -296,7 +301,7 @@ multi_declarator_list
     ;
 
 multi_declarator
-    : declarator '=' initializer { print_msg(yylloc.first_line, yylloc.first_column, MULTI_DEF); }
+    : declarator '=' initializer { print_msg(yylloc.first_line, yylloc.last_column, MULTI_DEF); }
     | declarator
 
 /*
@@ -425,7 +430,7 @@ direct_declarator
                    {
                       
                       print_bad_ident(yylloc.first_line,
-                         yylloc.first_column, yytext);
+                         yylloc.last_column, yytext);
                    }
                  }
     | '(' declarator ')'
@@ -512,9 +517,11 @@ direct_abstract_declarator
     | direct_abstract_declarator '(' parameter_type_list ')'
     ;
 
+/* HERE IS THE ',' at end of initializer code */
+
 initializer
     : '{' initializer_list '}'
-    | '{' initializer_list ',' '}'
+    | '{' initializer_list ',' '}' { print_msg(yylloc.first_line, 0, LCC );}
     | assignment_expression
     ;
 
@@ -584,7 +591,7 @@ block_item
  */
 
 expression_statement
-    : ';' { print_msg(yylloc.first_line, yylloc.first_column, ES); }
+    : ';' { print_msg(yylloc.first_line, yylloc.last_column - 1, ES); }
     | expression ';'
     ;
 

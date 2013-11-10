@@ -25,8 +25,6 @@ CP (u|U|L)
 SP (u8|u|U|L)
 ES (\\(['"\?\\abfnrtv]|[0-7]{1,3}|x[a-fA-F0-9]+))
 WS [ \t\v\f]
-Q [A-Z_]
-QZ [A-Z_0-9()]
 
 %{
 
@@ -42,6 +40,7 @@ static int check_type(char *str);
 struct symbol *lookup(char* str);
 void add_entry(int line_num, int flag, char* str);
 static unsigned symhash(char *sym);
+char linebuf[500];
 /* END Function Definitions */
 
 /* START Definitions. */
@@ -49,8 +48,7 @@ static unsigned symhash(char *sym);
 #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
                        yylloc.first_column = yycolumn; \
                        yylloc.last_column = yycolumn+yyleng-1; \
-                       yycolumn += yyleng; \
-                       append(yytext, yyleng);
+                       yycolumn += yyleng;
 
 #define RESET(x) x = 1
 /* END Definitions. */
@@ -100,18 +98,19 @@ int yycolumn = 1;
 
 ^"#"[ \t]*"include"        { BEGIN(INCLUDE); }
 <INCLUDE>.
-<INCLUDE>\n                { RESET(yycolumn); reset_text(); BEGIN(INITIAL); }
+<INCLUDE>\n                { RESET(yycolumn);  BEGIN(INITIAL); }
 
 ^"#"[ \t]*"define"         { BEGIN(DEFINE);}
 <DEFINE>.|\n
-<DEFINE>[^\\]\n            { RESET(yycolumn); reset_text(); BEGIN(INITIAL); }
+<DEFINE>[^\\]\n            { RESET(yycolumn);  BEGIN(INITIAL); }
 
 "/*"                       { BEGIN(COMMENT); }
 <COMMENT>"*/"              { BEGIN(INITIAL);}
 <COMMENT><<EOF>>           { printf("%d: Unterminated comment\n",yylineno);
                              return EOF; 
                            }
-<COMMENT>([^*]|\n)+|.
+<COMMENT>[^*\n]+|.      
+<COMMENT>\n                {  }      
 
 "//".*                        /* Eat up single line comments. */
 
@@ -249,7 +248,10 @@ int yycolumn = 1;
 "?"                        { return '?'; }
 
 {WS}                       { /* whitespace separates tokens */ }
-\n                         { RESET(yycolumn); reset_text(); }
+\n.*                       { append(yylineno, yytext, yyleng);
+                             yyless(1);
+                             RESET(yycolumn);
+                           }
 .                          { /* discard bad characters */ }
 
 

@@ -22,8 +22,7 @@ WS  [ \t\v\f]
 /* END Include files. */
 
 /* START Definitions. */
-#define YY_USER_ACTION yycolumn += yyleng; \
-append(yytext, yyleng);
+#define YY_USER_ACTION yycolumn += yyleng;
 
 #define RESET(x) x = 1
 /* END Definitions. */
@@ -60,16 +59,17 @@ int save_state;
 
 ^"#"[ \t]*"include"     { BEGIN(INCLUDE); }
 <INCLUDE>.
-<INCLUDE>\n             { RESET(yycolumn); reset_text(); BEGIN(INITIAL); }
+<INCLUDE>\n             { RESET(yycolumn); BEGIN(INITIAL); }
 
 ^"#"[ \t]*"define"      { BEGIN(DEFINE);}
 <DEFINE>.|\n            
-<DEFINE>[^\\]\n         { RESET(yycolumn); reset_text(); BEGIN(INITIAL); }
+<DEFINE>[^\\]\n         { RESET(yycolumn);  BEGIN(INITIAL); }
 
 "/*"                    { BEGIN(COMMENT); }
 <COMMENT>"*/"           { BEGIN(INITIAL);}
 <COMMENT><<EOF>>        { printf("%d: Unterminated comment\n",yylineno); return EOF; }
-<COMMENT>([^*]|\n)+|.
+<COMMENT>[^*\n]+|. 
+<COMMENT>\n             { RESET(yycolumn); }
 
 "//".*                  /* Eat up single line comments. */
 
@@ -88,16 +88,15 @@ int save_state;
 <QUOTE>[^'\\\n]
 <QUOTE>"\\"             { save_state = YY_START; BEGIN(EAT); }
 <QUOTE>"'"              { BEGIN(INITIAL); }
-<QUOTE>\n               { RESET(yycolumn); reset_text(); }
+<QUOTE>\n               { RESET(yycolumn); }
 <STRING>[^\"\\\n]
-<STRING>\n              { RESET(yycolumn); reset_text(); }
+<STRING>\n              { RESET(yycolumn); }
 <STRING>"\\"            { save_state = YY_START; BEGIN(EAT); }
 <STRING>"\""            { BEGIN(INITIAL); }
 
 <EAT>.|\n               { if (yytext[0] == '\n')
                             {
                                 RESET(yycolumn); 
-                                reset_text();
                             }
                           BEGIN(save_state); }
 
@@ -108,13 +107,16 @@ int save_state;
 
 [0-9]+                  { if (atoi(yytext) > 2)
                           {
-                              print_magic_number(yylineno, yycolumn - yyleng, yytext);
+                              print_magic_number(yylineno, yycolumn, yytext);
                           }
                         }
 
 
 {WS}				{ /* whitespace separates tokens */ }
-\n                  { RESET(yycolumn); reset_text(); }
+\n.*                { append(yylineno, yytext, yyleng);
+                      RESET(yycolumn);
+                      yyless(1);
+                    }
 .					{ /* discard bad characters */ }
 
 
