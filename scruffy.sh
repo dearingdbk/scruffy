@@ -32,17 +32,15 @@ else
 fi
 
 
-# Check that indentR, common_errors, composite_check, and magic_num exist.
+# Check that indentR, common_errors, and composite_check exist.
 # If they do not create them.
 
-if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check \
-     -o ! -e magic_num ]
+if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check ]
 then
     make --quiet || { echo 'Failed to build required programs!' >&2; rm -f $1; exit 1; }
     make --quiet clean
 
-    if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check \
-        -o ! -e magic_num ]
+    if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check ]
     then
         echo 'Failed to build required programs!'
         rm -f $1
@@ -137,7 +135,6 @@ expand $temp_in | diff \
 
 
 
-
 ##############################################################################
 #                          COMMON ERROR / STYLE CHECKS                       #
 # Checks document for common coding errors and style errors. (in progress)   #
@@ -161,13 +158,9 @@ expand $temp_in | diff \
 #   - Naming conventions of variables, structs, and functions.
 #        i.e. int a, numOfCats, num_dogs; is ok int A, NumOfCats, Num_dogs; is not.
 #   - Line length > 79.
+
 ./composite_check < $1
 
-
-# magic_num checks for unique integer values N where N > 2, which could (preferably) be 
-# replaced with named constants.
-
-#./magic_num < $1
 
 ##############################################################################
 #                           FORMAT PORTION                                   #

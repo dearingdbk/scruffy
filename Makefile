@@ -1,5 +1,5 @@
 
-all: indentR common_errors magic_num composite_check
+all: indentR common_errors composite_check
 
 indentR: indent/check_indent.yy.c
 	gcc  indent/check_indent.yy.c indent/check_indent.tab.c \
@@ -30,12 +30,6 @@ composite/composite_check.tab.h:
 	bison --defines=composite/composite_check.tab.h \
 		--output=composite/composite_check.tab.c composite/composite_check.y 
 
-magic_num: magicnum/magic_num.yy.c functions/functions.o
-	gcc magicnum/magic_num.yy.c  functions/functions.o -lfl -o magic_num
-
-magicnum/magic_num.yy.c:
-	lex -o magicnum/magic_num.yy.c magicnum/magic_num.l
-
 functions/functions.o:
 	gcc -o functions/functions.o -c functions/functions.c
 
@@ -47,13 +41,11 @@ clean:
 		common/common_errors.yy.c \
 		functions/functions.o  \
 		composite/composite_check.yy.c \
-		composite/composite_check.tab.* \
-		magicnum/magic_num.yy.c
+		composite/composite_check.tab.*
 
 remove: clean
 	rm -f indentR \
 		remove_single_comments \
 		common_errors \
 		check_declarations \
-		composite_check \
-		magic_num
+		composite_check
