@@ -254,7 +254,7 @@ int yycolumn = 1;
 "|"                        { return '|'; }
 "?"                        { return '?'; }
 
-{WS}                       { /* whitespace separates tokens */ }
+{WS}                       { /* white space separates tokens */ }
 \n.*                       { append(yylineno, yytext, yyleng);
                              yyless(1);
                              RESET(yycolumn);
@@ -355,7 +355,7 @@ get_hashval(char *str)
 
 /*
  * Name:        lookup
- * Purpose:     Searches for the existence of a sumbol in the 
+ * Purpose:     Searches for the existence of a symbol in the 
  *				symbol_table array.
  * Arguments:   str ~ The string to search for in the symbol_table.
  * Output:      none

@@ -5,7 +5,7 @@
  * Version: 1.0
  *
  * Purpose: ANSI C Yacc grammar, to parse tokens received from the
- * lex scanner switch_check.l
+ * flex scanner switch_check.l
  * Grammar has been re-written to identify common style errors
  * present in C code and alert the user.
  */

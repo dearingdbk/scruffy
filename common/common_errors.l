@@ -69,7 +69,7 @@ void handle_conditional(char *str, int line);
 
 \n                      { RESET(yycolumn); }
 
-.                       /* Eat up bad charachters. */
+.                       /* Eat up bad characters. */
 
 %%
 main(int argc, char **argv)
