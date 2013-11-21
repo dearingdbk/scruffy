@@ -14,8 +14,6 @@ int yycolumn = 0;
 #define MAX_STRING 1024
 #include <string.h>
 #include "../functions/functions.h"
-char *tmp;  // Not required except for functions.h
-char *linebuf;
 void handle_conditional(char *str, int line);
 %}
 
@@ -24,8 +22,13 @@ void handle_conditional(char *str, int line);
 %x COMMENT
 %x DEFINE
 %x STRING
-
+%x INCLUDE
 %%
+
+^"#"[ \t]*"include".*      { BEGIN(INCLUDE); }
+<INCLUDE>.
+<INCLUDE>\n                { RESET(yycolumn);  BEGIN(INITIAL); }
+
 
 ^"#"[ \t]*"define"      { BEGIN(DEFINE);}
 <DEFINE>.|\n
@@ -39,10 +42,22 @@ void handle_conditional(char *str, int line);
                         }
 <COMMENT>([^*]|\n)+|.
 
+"//".*                        /* Eat up single line comments. */
+
+^"#"[ \t]*"undef".*        |
+^"#"[ \t]*"if".*           |
+^"#"[ \t]*"elif".*         |
+^"#"[ \t]*"else".*         |
+^"#"[ \t]*"endif".*        |
+^"#"[ \t]*"line".*         |
+^"#"[ \t]*"error".*        |
+^"#"[ \t]*"pragma".*       |
+^"#"                       ; /* Eat up preprocessor directives. */
+
 
 "//".*                  /* Eat up single line comments. */
 
-^[ \t]*
+^[ \t]*                 /* Eat up white space at the beginning of a line. */
 
 "while"                 | 
 "for"                   |
@@ -53,7 +68,8 @@ void handle_conditional(char *str, int line);
                         }
 
 \n                      { RESET(yycolumn); }
-.                       {  }
+
+.                       /* Eat up bad charachters. */
 
 %%
 main(int argc, char **argv)
@@ -81,6 +97,7 @@ void handle_conditional(char *str, int len)
     {
         result_str[index] = str[index];
     }
+    
     result_str[index] = '\0';
    
     c = input();

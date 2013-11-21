@@ -48,9 +48,6 @@ void handle_text(diff_output *current);
 %x NEW_SPACE
 %x GET_TEXT
 %x READ_TO_END
-%x SECOND_LINE
-%x PROCESS_LINE
-%x COMMENT
 
 %%
 
@@ -77,6 +74,7 @@ void handle_text(diff_output *current);
 
 \n                      {RESET(yycolumn);}
 .
+
 %%
 main(int argc, char **argv)
 {

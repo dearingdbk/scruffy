@@ -301,7 +301,7 @@ multi_declarator_list
     ;
 
 multi_declarator
-    : declarator '=' initializer { print_msg(yylloc.first_line, yylloc.last_column, MULTI_DEF); }
+    : declarator '=' initializer { print_msg(yylloc.first_line, yylloc.last_column - 1, MULTI_DEF); }
     | declarator
 
 /*

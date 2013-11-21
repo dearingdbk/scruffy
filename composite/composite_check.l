@@ -1,7 +1,12 @@
-/**
-* ANSI C grammar, Lex specification
-*/
-
+/*
+ * File:     composite_check.l
+ * Author:   Bruce Dearing 100036623
+ * Date:     2012/20/11
+ * Version:  1.0
+ * Purpose:  Flex tokenizer grammar which supplies tokens to 
+ *           composite_check parser in an effort to parse a file to 
+ *           locate errors in code.
+ */
 
 %e 1019
 %p 2807
@@ -39,7 +44,7 @@ WS [ \t\v\f]
 static int check_type(char *str);
 struct symbol *lookup(char* str);
 void add_entry(int line_num, int flag, char* str);
-static unsigned symhash(char *sym);
+static unsigned get_hashval(char *sym);
 char linebuf[500];
 /* END Function Definitions */
 
@@ -65,6 +70,7 @@ struct symbol
 
 struct symbol symbol_table[NUM_HASH];
 int yycolumn = 1;
+
 /* END Program variables */
 
 %}
@@ -78,6 +84,7 @@ int yycolumn = 1;
  * increments yylineno, and if the scanner backs up over
  * a '\n', it decrements it.
  */
+ 
 %option yylineno
 
 
@@ -85,18 +92,18 @@ int yycolumn = 1;
 %x COMMENT
 %x INCLUDE
 %x DEFINE
-%s STRUCT
 /* END Exclusive Start State definitions. */
 
 
 /* START Inclusive Start State definitions. */
 %s TYPE_DEF
 %s STRUCT_BLOCK
+%s STRUCT
 /* END Inclusive Start State definitions. */
 
 %%
 
-^"#"[ \t]*"include"        { BEGIN(INCLUDE); }
+^"#"[ \t]*"include".*      { BEGIN(INCLUDE); }
 <INCLUDE>.
 <INCLUDE>\n                { RESET(yycolumn);  BEGIN(INITIAL); }
 
@@ -105,7 +112,7 @@ int yycolumn = 1;
 <DEFINE>[^\\]\n            { RESET(yycolumn);  BEGIN(INITIAL); }
 
 "/*"                       { BEGIN(COMMENT); }
-<COMMENT>"*/"              { BEGIN(INITIAL);}
+<COMMENT>"*/"              { BEGIN(INITIAL); }
 <COMMENT><<EOF>>           { printf("%d: Unterminated comment\n",yylineno);
                              return EOF; 
                            }
@@ -323,24 +330,45 @@ add_entry(int line_num, int flag, char* str)
     }
 }
 
-
+/*
+ * Name:      	get_hashval
+ * Purpose:     returns the hash of the entry string.
+ * Arguments:   str ~ The string to hash and then return.
+ * Output:      none
+ * Modifies:    none
+ * Returns:     hash of string parameter.
+ * Assumptions: 
+ * Bugs:        unfound.
+ * Notes:
+ */ 
 static unsigned
-symhash(char *sym)
+get_hashval(char *str)
 {
     unsigned int hash = 0;
     unsigned c;
-    while(c = *sym++)
+    while(c = *str++)
     {
         hash = c + (hash << 6) + (hash << 16) - hash;
     }
     return hash;
 }
 
-
+/*
+ * Name:        lookup
+ * Purpose:     Searches for the existence of a sumbol in the 
+ *				symbol_table array.
+ * Arguments:   str ~ The string to search for in the symbol_table.
+ * Output:      none
+ * Modifies:    none
+ * Returns:     symbol struct.
+ * Assumptions: 
+ * Bugs:        none
+ * Notes:
+ */ 
 struct symbol*
 lookup(char* str)
 {
-    unsigned int index = symhash(str) % NUM_HASH;
+    unsigned int index = get_hashval(str) % NUM_HASH;
     struct symbol *cur_entry = &symbol_table[index];
     int scount = NUM_HASH;
     /* how many have we looked at */
@@ -355,7 +383,7 @@ lookup(char* str)
             return cur_entry;
         }
         /* new entry */
-        if(++cur_entry >= symbol_table+NUM_HASH)
+        if(++cur_entry >= symbol_table + NUM_HASH)
         {
             cur_entry = symbol_table; /* try the next entry */
         }
