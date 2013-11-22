@@ -1,11 +1,11 @@
 /*
- * File: switch-check.y
+ * File: composite_check.y
  * Author: Bruce Dearing 100036623
  * Date: 2013/10/27
  * Version: 1.0
  *
  * Purpose: ANSI C Yacc grammar, to parse tokens received from the
- * flex scanner switch_check.l
+ * flex scanner composite_check.l
  * Grammar has been re-written to identify common style errors
  * present in C code and alert the user.
  */
@@ -14,22 +14,21 @@
 %glr-parser
 %expect 2
 %expect-rr 0
+
 %{
+
 #ifndef SWITCH_CHECK_TAB_H
-#define SWITCH_CHECK_TAB_H
-#include "composite_check.tab.h"
+    #define SWITCH_CHECK_TAB_H
+    #include "composite_check.tab.h"
 #endif
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include "../functions/functions.h"
-//extern char *tmp;
+
 extern char *yytext;
-//extern void add_entry(int line_num, int flag, char* str);
-//void print_msg(int line, int column, char *str);
-//char *trim(char *str);
-//void print_bad_ident(int line, int column, char *str);
 #define YYERROR_VERBOSE
 #define MAX_TRYS 1000
 #define MULTI_DEF "Variable initialized in a multi-variable declaration."
@@ -42,6 +41,7 @@ extern char *yytext;
  label."
 #define MBS "Missing Break statement."
 #define LCC "Array initialization contains optional trailing comma."
+
 void yyerror(const char *str)
 {
    /*
@@ -49,7 +49,6 @@ void yyerror(const char *str)
     * to allow greater flexibility within this parser.
     */
 }
-
 
 main()
 {

@@ -116,7 +116,7 @@ void output_results(diff_output *current)
 {
     if (current->orig_start == current->orig_end)
     {
-        printf("%d:\n\t%s\n\nCode at indentation level %d "
+        printf("%d:\n\t%s\n\nCode at indentation level [%d] "
                 "not at correct indentation [%d].\n\n", 
                 current->orig_start,
                 current->text,
@@ -126,7 +126,7 @@ void output_results(diff_output *current)
     else
     {
         printf("%d - %d:\n\t%s\n\t\tcode continues...\n\n"
-               "Code at indentation level %d "
+               "Code at indentation level [%d] "
                "not at correct indentation [%d].\n\n",
                 current->orig_start,
                 current->orig_end,
@@ -140,7 +140,20 @@ void output_results(diff_output *current)
     current->text = "";
 }
 
-void handle_text(diff_output *current)
+/*  
+ * Name:        handle_text
+ * Purpose:     Searches for the existence of a symbol in the 
+ *              symbol_table array.
+ * Arguments:   str ~ The string to search for in the symbol_table.
+ * Output:      none
+ * Modifies:    none
+ * Returns:     symbol struct.
+ * Assumptions: 
+ * Bugs:        none
+ * Notes:
+ */
+void 
+handle_text(diff_output *current)
 {
     int index = 0;
     int c;
