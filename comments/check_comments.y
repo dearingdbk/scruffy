@@ -95,11 +95,12 @@ program_comments
     ;
 
 comment_start
-    : START_COMMENT comment_body END_COMMENT {printf("MADE IT\n");} 
+    : START_COMMENT comment_body END_COMMENT 
 
 comment_body
-    : header_comment
-    | function_comment
+    : header_comment {printf("header_comment\n");} 
+    | function_comment {printf("function comment\n");}
+    | /* regular comments */ {printf("regular old comment\n");}
     ;
 
 header_comment
@@ -129,18 +130,21 @@ function_label_name
 
 
 header_list
-    : header_label_name ':'
-    | header_list header_label_name ':'
+    : header_label_name
+    | header_list header_label_name
     ;
 
 header_label_name
-    : FILE_LBL
-    | AUTHOR
-    | VERSION
-    | DATE
-    | PURPOSE
+    : FILE_LBL colon
+    | AUTHOR  colon
+    | VERSION colon
+    | DATE colon
+    | PURPOSE colon
     ;
 
-
+colon
+    : ':'
+    |
+    ;
 %%   
 
