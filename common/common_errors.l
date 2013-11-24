@@ -21,6 +21,7 @@
 #define FALSE 0
 #define TRUE 1
 #define MAX_STRING 1024
+#define TAB_WIDTH 9
 /* END Definitions */
 
 /* START Declarations */
@@ -78,9 +79,6 @@ int yycolumn = 0;
 ^"#"[ \t]*"error".*          |
 ^"#"[ \t]*"pragma".*         |
 ^"#"                         ; /* Eat up preprocessor directives. */
-
-
-"//".*                       /* Eat up single line comments. */
 
 ^[ \t]*                      /* Eat up white space at the start of a line. */
 
@@ -159,7 +157,7 @@ handle_conditional(char *str, int len)
 {
     int c, d, index;
     int cur_line = yylineno;
-    int cur_column = yycolumn - 9;
+    int cur_column = yycolumn - TAB_WIDTH;
     int lparen = FALSE;
     int in_quote = FALSE;
     int in_sing_quote = FALSE;

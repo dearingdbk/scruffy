@@ -53,8 +53,8 @@ void yyerror(const char *str)
 main()
 {
    /*
-    * The parser returns a value of zero
-    * if the parse succeeds and nonzero if not.
+    * The parser returns a value of zero if the parse succeeds
+    * and nonzero if the parse fails.
     * Here we continue parsing even on error up to
     * MAX_TRYS.
     */
@@ -71,7 +71,7 @@ main()
 
 %}
 
-%token BIDENTIFIER IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
+%token        BIDENTIFIER IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
 %token        PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token        AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token        SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
@@ -300,9 +300,10 @@ multi_declarator_list
     ;
 
 multi_declarator
-    : declarator '=' initializer { print_msg(yylloc.first_line, yylloc.last_column - 1, MULTI_DEF); }
+    : declarator '=' initializer { print_msg(yylloc.first_line, 
+                                     yylloc.last_column - 1, MULTI_DEF); }
     | declarator
-
+    ;
 /*
  * END CHANGE OF MULTI_DECLARATION GRAMMAR
  */
@@ -425,13 +426,10 @@ declarator
     ;
 
 direct_declarator
-    : IDENTIFIER { if (isupper(yytext[0]) || isdigit(yytext[0]))
-                   {
-                      
-                      print_bad_ident(yylloc.first_line,
+    : IDENTIFIER { /*if (isupper(yytext[0]) || isdigit(yytext[0]))
+                       print_bad_ident(yylloc.first_line,
                          yylloc.last_column, yytext);
-                   }
-                 }
+                 */}
     | '(' declarator ')'
     | direct_declarator '[' ']'
     | direct_declarator '[' '*' ']'

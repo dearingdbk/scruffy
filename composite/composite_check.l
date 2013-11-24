@@ -99,6 +99,8 @@ int yycolumn = 1;
 %s TYPE_DEF
 %s STRUCT_BLOCK
 %s STRUCT
+%s ENUM
+%s ENUM_BLOCK
 /* END Inclusive Start State definitions. */
 
 %%
@@ -137,12 +139,19 @@ int yycolumn = 1;
                            }
 
 <STRUCT>"{"                { BEGIN(STRUCT_BLOCK);  }
-
 <STRUCT>{L}{A}*            { add_entry(yylineno, TYPEDEF_NAME, yytext);
                              BEGIN(INITIAL);
                            }
 
 <STRUCT_BLOCK>"}"          { BEGIN(STRUCT); }
+
+<ENUM>;                    { BEGIN(INITIAL); }
+<ENUM>"{"                  { BEGIN(ENUM_BLOCK); }
+<ENUM>{L}{A}*              { add_entry(yylineno, IDENTIFIER, yytext); }
+
+<ENUM_BLOCK>"}"            { BEGIN(ENUM); }
+<ENUM_BLOCK>{L}{A}*        { add_entry(yylineno, ENUMERATION_CONSTANT, yytext); }
+
 
 "auto"                     { return(AUTO); }
 "bool"                     { return(BOOL); }
@@ -155,7 +164,7 @@ int yycolumn = 1;
 "do"                       { return(DO); }
 "double"                   { return(DOUBLE); }
 "else"                     { return(ELSE); }
-"enum"                     { return(ENUM); }
+"enum"                     { BEGIN(ENUM); return(ENUM); }
 "extern"                   { return(EXTERN); }
 "float"                    { return(FLOAT); }
 "for"                      { return(FOR); }

@@ -212,6 +212,7 @@ then
         --brace-indent0\
         --indent-label0\
         --line-length80\
+        --no-space-after-parentheses\
         $temp_in -o $temp_out
 
 

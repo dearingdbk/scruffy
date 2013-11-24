@@ -22,7 +22,6 @@ int strpos = 0;
  * Bugs:        none found to date.
  * Notes:       
  */
-
 void
 print_bad_ident(int line, int column, char *str)
 {
@@ -40,11 +39,23 @@ print_bad_ident(int line, int column, char *str)
     msg = strcat(msg, "' must match pattern '^[a-z][a-zA-Z0-9_]*$'.");
 
     printf("%d:\n\n\t%s\n\t%*s%s\n%s\n\n", line, rtnstr, column, " ", "^", msg);
-    //printf("%d,%d:\n\n\t%s\n\n%s\n\n", line, column, rtnstr, msg);
 
     free(msg);
 }
 
+
+/*
+ * Name:        trim
+ * Purpose:     Trims the whitespace from the beggining of a string.
+ * Arguments:   str ~ pointer to an array of chars to trim the whitespace.
+ * Output:      none.
+ * Modifies:    none.
+ * Returns:     return a new string with whitespace trimmed from beginning.
+ * Assumptions: The pointer is to a valid string.
+ *              The string contains more than whitespace.
+ * Bugs:        none found to date.
+ * Notes:       
+ */
 void
 print_magic_number(int line, int column, char *str)
 {
@@ -63,7 +74,6 @@ print_magic_number(int line, int column, char *str)
     msg = strcat(msg, "' might be a magic number.");
 
     printf("%d:\n\n\t%s\n\t%*s%s\n%s\n\n", line, rtnstr, column, " ", "^", msg);
-    //printf("%d,%d:\n\n\t%s\n\n%s\n\n", line, column, rtnstr, msg);
 
     free(msg);
 }
@@ -81,7 +91,6 @@ print_magic_number(int line, int column, char *str)
  * Bugs:        none found to date.
  * Notes:       
  */
-
 char*
 trim(char *str)
 {
@@ -133,6 +142,20 @@ print_msg(int line, int column, char *str)
 
 }
 
+
+/*
+ * Name:        trim
+ * Purpose:     Trims the whitespace from the beggining of a string.
+ * Arguments:   str ~ pointer to an array of chars to trim the whitespace.
+ * Output:      none.
+ * Modifies:    none.
+ * Returns:     return a new string with whitespace trimmed from beginning.
+ * Assumptions: The pointer is to a valid string.
+ *              The string contains more than whitespace.
+ * Bugs:        none found to date.
+ * Notes:       
+ */
+
 void
 append(int line, char *str, int len)
 {
@@ -150,18 +173,19 @@ append(int line, char *str, int len)
     }
 }
 
+
 /*
-    void
-    reset_text(int line, int check)
-    {
-    if (strpos > 79 && check)
-    {
-    print_msg(line, 0, "Line is longer than 79 characters");
-    }
-    tmp[0] = '\0';
-    strpos = 0;
-    }
-    */
+ * Name:        trim
+ * Purpose:     Trims the whitespace from the beggining of a string.
+ * Arguments:   str ~ pointer to an array of chars to trim the whitespace.
+ * Output:      none.
+ * Modifies:    none.
+ * Returns:     return a new string with whitespace trimmed from beginning.
+ * Assumptions: The pointer is to a valid string.
+ *              The string contains more than whitespace.
+ * Bugs:        none found to date.
+ * Notes:       
+ */
 char*
 fix_string(char* string)
 {
