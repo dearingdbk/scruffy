@@ -41,12 +41,8 @@ WS  [ \t\v\n\f]
 #include "check_comments.tab.h"
 
 
-extern int sym_type(const char *);  /* returns type from symbol table */
 
-#define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
 
-static void comment(void);
-static int check_type(void);
 %}
 
 %x COMMENT
@@ -86,16 +82,3 @@ int yywrap(void)        /* called at end of input */
     return 1;           /* terminate now */
 }
 
-
-static int check_type(void)
-{
-    switch (sym_type(yytext))
-    {
-    case TYPEDEF_NAME:                /* previously defined */
-        return TYPEDEF_NAME;
-    case ENUMERATION_CONSTANT:        /* previously defined */
-        return ENUMERATION_CONSTANT;
-    default:                          /* includes undefined */
-        return IDENTIFIER;
-    }
-}
