@@ -47,7 +47,6 @@ void check_header();
 void check_function();
 void yyerror(const char *s, ...)
 {
-site/composite_check.yy.c
   //fprintf(stderr, "ERROR line %d: %s\n", yylloc.first_line, s);
     va_list ap;
       va_start(ap, s);

@@ -12,7 +12,7 @@ check_comments.yy.c: check_comments.tab.h
 
 check_comments.tab.h:
 	bison --defines=check_comments.tab.h \
-		--output=check_comments.tab.c -p pdq check_comments.y 
+		--output=check_comments.tab.c -p foo check_comments.y 
 
 
 indentR: indent/check_indent.yy.c
@@ -38,11 +38,11 @@ composite_check: composite/composite_check.yy.c functions/functions.o
 		functions/functions.o -lfl -o composite_check
 
 composite/composite_check.yy.c: composite/composite_check.tab.h
-	lex -o composite/composite_check.yy.c composite/composite_check.l
+	lex -o ../composite/composite_check.yy.c --prefix=pdf ../composite/composite_check.l
 
 composite/composite_check.tab.h:
 	bison --defines=../composite/composite_check.tab.h \
-		--output=../composite/composite_check.tab.c ../composite/composite_check.y 
+		--output=../composite/composite_check.tab.c -p pdf ../composite/composite_check.y 
 
 functions/functions.o:
 	gcc -o ../functions/functions.o -c ../functions/functions.c

@@ -221,10 +221,8 @@ then
 ' \
         --new-line-format='%l
 ' \
-        --old-group-format='%df%(f=l?:,%dl)d%dE
-%<'\
-        --new-group-format='%dea%dF%(F=L?:,%dL)
-%>'\
+        --old-group-format=''\
+        --new-group-format=''\
         --changed-group-format='%df:
 %<---
 %>
