@@ -1,17 +1,18 @@
 
-all: check_comments
+all: check_comments composite/composite_check.yy.c
 
 
 check_comments: check_comments.yy.c functions/functions.o
-	gcc check_comments.yy.c check_comments.tab.c \
+	gcc check_comments.yy.c check_comments.tab.c  ../composite/\
+	composite_check.yy.c ../composite/composite_check.tab.c \
 		../functions/functions.o -lfl -o check_comments
 
 check_comments.yy.c: check_comments.tab.h
-	lex -o check_comments.yy.c check_comments.l
+	lex -o check_comments.yy.c --prefix=foo check_comments.l
 
 check_comments.tab.h:
 	bison --defines=check_comments.tab.h \
-		--output=check_comments.tab.c check_comments.y 
+		--output=check_comments.tab.c -p pdq check_comments.y 
 
 
 indentR: indent/check_indent.yy.c
@@ -40,8 +41,8 @@ composite/composite_check.yy.c: composite/composite_check.tab.h
 	lex -o composite/composite_check.yy.c composite/composite_check.l
 
 composite/composite_check.tab.h:
-	bison --defines=composite/composite_check.tab.h \
-		--output=composite/composite_check.tab.c composite/composite_check.y 
+	bison --defines=../composite/composite_check.tab.h \
+		--output=../composite/composite_check.tab.c ../composite/composite_check.y 
 
 functions/functions.o:
 	gcc -o ../functions/functions.o -c ../functions/functions.c

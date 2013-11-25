@@ -34,6 +34,7 @@
 
 
 extern char *yytext;
+extern int comment_start;
 #define YYERROR_VERBOSE
 
 
@@ -46,6 +47,7 @@ void check_header();
 void check_function();
 void yyerror(const char *s, ...)
 {
+site/composite_check.yy.c
   //fprintf(stderr, "ERROR line %d: %s\n", yylloc.first_line, s);
     va_list ap;
       va_start(ap, s);
@@ -90,7 +92,6 @@ program_comments
 
 program_start
     : START_COMMENT header_comment END_COMMENT {check_header();}
-    | error
     ;
 
 comment_start
@@ -110,8 +111,8 @@ function_comment
     ;
 
 function_list
-    : function_label_name colon
-    | function_list function_label_name colon
+    : function_label_name
+    | function_list function_label_name
     ;
 
 function_label_name
@@ -128,8 +129,8 @@ function_label_name
 
 
 header_list
-    : header_label_name colon
-    | header_list header_label_name colon
+    : header_label_name
+    | header_list header_label_name
     ;
 
 header_label_name
@@ -140,10 +141,6 @@ header_label_name
     | PURPOSE   {header[PURPOSE] = 1;}
     ;
 
-colon
-    : ':'
-    |
-    ;
 %%   
 
 
@@ -158,7 +155,9 @@ void check_header()
     i = (i << 1) | header[DATE];
     i = (i << 1) | header[VERSION];
     i = (i << 1) | header[PURPOSE];
-   
+    
+    memset(header,0,sizeof(header));
+    
     for (k = 0; k < 5; k++)
     {
         if ((i & mask[k]) == 0)
@@ -166,26 +165,25 @@ void check_header()
             switch(k)
             {
               case 0:
-                printf("Missing Purpose\n");
+                print_comment_msg(comment_start, "\"header\"", "\"Purpose:\"");
                 break;
               case 1:
-                printf("Missing Version\n");
+                print_comment_msg(comment_start, "\"header\"", "\"Version:\"");
                 break;
               case 2:
-                printf("Missing Date\n");
+                print_comment_msg(comment_start, "\"header\"", "\"Date:\"");
                 break;
               case 3:
-                printf("Missing Author\n");
+                print_comment_msg(comment_start, "\"header\"", "\"Author:\"");
                 break;
               case 4:
-                printf("Missing File name from header comment.\n");
+                print_comment_msg(comment_start, "\"header\"", "\"File:\"");
                 break;
               default:
                break;
             }
         }    
     }
-
 }
 
 
@@ -205,6 +203,8 @@ void check_function()
     i = (i << 1) | function[BUGS];
     i = (i << 1) | function[NOTES];
 
+    memset(function,0,sizeof(function));
+
     for (k = 0; k < 9; k++)
     {
         if ((i & mask[k]) == 0)
@@ -212,31 +212,31 @@ void check_function()
             switch(k)
             {
               case 0:
-                printf("Missing function comment name.\n");
+                print_comment_msg(comment_start, "\"function\"", "\"Name:\"");
                 break;
               case 1:
-                printf("Missing function comment purpose.\n");
+                print_comment_msg(comment_start, "\"function\"", "\"Purpose:\"");
                 break;
               case 2:
-                printf("Missing function comment arguments.\n");
+                print_comment_msg(comment_start, "\"function\"", "\"Arguments:\"");
                 break;
               case 3:
-                printf("Missing function comment output\n");
+                print_comment_msg(comment_start, "\"function\"", "\"Output:\"");
                 break; 
               case 4:
-                printf("Missing function comment modifies.\n");
+                print_comment_msg(comment_start, "\"function\"", "\"Modifies:\"");
                 break;
               case 5:
-                printf("Missing function comment returns. \n");
+                print_comment_msg(comment_start, "\"function\"", "\"Returns:\"");
                 break;
               case 6:
-                printf("Missing function comment assumptions. \n");
+                print_comment_msg(comment_start, "\"function\"", "\"Assumptions:\"");
                 break;
                 case 7:
-                printf("Missing function comment Bugs. \n");
+                print_comment_msg(comment_start, "\"function\"", "\"Bugs:\"");
                 break;
                 case 8:
-                printf("Missing function comment Notes. \n");
+                print_comment_msg(comment_start, "\"function\"", "\"Notes:\"");
                 break;
               default:
                 break;

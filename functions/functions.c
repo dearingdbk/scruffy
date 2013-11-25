@@ -10,17 +10,19 @@
 char linebuf[MAX_STRING];
 int strpos = 0;
 
+
+
 /*
- * Name:        trim
- * Purpose:     Trims the whitespace from the beggining of a string.
- * Arguments:   str ~ pointer to an array of chars to trim the whitespace.
- * Output:      none.
- * Modifies:    none.
- * Returns:     return a new string with whitespace trimmed from beginning.
- * Assumptions: The pointer is to a valid string.
- *              The string contains more than whitespace.
- * Bugs:        none found to date.
- * Notes:       
+ * Name: print_bad_ident
+ * Purpose: 
+ * Arguments: 
+ * Output: 
+ * Modifies: 
+ * Returns: 
+ * Assumptions: 
+ * 
+ * Bugs: 
+ * Notes:
  */
 void
 print_bad_ident(int line, int column, char *str)
@@ -41,6 +43,27 @@ print_bad_ident(int line, int column, char *str)
     printf("%d:\n\n\t%s\n\t%*s%s\n%s\n\n", line, rtnstr, column, " ", "^", msg);
 
     free(msg);
+}
+
+
+/*
+ * Name:        print_comment_msg
+ * Purpose:     
+ * Arguments:   
+ * Output:      
+ * Modifies:    
+ * Returns:     
+ * Assumptions: 
+ *              
+ * Bugs:       
+ * Notes:       
+ */
+void
+print_comment_msg(int line, char *type, char *name)
+{
+
+    printf("%d:\n\n%s %s %s %s %s.\n\n", line, "Missing", name, "label inside",
+           type ,"comment");
 }
 
 
@@ -200,4 +223,6 @@ fix_string(char* string)
 
     }       
     return ret_str;
-} 
+}
+
+
