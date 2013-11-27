@@ -35,7 +35,11 @@ WS [ \t\v\f]
 
 /* START Include files. */
 #include <stdio.h>
-#include "composite_check.tab.h"
+#ifndef COMPOSITE_CHECK_TAB_H
+    #define COMPOSITE_CHECK_TAB_H
+    #include "composite_check.tab.h"
+#endif
+
 #include "../functions/functions.h"
 /* END Include files. */
 
@@ -60,7 +64,7 @@ char linebuf[500];
 
 
 /* START Program variables */
-struct symbol
+typedef struct symbol
 {
     char *name;
     int flag;
@@ -274,12 +278,37 @@ int yycolumn = 1;
 %%
 
 
+
+/*
+ * Name:      	yywrap
+ * Purpose:     called at the end of input, in this case we do not
+				wrap, we terminate.
+ * Arguments:   void.
+ * Output:      none.
+ * Modifies:    none.
+ * Returns:     1
+ * Assumptions: 
+ * Bugs:        unfound.
+ * Notes:
+ */
 int yywrap(void) /* called at end of input */
 {
     return 1; /* terminate now */
 }
 
 
+/*
+ * Name:      	check_type
+ * Purpose:     checks whether an identifier has been previously 
+ *              entered into the symbol table. If not it adds it.
+ * Arguments:   str ~ the string containing the identifier.
+ * Output:      none.
+ * Modifies:    symbol_table.
+ * Returns:     void.
+ * Assumptions: 
+ * Bugs:        unfound.
+ * Notes:
+ */
 static int check_type(char *str)
 {
     struct symbol *cur_entry = lookup(str);
@@ -290,11 +319,11 @@ static int check_type(char *str)
     }
     switch (cur_entry->flag)
     {
-    case TYPEDEF_NAME: /* previously defined */
+      case TYPEDEF_NAME:              /* previously defined */
         return TYPEDEF_NAME;
-    case ENUMERATION_CONSTANT: /* previously defined */
+      case ENUMERATION_CONSTANT:      /* previously defined */
         return ENUMERATION_CONSTANT;
-    default: /* includes undefined */
+      default:                        /* includes undefined */
         return IDENTIFIER;
     }
 }
@@ -302,7 +331,20 @@ static int check_type(char *str)
 
 /* Symbol Table Implementation */
 
-
+/*
+ * Name:      	add_entry
+ * Purpose:     adds an identifier to the symbol table.
+ * Arguments:   line_num ~ the line number the identifier was found.
+ *              flag ~ the type of identifier located, enum, typedef, or
+ *              identifier.
+ *              str ~ the string containing the identifier.
+ * Output:      none.
+ * Modifies:    symbol_table.
+ * Returns:     void.
+ * Assumptions: 
+ * Bugs:        unfound.
+ * Notes:
+ */ 
 void
 add_entry(int line_num, int flag, char* str)
 {
@@ -316,7 +358,8 @@ add_entry(int line_num, int flag, char* str)
     }
     if (cur_entry == NULL)
     {
-        /* exit with an error here */return ;
+        fprintf(stderr, "Unable to enter value into table: %s \n", str);
+        abort();
     }
    
     if (cur_entry->line_num == line_num)
@@ -331,7 +374,7 @@ add_entry(int line_num, int flag, char* str)
     }
     else
     {
-        /* NEED TO ALLOC MEMORY */
+        new_entry = (struct symbol *)malloc(sizeof(struct symbol));
         new_entry->next = cur_entry->next;
         new_entry->line_num = line_num;
         new_entry->flag = flag;
@@ -380,8 +423,8 @@ lookup(char* str)
     unsigned int index = get_hashval(str) % NUM_HASH;
     struct symbol *cur_entry = &symbol_table[index];
     int scount = NUM_HASH;
-    /* how many have we looked at */
-    while(--scount >= 0)
+
+    while(--scount >= 0) // search though symbol_table array. 
     {
         if(cur_entry->name && !strcmp(cur_entry->name, str))
             return cur_entry;
@@ -391,13 +434,13 @@ lookup(char* str)
             cur_entry->next = NULL;
             return cur_entry;
         }
-        /* new entry */
+
         if(++cur_entry >= symbol_table + NUM_HASH)
         {
-            cur_entry = symbol_table; /* try the next entry */
+            cur_entry = symbol_table;
         }
     }
-    fputs("symbol table overflow\n", stderr);
-    abort(); /* tried them all, table is full */
+    fprintf(stderr, "Symbol table overflow\n");
+    abort();
 }
 

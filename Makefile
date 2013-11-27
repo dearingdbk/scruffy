@@ -1,5 +1,5 @@
 
-all: indentR common_errors composite_check
+all: indentR common_errors composite_check check_comments
 
 indentR: indent/check_indent.yy.c
 	gcc  indent/check_indent.yy.c indent/check_indent.tab.c \
@@ -30,6 +30,17 @@ composite/composite_check.tab.h:
 	bison --defines=composite/composite_check.tab.h \
 		--output=composite/composite_check.tab.c composite/composite_check.y 
 
+check_comments: comments/check_comments.yy.c functions/functions.o
+	gcc comments/check_comments.yy.c comments/check_comments.tab.c\
+		functions/functions.o -lfl -o check_comments
+
+comments/check_comments.yy.c: comments/check_comments.tab.h
+	lex -o comments/check_comments.yy.c  comments/check_comments.l
+
+comments/check_comments.tab.h:
+	bison --defines=comments/check_comments.tab.h \
+		--output=comments/check_comments.tab.c comments/check_comments.y 
+
 functions/functions.o:
 	gcc -o functions/functions.o -c functions/functions.c
 
@@ -41,11 +52,14 @@ clean:
 		common/common_errors.yy.c \
 		functions/functions.o  \
 		composite/composite_check.yy.c \
-		composite/composite_check.tab.*
+		composite/composite_check.tab.*\
+		comments/check_comments.yy.c \
+		comments/check_comments.tab.*
 
 remove: clean
 	rm -f indentR \
 		remove_single_comments \
 		common_errors \
 		check_declarations \
-		composite_check
+		composite_check \
+		check_comments

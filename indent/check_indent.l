@@ -1,3 +1,14 @@
+/*
+ * File:     check_indent.l
+ * Author:   Bruce Dearing 100036623
+ * Date:     2013/20/11
+ * Version:  1.0
+ * Purpose:  Flex tokenizer designed to read diff output from the 
+ *           the supplied file after it has been indented with a vim 
+ *           script, and calculate the original column and the required
+ *           column space.
+ */
+
 %{
 
 int yycolumn = 0;
@@ -76,17 +87,54 @@ void handle_text(diff_output *current);
 .
 
 %%
+
+/*      
+ * Name:        main 
+ * Purpose:     calls yylex() to tokenize input.
+ * Arguments:   
+ * Output:      none
+ * Modifies:    none
+ * Returns:     
+ * Assumptions: 
+ * Bugs:        
+ * Notes:
+ */ 
 main(int argc, char **argv)
 {
     yylex();
 }
 
+
+/*      
+ * Name:        yywrap 
+ * Purpose:     called at the end of output to signal end.
+ * Arguments:   none
+ * Output:      none
+ * Modifies:    none
+ * Returns:     1
+ * Assumptions: 
+ * Bugs:        
+ * Notes:
+ */ 
 int yywrap(void) /* called at end of input */
 {
     return 1; /* terminate now */
 }
 
-
+/*  
+ * Name:        set_multi
+ * Purpose:     takes multi line diff output and places the line
+ *              numbers into their appropriate place in the struct
+ *              diff_output. 
+ * Arguments:   current ~ the current diff_output struct.
+ *              text ~ the text to strip out line numbers from.
+ * Output:      none
+ * Modifies:    current.
+ * Returns:     void.
+ * Assumptions: 
+ * Bugs:        none
+ * Notes:       multi line diff output - 18,22c18,22
+ */
 void set_multi(diff_output *current, char *text)
 {
     char *tmp = strdup(text);
@@ -100,6 +148,20 @@ void set_multi(diff_output *current, char *text)
 
 }
 
+/*  
+ * Name:        set_single
+ * Purpose:     takes single line diff output and places the line
+ *              numbers into their appropriate place in the struct
+ *              diff_output. 
+ * Arguments:   current ~ the current diff_output struct.
+ *              text ~ the text to strip out line numbers from.
+ * Output:      none
+ * Modifies:    current.
+ * Returns:     void.
+ * Assumptions: 
+ * Bugs:        none
+ * Notes:       single line diff output - 16c16
+ */
 void set_single(diff_output *current, char *text)
 {
     char *tmp = strdup(text);
@@ -111,8 +173,20 @@ void set_single(diff_output *current, char *text)
 
 }
 
-
-void output_results(diff_output *current)
+/*  
+ * Name:        output_results
+ * Purpose:     outputs to stdout the appropriate message representing 
+ *              the required change in indentation.
+ * Arguments:   str ~ The string to search for in the symbol_table.
+ * Output:      none
+ * Modifies:    none
+ * Returns:     symbol struct.
+ * Assumptions: 
+ * Bugs:        none
+ * Notes:       
+ */
+void 
+output_results(diff_output *current)
 {
     if (current->orig_start == current->orig_end)
     {
@@ -142,9 +216,9 @@ void output_results(diff_output *current)
 
 /*  
  * Name:        handle_text
- * Purpose:     Searches for the existence of a symbol in the 
- *              symbol_table array.
- * Arguments:   str ~ The string to search for in the symbol_table.
+ * Purpose:     place the code from the first line of the diff
+ *              into the diff_ouput struct.
+ * Arguments:   current - the diff_output struct.
  * Output:      none
  * Modifies:    none
  * Returns:     symbol struct.

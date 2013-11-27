@@ -3,7 +3,8 @@
  * Author:   Bruce Dearing 100036623
  * Date:     2013/20/11
  * Version:  1.0
- * Purpose:  Flex tokenizer and functions to handle common white space errors. 
+ * Purpose:  Flex tokenizer and functions to handle common 
+ * 			 white space errors. 
  */
 
 %{
@@ -201,7 +202,6 @@ handle_conditional(char *str, int len)
           case '{':
             if (!in_quote && !in_sing_quote)
             {
-
                 if (!isblank(miss_spc))
                 {
                     printf("%d:\n\n\t%s\n\n'%s' %s\n\n",

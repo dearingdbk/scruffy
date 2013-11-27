@@ -10,7 +10,7 @@
 #           to be checked and temp_out which will contain a formatted
 #           version of the file to compare against.
 #           
-#           use case sh scruffy.sh <file_to_be_checked>
+#           use case 'sh scruffy.sh <file_to_be_checked>'
 #
 
 
@@ -35,12 +35,12 @@ fi
 # Check that indentR, common_errors, and composite_check exist.
 # If they do not create them.
 
-if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check ]
+if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check -o ! -e check_comments ]
 then
     make --quiet || { echo 'Failed to build required programs!' >&2; rm -f $1; exit 1; }
     make --quiet clean
 
-    if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check ]
+    if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check -o ! -e check_comments ]
     then
         echo 'Failed to build required programs!'
         rm -f $1
@@ -87,6 +87,30 @@ then
     echo $1 \\n \\nFile length is $size lines '['max allowed is $MAX_LINES']'.\
         \\n\\n
 fi
+
+
+##############################################################################
+#                       COMMENT PORTION CHECK                                #
+# Check that the file has proper indentation levels throughout.              #
+##############################################################################
+
+# check_comments validates that the file begins with a header comment 
+# and function comments have the appropriate tags if included.
+#
+#  HEADER COMMENT                                 FUNCTION COMMENT
+#	/*                                     /*
+#	 * File:     A2P1.c                     * Name:        my_func
+#	 * Author:   My Name 100123456          * Purpose:     ...
+#	 * Date:     2011/09/12                 * Arguments:   ...
+#	 * Version:  1.0                        * Output:      ...
+#	 *                                      * Modifies:    ...
+#	 * Purpose:                             * Returns:     ...
+#	 * ...                                  * Assumptions: ...
+#	 */                                     * Bugs:        ...
+#                                           * Notes:       ...
+#                                           */
+
+./check_comments < $1
 
 
 ##############################################################################
@@ -147,16 +171,17 @@ expand $temp_in | diff \
 ./common_errors < $1
 
 # composite_check has a number of checks it performs against a modified 
-# ANSI C grammar. The code is tokenized and parsed as it normally would be,
-# however, grammar rules and reductions have been added to make it possible
-# to check for:
+# ANSI C grammar. The code is tokenized and parsed as it normally would
+# be, however, grammar rules and reductions have been added to make it 
+# possible to check for:
 #   - Variable declarations on a multi-variable definition statement.
-#         i.e. int a, b, c = 4, d;  " c should be declared on it's own line.
+#     i.e. int a, b, c = 4, d;  " c should be declared on it's own line.
 #   - Switch statement common errors.
 #   - Empty statements.
 #   - Empty code blocks.
 #   - Naming conventions of variables, structs, and functions.
-#        i.e. int a, numOfCats, num_dogs; is ok int A, NumOfCats, Num_dogs; is not.
+#        i.e. int a, numOfCats, num_dogs; is ok 
+#             int A, NumOfCats, Num_dogs; is not.
 #   - Line length > 79.
 
 ./composite_check < $1
@@ -168,9 +193,10 @@ expand $temp_in | diff \
 ##############################################################################
 
 
-# Run the file through expand again to remove tabs. That output is then piped
-# through two stream editor commands which work to strip out single line comments.
-# This allows for single line comments in code, and enables the check of 
+# Run the file through expand again to remove tabs. That output is then 
+# piped through two stream editor commands which work to strip out 
+# single line comments. This allows for single line comments in code,
+# and enables the check of 
 # multi-line comments for proper spacing and format.
 
 expand $1 | sed 's/\/\/.*//g' | sed 's/\/\*.*\*\///g' > $temp_in

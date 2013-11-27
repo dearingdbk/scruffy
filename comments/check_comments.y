@@ -1,24 +1,16 @@
-/** ANSI C Yacc grammar 
-*   YACC file for ANSI C grammar
-*
-*/
-
 /*
- * File: composite_check.y
+ * File: check_comments.y
  * Author: Bruce Dearing 100036623
- * Date: 2013/10/27
+ * Date: 2013/11/27
  * Version: 1.0
  *
  * Purpose: ANSI C Yacc grammar, to parse tokens received from the
- * flex scanner composite_check.l
+ * flex scanner check_comments.l
  * Grammar has been re-written to identify common style errors
- * present in C code and alert the user.
+ * present in C code comments according to style guide.
  */
 
 %locations
-//%glr-parser
-//%expect 2
-//%expect-rr 0
 
 %{
 
@@ -45,30 +37,11 @@ main()
 
 void check_header();
 void check_function();
-void yyerror(const char *s, ...)
+void yyerror(const char *s)
 {
-  //fprintf(stderr, "ERROR line %d: %s\n", yylloc.first_line, s);
-    va_list ap;
-      va_start(ap, s);
-
-if(yylloc.first_line)
-    {
-        fprintf(stderr, "%d.%d-%d.%d: error: ", 
-            yylloc.first_line, yylloc.first_column,
-            yylloc.last_line, yylloc.last_column);
-            vfprintf(stderr, s, ap);
-
-fprintf(stderr, "\n");
-printf("%s\n", yytext);
-    }
+	fprintf(stderr, "%d:\n\n%s\n\n", yylloc.first_line,
+		"Program appears to be missing a header comment.");
 }
-/*void yyerror(const char *str)
-{
-*
- * Purposely do nothing here, we want to error quietly
- * to allow greater flexibility within this parser.
- *
-}*/
 
 unsigned int header[LAST_VAL] = {0};
 unsigned int function[LAST_VAL] = {0};

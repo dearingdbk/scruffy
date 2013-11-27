@@ -17,8 +17,8 @@
 
 %{
 
-#ifndef SWITCH_CHECK_TAB_H
-    #define SWITCH_CHECK_TAB_H
+#ifndef COMPOSITE_CHECK_TAB_H
+    #define COMPOSITE_CHECK_TAB_H
     #include "composite_check.tab.h"
 #endif
 
@@ -105,12 +105,12 @@ primary_expression
     ;
 
 constant
-    : I_CONSTANT                /* includes character_constant */
+    : I_CONSTANT               /* includes character_constant */
     | F_CONSTANT
-    | ENUMERATION_CONSTANT        /* after it has been defined as such */
+    | ENUMERATION_CONSTANT     /* after it has been defined as such */
     ;
 
-enumeration_constant                /* before it has been defined as such */
+enumeration_constant           /* before it has been defined as such */
     : IDENTIFIER
     ;
 
@@ -338,7 +338,7 @@ type_specifier
     | atomic_type_specifier
     | struct_or_union_specifier
     | enum_specifier
-    | TYPEDEF_NAME                /* after it has been defined as such */
+    | TYPEDEF_NAME             /* after it has been defined as such */
     ;
 
 struct_or_union_specifier
@@ -358,7 +358,7 @@ struct_declaration_list
     ;
 
 struct_declaration
-    : specifier_qualifier_list ';'        /* for anonymous struct/union */
+    : specifier_qualifier_list ';'     /* for anonymous struct/union */
     | specifier_qualifier_list struct_declarator_list ';'
     | static_assert_declaration
     ;
@@ -394,7 +394,7 @@ enumerator_list
     | enumerator_list ',' enumerator
     ;
 
-enumerator        /* identifiers must be flagged as ENUMERATION_CONSTANT */
+enumerator    /* identifiers must be flagged as ENUMERATION_CONSTANT */
     : enumeration_constant '=' constant_expression
     | enumeration_constant
     ;
@@ -426,10 +426,7 @@ declarator
     ;
 
 direct_declarator
-    : IDENTIFIER { /*if (isupper(yytext[0]) || isdigit(yytext[0]))
-                       print_bad_ident(yylloc.first_line,
-                         yylloc.last_column, yytext);
-                 */}
+    : IDENTIFIER
     | '(' declarator ')'
     | direct_declarator '[' ']'
     | direct_declarator '[' '*' ']'
@@ -514,7 +511,7 @@ direct_abstract_declarator
     | direct_abstract_declarator '(' parameter_type_list ')'
     ;
 
-/* HERE IS THE ',' at end of initializer code */
+/* CHECK FOR OPTIONAL , AT END OF INITIALIZER LIST  */
 
 initializer
     : '{' initializer_list '}'
@@ -603,7 +600,7 @@ for_expression_statement
 
 
 /*
- * CHANGE OF SELECTION_STATEMENT GRAMMAR
+ * CHANGE OF SELECTION_STATEMENT GRAMMAR.
  */
 
 selection_statement
@@ -688,6 +685,9 @@ case_stmts
  * END CHANGE OF SELECTION_STATEMENT GRAMMAR
  */
 
+/*
+ * CHANGE OF ITERATION STATEMENT GRAMMAR.
+ */
 
 iteration_statement
     : WHILE '(' expression ')' statement
@@ -697,6 +697,10 @@ iteration_statement
     | FOR '(' declaration for_expression_statement ')' statement
     | FOR '(' declaration for_expression_statement expression ')' statement
     ;
+
+/*
+ * END CHANGE OF ITERATION STATEMENT GRAMMAR.
+ */
 
 jump_statement
     : GOTO IDENTIFIER ';'

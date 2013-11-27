@@ -1,17 +1,12 @@
-/**
-*   ANSI C grammar, Lex specification
-*/
-
 /*
- * File:     A2P1.c
- * Author:   Jim Diamond   000123456
- * Date:     2011/09/12
+ * File:     check_comments.l
+ * Author:   Bruce Dearing 100036623
+ * Date:     2013/20/11
  * Version:  1.0
- *
- * Purpose:
- * ...
+ * Purpose:  Flex tokenizer which is called by check_comments parser
+ *           to handle comments in C code. Checks header comments and
+ *           function comments. 
  */
-
 
 %e  1019
 %p  2807
@@ -50,9 +45,20 @@ P   ((P|p)(urpose:|urpose))
 M   ((M|m)(odifies:|odifies))
 
 %{
+
+#define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
+                       yylloc.first_column = yycolumn; \
+                       yylloc.last_column = yycolumn+yyleng-1; \
+                       yycolumn += yyleng;
+
+
 #include <stdio.h>
-#include "check_comments.tab.h"
+#ifndef CHECK_COMMENTS_TAB_H
+    #define CHECK_COMMENTS_TAB_H
+    #include "check_comments.tab.h"
+#endif
 int comment_start;
+int yycolumn = 1;
 
 %}
 
@@ -73,13 +79,13 @@ int comment_start;
 
 
 %%
-"/*"                      { comment_start = yylineno; 
-                            BEGIN(COMMENT); 
-                            return(START_COMMENT); 
-                          }
-"//".*                    { /* consume //-comment */ }
-<COMMENT>"*/"             { BEGIN(INITIAL); return(END_COMMENT);}
-<COMMENT>\n               { }
+"/*"                           { comment_start = yylineno; 
+                                 BEGIN(COMMENT); 
+                                 return(START_COMMENT); 
+                               }
+"//".*                         { /* consume //-comment */ }
+<COMMENT>"*/"                  { BEGIN(INITIAL); return(END_COMMENT);}
+<COMMENT>\n                    { }
 <COMMENT>^{BG}{F}{WS}+{FN}     { return(FILE_LBL);}
 <COMMENT>^{BG}{A}{TH}{WS}+{BN} { return(AUTHOR); }
 <COMMENT>^{BG}{V}              { return(VERSION); }
@@ -93,15 +99,26 @@ int comment_start;
 <COMMENT>^{BG}{A}{SS}          { return(ASSUMPTIONS); }
 <COMMENT>^{BG}{B}              { return(BUGS); }
 <COMMENT>^{BG}{N}{OT}          { return(NOTES); }
-<COMMENT>[^*\n]|.         { }
-    /*{L}{A}*					{ return check_type(); }*/
+<COMMENT>[^*\n]|.              { }
 
-{WS}					{ /* whitespace separates tokens */ }
-.					{ /* discard bad characters */ }
+{WS}					       { /* whitespace separates tokens */ }
+.					           { /* discard bad characters */ }
 %%
 
-int yywrap(void)        /* called at end of input */
+
+/*      
+ * Name:        yywrap 
+ * Purpose:     called at the end of output to signal end.
+ * Arguments:   none
+ * Output:      none
+ * Modifies:    none
+ * Returns:     1
+ * Assumptions: 
+ * Bugs:        
+ * Notes:
+ */ 
+int yywrap(void) /* called at end of input */
 {
-    return 1;           /* terminate now */
+    return 1;    /* terminate now */
 }
 
