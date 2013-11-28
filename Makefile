@@ -27,7 +27,7 @@ composite/composite_check.yy.c: composite/composite_check.tab.h
 	lex -o composite/composite_check.yy.c composite/composite_check.l
 
 composite/composite_check.tab.h:
-	bison --defines=composite/composite_check.tab.h \
+	bison  -g --defines=composite/composite_check.tab.h \
 		--output=composite/composite_check.tab.c composite/composite_check.y 
 
 check_comments: comments/check_comments.yy.c functions/functions.o
@@ -38,7 +38,7 @@ comments/check_comments.yy.c: comments/check_comments.tab.h
 	lex -o comments/check_comments.yy.c  comments/check_comments.l
 
 comments/check_comments.tab.h:
-	bison --defines=comments/check_comments.tab.h \
+	bison -g --defines=comments/check_comments.tab.h \
 		--output=comments/check_comments.tab.c comments/check_comments.y 
 
 functions/functions.o:

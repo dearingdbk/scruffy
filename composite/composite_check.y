@@ -426,7 +426,13 @@ declarator
     ;
 
 direct_declarator
-    : IDENTIFIER
+    : IDENTIFIER { if (isupper(yytext[0]) || isdigit(yytext[0]))
+                   {
+                      
+                      print_bad_ident(yylloc.first_line,
+                         yylloc.last_column, yytext);
+                   }
+                 }
     | '(' declarator ')'
     | direct_declarator '[' ']'
     | direct_declarator '[' '*' ']'
