@@ -1,0 +1,447 @@
+% Name           : scruffy.tex using theme -> hsrm-beamer-demo.sty
+% Author         : Benjamin Weiss (benjamin.weiss@student.hs-rm.de)
+% Version        : 0.3c
+% Created on     : 05.05.2013
+% Last Edited on : 16.05.2013
+% Copyright      : Copyright (c) 2013 by Benjamin Weiss. All rights reserved.
+% License        : This file may be distributed and/or modified under the
+%                  GNU Public License.
+% Description    : Beamer presentation on scruffy using hsrm theme.
+
+\documentclass[compress]{beamer}
+%--------------------------------------------------------------------------
+% Common packages
+%--------------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{pgfpages}
+\usepackage{multicol}
+\usepackage{tabularx,ragged2e}
+\usepackage{booktabs}
+\usepackage{listings}
+\lstset{ %
+language=[LaTeX]TeX,
+basicstyle=\normalsize\ttfamily,
+keywordstyle=,
+numbers=left,
+numberstyle=\tiny\ttfamily,
+stepnumber=1,
+showspaces=false,
+showstringspaces=false,
+showtabs=false,
+breaklines=true,
+frame=tb,
+framerule=0.5pt,
+tabsize=4,
+framexleftmargin=0.5em,
+framexrightmargin=0.5em,
+xleftmargin=0.5em,
+xrightmargin=0.5em
+}
+
+%--------------------------------------------------------------------------
+% Load theme
+%--------------------------------------------------------------------------
+\usetheme{hsrm}
+
+\usepackage{dtklogos} % must be loaded after theme
+\usepackage{tikz}
+\usetikzlibrary{mindmap,backgrounds}
+
+%--------------------------------------------------------------------------
+% General presentation settings
+%--------------------------------------------------------------------------
+\title{C Style Checker}
+\subtitle{Flex and Bison Implementation.}
+\date{\today}
+\author{Bruce Dearing}
+\institute{Acadia University}
+
+%--------------------------------------------------------------------------
+% Notes settings
+%--------------------------------------------------------------------------
+%\setbeameroption{show notes}
+\setbeameroption{show notes on second screen}
+
+\begin{document}
+%--------------------------------------------------------------------------
+% Titlepage
+%--------------------------------------------------------------------------
+
+\maketitle
+
+%\begin{frame}[plain]
+%   \titlepage
+%\end{frame}
+
+%--------------------------------------------------------------------------
+% Table of contents
+%--------------------------------------------------------------------------
+\section*{Overview}
+\begin{frame}{Overview}
+    % hideallsubsections - dont show the subsections of the slides.
+    \tableofcontents[hideallsubsections]
+\end{frame}
+
+%--------------------------------------------------------------------------
+% Content
+%--------------------------------------------------------------------------
+
+%--------------------------------------------------------------------------
+% Introduction
+%--------------------------------------------------------------------------
+\section{Introduction}
+
+%--------------------------------------------------------------------------
+% Problem Description
+%--------------------------------------------------------------------------
+\subsection{Problem Description}
+
+\begin{frame}{Problem Description}
+        COMP 2103 students are required to format their programs according to a set of style guidelines.
+        \note{Currently no style checker for C has been in use. \\ 
+        The solution to this problem would require the
+        program to have as much flexibility as possible.
+        Ideally, the program would be used as the back end for a web page, so that someone could submit 
+        their program and the web server would return a either confirmation that the style meets the 
+        guidelines or a list of non-conforming constructs.}
+\end{frame}
+
+%--------------------------------------------------------------------------
+% Solution Description
+%--------------------------------------------------------------------------
+\subsection{Solution Description}
+
+\begin{frame}{Solution Description}
+\begin{itemize}
+    \item{Initial Approach}
+        \begin{itemize}
+            \item{Flex and Bison} 
+        \end{itemize}
+     
+     \item{Second approach}
+     \begin{itemize}
+        \item{Flex and Bison}
+        \item{GNU Indent}
+     \end{itemize}
+
+    \item{Third approach}
+        \begin{itemize}
+                \item{Flex and Bison}
+        \item{GNU Indent}
+        \item{Vim \texttt{'cindent'}}
+        \end{itemize}
+\end{itemize} 
+\end{frame}
+
+
+%--------------------------------------------------------------------------
+% Solution Description Notes
+%--------------------------------------------------------------------------
+\note{
+    \scriptsize{\begin{itemize}
+    \item In order to provide a reasonable amount of functionality while still remaining flexible, 
+        I initially chose to use a combination of LALR  compiler tools.
+    \item Look-Ahead LR parser reading context free BNF grammar. \\
+    \item Backus–Naur Form BNF 
+
+     \item Unfortunately constructing a grammar that could also parse all the possible combinations of white space proved problematic.
+     \item Therefore my second approach was to use a combination of compiler tools and a gnu open source project called indent.
+     \item The indent program changes the appearance of a C program by inserting or deleting white space based on a set of supplied flags.
+     \item indent can be used to format the code to the desired specifications.  
+
+    \item As the name suggests gnu indent can handle indentation, however, it is not very flexible in implementing different levels of indentation.
+    \item For indentation I use Vim's cindent, which is considerably more configurable using cinoptions.
+    \end{itemize}}
+}
+
+%--------------------------------------------------------------------------
+% Flex and bison
+%--------------------------------------------------------------------------
+\subsection{Flex and Bison}
+
+\begin{frame}{What are Flex and Bison?}
+    Flex and Bison are a set of tools originally designed for constructing compilers.
+    They have proven to be very useful in building programs which handle
+    structured input.
+\end{frame}
+
+%--------------------------------------------------------------------------
+% Flex and Bison Notes
+%--------------------------------------------------------------------------
+\note{
+    \begin{itemize}
+        \item Flex is a fast lexical analyser generator. 
+        \item It is a tool for generating programs that perform pattern-matching on text.
+        \item A flex program consists of three sections, separated by \%\% lines.
+        \item  The first section contains declarations and option settings. 
+        \item The second section is a list of patterns and actions, and 
+        \item the third section is C code that is copied to the generated scanner.
+        \end{itemize}
+}
+
+
+%--------------------------------------------------------------------------
+% Flex Structure
+%--------------------------------------------------------------------------
+\begin{frame}[containsverbatim]{Flex structure}
+\scriptsize{\begin{verbatim}
+%{     /* Declarations and optiions */
+int chars = 0;
+int words = 0;
+int lines = 0;
+%}
+%%    /* Patterns and actions.  */
+[a-zA-Z]+ { words++; chars += strlen(yytext); }
+\n        { chars++; lines++; }
+.         { chars++; }
+%%
+ /* C code that is copied to the generated scanner. */
+main(int argc, char **argv)
+{
+    yylex();
+    printf("%8d%8d%8d\n", lines, words, chars);
+}
+\end{verbatim}}
+\end{frame}
+
+
+%--------------------------------------------------------------------------
+% Bison Structure
+%--------------------------------------------------------------------------
+\begin{frame}[containsverbatim]{Bison Structure}
+\scriptsize{\begin{verbatim}
+%{                 /* declare options */
+%}                  
+%token ONE TWO EOL /* declare tokens */
+%start start
+%%               
+start
+    : exp EOL     /* grammar rules */
+    ;
+exp
+    : ONE 
+    | TWO
+    ;
+%%                /* C code that is copied to parser */
+main(int argc, char **argv)
+{
+    yyparse();
+}
+yyerror(char *s)
+{
+    fprintf(stderr, "error: %s\n", s);
+}
+\end{verbatim}}
+\end{frame}
+
+%--------------------------------------------------------------------------
+% Bison Notes
+%--------------------------------------------------------------------------
+\note{
+    \begin{itemize}
+        \item Bison is a general-purpose parser generator that converts an annotated context-free grammar into a deterministic LR or generalized LR (GLR) parser.
+        \item The input file for the Bison utility is a Bison grammar file The general form of a Bison grammar file is as follows:
+    \end{itemize}
+}
+
+%--------------------------------------------------------------------------
+% Implementation Description 
+%--------------------------------------------------------------------------
+\section{Implementation Description}
+
+\begin{frame}{Style checker design}
+    The C style checker is composed of four main components which perform the following
+    checks:
+    \begin{itemize}
+        \item Comments;
+        \item Indentation;
+        \item Common errors, and Style;
+        \item Format, and White space.
+    \end{itemize}
+        The components are tied together with a shell script which is accessed
+    through a web based interface.
+\end{frame}
+
+
+%--------------------------------------------------------------------------
+% Comments
+%--------------------------------------------------------------------------
+\subsection{Comments}
+\begin{frame}[containsverbatim]{Comments}
+The comment component of the style checker attempts to:
+\begin{enumerate}
+    \item verify that the program starts with a header comment similar to the following. and 
+    \item that functions preceded by a short comment describing the function are correctly formatted.
+    \end{enumerate}
+\begin{multicols}{2}
+\scriptsize{\begin{verbatim}
+    HEADER COMMENT 
+/*   
+ * File:     A2P1.c
+ * Author:   My Name 100123456  
+ * Date:     2011/09/12  
+ * Version:  1.0
+ * 
+ * Purpose: 
+ * ...
+ */ 
+\end{verbatim}}
+\scriptsize{\begin{verbatim}
+FUNCTION COMMENT
+ /*
+  * Name:        my_func
+  * Purpose:     ...
+  * Arguments:   ...
+  * Output:      ...
+  * Modifies:    ...
+  * Returns:     ...
+  * Assumptions: ...
+  * Bugs:        ...
+  * Notes:       ...
+  */
+\end{verbatim}}
+\end{multicols}
+\end{frame}
+%--------------------------------------------------------------------------
+% Comments Design
+%--------------------------------------------------------------------------
+\begin{frame}[containsverbatim]{Comment Check Design}
+The \textcolor{hsrmSec2}{\texttt{check\_comments}} program is a combined scanner parser.
+\begin{verbatim}
+%x COMMENT /* Exclusive start state.  */
+%%
+"/*"          { BEGIN(COMMENT); }
+<COMMENT>"*/" { BEGIN(INITIAL); return(END_COMMENT);}
+
+\end{verbatim}
+\end{frame}
+
+%--------------------------------------------------------------------------
+% Comments Design NOTES 
+%--------------------------------------------------------------------------
+
+\note{
+The starting comment character '/*' triggers the scanner to enter an 'exclusive' start state \texttt{<COMMENT>} to capture
+comment tokens and pass those tokens off to the parser.\\
+The parser then handles the tokens and verifies the comment is complete.
+}
+
+%--------------------------------------------------------------------------
+% Comments Design
+%--------------------------------------------------------------------------
+
+\begin{frame}[containsverbatim]{Comment Check Design}
+The parser is responsible for determining if the stream of tokens provided by the scanner conforms
+to the grammar specification.
+\scriptsize{\begin{verbatim}
+%token  IDENTIFIER FILE_LBL AUTHOR START_COMMENT END_COMMENT VERSION DATE
+%token  NAME ARGUMENTS OUTPUT MODIFIES RETURNS ASSUMPTIONS BUGS NOTES 
+%token  PURPOSE LAST_VAL
+%start program_body
+%%
+program_body
+    : program_start program_comments
+    ;
+program_comments
+    : comment_start
+    | program_comments comment_start
+    ;
+program_start
+    : START_COMMENT header_comment END_COMMENT {check_header();}
+    ;
+comment_start
+    : START_COMMENT comment_body END_COMMENT
+ ...
+\end{verbatim}}
+\end{frame}
+
+%--------------------------------------------------------------------------
+% Indentation
+%--------------------------------------------------------------------------
+\subsection{Indentation}
+\begin{frame}[containsverbatim]{Indentation}
+The indentation portion of the style checker attempts to verify the file has been indented correctly.
+\begin{verbatim}
+vim -e -s $temp_in < indent/vim_commands.scr
+\end{verbatim}
+\begin{exampleblock}{indent/vim\_commands.scr}
+    \scriptsize{\begin{itemize}
+        \item[:] \verb|set shiftwidth=4|
+        \item[:] \verb|set cinoptions=e0,n0,f0,{0,}0,:2,=2,l1,b0,t0,+4,c4,C1,(0,w1|
+        \item[:] \verb|normal gg=G|
+        \item[:] \verb|wq|
+    \end{itemize}}
+\end{exampleblock}
+\end{frame}
+
+\note{
+
+	The program begins by correctly indenting a temporary copy of the supplied file
+	by passing the file into vim in execute mode and supplying a set of script commands.
+
+	The temporary file is then compared against the original and the diff output
+	is run through a lexical analyzer to report error messages
+	when differences in indentation exist.  
+}
+
+
+%--------------------------------------------------------------------------
+% Common Errors
+%--------------------------------------------------------------------------
+\subsection{Common Errors and Style}
+\begin{frame}{Common Errors and Style}
+The Common errors and style portion of the style checker consists of two components.
+\begin{enumerate}
+	\item  \textcolor{hsrmSec2}{\texttt{common\_errors}} program which initiates checks for:
+		\begin{itemize}
+			\item Common white space errors. and
+			\item Code block bracket location.
+		\end{itemize}
+	\item  \textcolor{hsrmSec2}{\texttt{composite\_check}} program which combines the \\
+			ANSI C grammar specification with a combination of additional 
+			grammar productions to produce style error checks.  
+\end{enumerate}
+
+\end{frame}
+
+
+%--------------------------------------------------------------------------
+% Format and white space
+%--------------------------------------------------------------------------
+\subsection{Format and white space}
+\begin{frame}{Format and white space}
+\end{frame}
+
+\section{Possible Extensions}
+\begin{frame}{Possible Extensions}
+\begin{description}
+	\item[C Preprocessor] \hfill \\
+		Construct the C style checker to first run the files through C preprocessor.
+	\note
+	{
+		I made an initial attempt to implement Preprocessing the files before checking for errors. 
+		Running through the C preprocessor proved very useful in eliminating portions of the file which are difficult to parse without it.
+		It can be implemented to replaces macro definitions and join broken strings and variable together.
+		and line position can be easily recalculated with the linemarkers the preprocessor inserts into the outfile.
+		where I ran into problems with implementation is when the C file included local header files. 
+		In order to implement the preprocessor portion a multiple file upload portion would be required.
+		 
+		This would also eliminate the need for a GLR parser in the Common Errors and Style portion.
+    }
+    \item
+\end{description}
+\end{frame}
+\section{Summary and Conclusions}
+\subsection{Demonstration}
+\subsection{Required Software}
+\subsection{Questions?}
+
+
+\end{document}
+
+
+
+
+
+

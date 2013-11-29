@@ -3,7 +3,7 @@
  * Author:   Bruce Dearing 100036623
  * Date:     2013/20/11
  * Version:  1.0
- * Purpose:  Flex tokenizer grammar which supplies tokens to 
+ * Purpose:  Flex tokenizer specification which supplies tokens to 
  *           composite_check parser in an effort to parse a file to 
  *           locate errors in code.
  */
