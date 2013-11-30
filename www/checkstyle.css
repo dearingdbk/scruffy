@@ -1,3 +1,4 @@
+
 div
 {
     -moz-column-count:1; /* Firefox */
@@ -62,9 +63,9 @@ pre
 
 .printoff
 {
-	position:absolute;
-	right:20px;
-	top:70px;
+    position:absolute;
+    right:20px;
+    top:70px;
     box-shadow: 10px 10px 5px #888888;
     width:50%;
     background-color:white;
@@ -75,11 +76,11 @@ pre
 
 .skinny
 {
-	position:absolute;
-	right:50%;
-	top:70px;
-	font-size:0.8vw;
-	text-align:center;
+    position:absolute;
+    right:50%;
+    top:70px;
+    font-size:0.8vw;
+    text-align:center;
     width:auto;
     height:auto;
     background-color:white;

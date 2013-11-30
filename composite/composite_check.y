@@ -5,9 +5,9 @@
  * Version: 1.0
  *
  * Purpose: ANSI C Yacc grammar, to parse tokens received from the
- * flex scanner composite_check.l
- * Grammar has been re-written to identify common style errors
- * present in C code and alert the user.
+ *          flex scanner composite_check.l
+ *          Grammar has been re-written to identify common style errors
+ *          present in C code and alert the user.
  */
 
 %locations
@@ -17,18 +17,24 @@
 
 %{
 
+/* START Include files. */
 #ifndef COMPOSITE_CHECK_TAB_H
     #define COMPOSITE_CHECK_TAB_H
     #include "composite_check.tab.h"
 #endif
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include "../functions/functions.h"
+/* END Include files. */
 
+/* START Program variables */
 extern char *yytext;
+/* End Program variables */
+
+
+/* START Definitions. */
 #define YYERROR_VERBOSE
 #define MAX_TRYS 1000
 #define MULTI_DEF "Variable initialized in a multi-variable declaration."
@@ -41,33 +47,11 @@ extern char *yytext;
  label."
 #define MBS "Missing Break statement."
 #define LCC "Array initialization contains optional trailing comma."
+/* End Definitions. */
 
-void yyerror(const char *str)
-{
-   /*
-    * Purposely do nothing here, we want to error quietly
-    * to allow greater flexibility within this parser.
-    */
-}
-
-main()
-{
-   /*
-    * The parser returns a value of zero if the parse succeeds
-    * and nonzero if the parse fails.
-    * Here we continue parsing even on error up to
-    * MAX_TRYS.
-    */
-   int index = 0;
-   while(index < MAX_TRYS)
-   {
-       if (yyparse())
-          index++;
-       else
-            break;
-   }
-
-}
+/* START Function Definitions */
+void yyerror(const char *str);
+/* START Function Definitions */
 
 %}
 
@@ -736,3 +720,57 @@ declaration_list
     ;
 
 %%
+
+
+
+/*      
+ * Name:        yyerror 
+ * Purpose:     function called to report errors when check_comments is 
+ *              unable to parse received tokens.
+ * Arguments:   str ~ the string containing the received error message.
+ * Output:      prints to stdout
+ * Modifies:    none
+ * Returns:     1
+ * Assumptions: 
+ * Bugs:        
+ * Notes:
+ */  
+void 
+yyerror(const char *str)
+{
+   /*
+    * Purposely do nothing here, we want to error quietly
+    * to allow greater flexibility within this parser.
+    */
+}
+
+
+/*
+ * Name:        main
+ * Purpose:     calls yyparse() to parse tokens.
+ * Arguments:   none.
+ * Output:      none.
+ * Modifies:    none.
+ * Returns:     void.
+ * Assumptions: 
+ * Bugs:        none to date.
+ * Notes:
+ */ 
+main()
+{
+   /*
+    * The parser returns a value of zero if the parse succeeds
+    * and nonzero if the parse fails.
+    * Here we continue parsing even on error up to
+    * MAX_TRYS.
+    */
+   int index = 0;
+   while(index < MAX_TRYS)
+   {
+       if (yyparse())
+          index++;
+       else
+            break;
+   }
+
+}

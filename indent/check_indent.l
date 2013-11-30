@@ -10,21 +10,20 @@
  */
 
 %{
-
-int yycolumn = 0;
+    
 /* START Include files. */
 #include <stdio.h>
+#include <string.h>
 /* END Include files. */
 
 /* START Definitions. */
 #define YY_USER_ACTION yycolumn += yyleng;
-
 #define RESET(x) x = 0
 #define MAX_LENGTH 80
 #define DECIMAL 10
+/* END Definitions */
 
-#include <string.h>
-
+/* START Program variables */
 typedef struct 
 {
     int orig_start;
@@ -39,11 +38,16 @@ typedef struct
 diff_output current; 
 int col_num = 0;
 int indent = 0;
+int yycolumn = 0;
+/* END Program variables */
 
+/* START Function Definitions */
 void set_multi(diff_output *current, char *text);
 void set_single(diff_output *current, char *text);
 void output_results(diff_output *current);
 void handle_text(diff_output *current);
+/* END Function Definitions */
+
 %}
 
 %option yylineno

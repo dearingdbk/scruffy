@@ -15,50 +15,85 @@
 %a  1213
 %o  1117
 
+/* Regular expressions */
 
+    /* Beginning of a comment line.*/ 
 BG  {WS}*[*]?{WS}
+    /* Day of a month. */
 DD  [0-3]?[0-9]
+    /* Month. */ 
 MM  ((0[1-9])|(1[0-2|])|([0-9]))
+    /* Year format */
 YY  (20|19)?[0-9]{2}
+    /* Date time format. */
 DT  (({YY}{SP}{MM}{SP}{DD})|({DD}{SP}{MM}{SP}{YY})|({MM}{SP}{DD}{SP}{YY}))
-SP  [/\-. ]
+    /* Separator format */
+SP  [\/\-. ]
+    /* File name */
 FN  [a-zA-Z_0-9]+(\.(c|h))?
+    /* Student number */
 SN  [1][0-9]{8}
+    /* name */
 NM  [a-z,\.A-Z\'\-]+
+    /* Total name */
 TN  {NM}{WS}{NM}
+    /* Author */
 BN  ({SN}{WS}+{TN}|{TN}{WS}+{SN})
+    /* White space */
 WS  [ \t\v\f\n]
+    /* File label */
 F   ((F|f)(ile:|ile))
+    /* A or a */
 A   (A|a)
+    /* backend of author*/
 TH  (uthor:|uthor)
+    /* backed of arguments. */
 RG  (rguments:|rguments)
+    /* backend of assumptions */
 SS  (ssumptions|ssumptions)
+    /* output label */
 O   ((O|o)(utput:|utput))
+    /* date label */
 D   ((D|d)(ate:|ate))
+    /* returns label */
 R   ((R|r)(eturns:|eturns))
+    /* Bugs label */
 B   ((B|b)(ugs:|ugs))
+    /* N or n */
 N   (N|n)
+    /* backend of name */
 ME  (ame:|ame)
+    /* backend of notes */
 OT  (otes:|otes)
+    /* Version label */
 V   ((V|v)(ersion:|ersion))
+    /* Purpose label */
 P   ((P|p)(urpose:|urpose))
+    /* Modifies label */
 M   ((M|m)(odifies:|odifies))
 
 %{
 
+/* START Definitions. */
 #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
                        yylloc.first_column = yycolumn; \
                        yylloc.last_column = yycolumn+yyleng-1; \
                        yycolumn += yyleng;
+/* END Definitions. */
 
 
+/* START Include files. */
 #include <stdio.h>
 #ifndef CHECK_COMMENTS_TAB_H
     #define CHECK_COMMENTS_TAB_H
     #include "check_comments.tab.h"
 #endif
+/* END Include files. */
+
+/* START Program variables */
 int comment_start;
 int yycolumn = 1;
+/* END Program variables */
 
 %}
 
@@ -75,8 +110,9 @@ int yycolumn = 1;
          
 %option yylineno
 
+/* START Exclusive Start State definitions. */
 %x COMMENT
-
+/* END Exclusive Start State definitions. */
 
 %%
 "/*"                           { comment_start = yylineno; 
@@ -101,8 +137,8 @@ int yycolumn = 1;
 <COMMENT>^{BG}{N}{OT}          { return(NOTES); }
 <COMMENT>[^*\n]|.              { }
 
-{WS}					       { /* whitespace separates tokens */ }
-.					           { /* discard bad characters */ }
+{WS}                           { /* whitespace separates tokens */ }
+.                              { /* discard bad characters */ }
 %%
 
 

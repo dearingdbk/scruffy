@@ -1,55 +1,50 @@
 /*
- * File: check_comments.y
- * Author: Bruce Dearing 100036623
- * Date: 2013/11/27
- * Version: 1.0
+ * File:     check_comments.y
+ * Author:   Bruce Dearing 100036623
+ * Date:     2013/11/27
+ * Version:  1.0
  *
- * Purpose: ANSI C Yacc grammar, to parse tokens received from the
- * flex scanner check_comments.l
- * Grammar has been re-written to identify common style errors
- * present in C code comments according to style guide.
+ * Purpose:  ANSI C Yacc grammar, to parse tokens received from the
+ *           flex scanner check_comments.l
+ *           Grammar has been re-written to identify common style errors
+ *           present in C code comments according to style guide.
  */
 
 %locations
 
 %{
-
+    
+/* START Include files. */
 #ifndef CHECK_COMMENTS_TAB_H
     #define CHECK_COMMENTS_TAB_H
     #include "check_comments.tab.h"
 #endif
-
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
+/* END Include files. */
 
+/* START Definitions. */
+#define YYERROR_VERBOSE
+/* END Definitions. */
 
+/* START Program variables */
 extern char *yytext;
 extern int comment_start;
-#define YYERROR_VERBOSE
-
-
-main()
-{
-  yyparse();
-} 
-
-void check_header();
-void check_function();
-void yyerror(const char *s)
-{
-	fprintf(stderr, "%d:\n\n%s\n\n", yylloc.first_line,
-		"Program appears to be missing a header comment.");
-}
-
 unsigned int header[LAST_VAL] = {0};
 unsigned int function[LAST_VAL] = {0};
+/* END Program variables */
+
+/* START Function Definitions */
+void check_header();
+void check_function();
+void yyerror(const char *s);
+/* END Function Definitions */
+
 
 %}
-%token  IDENTIFIER FILE_LBL AUTHOR START_COMMENT END_COMMENT VERSION DATE PURPOSE 
-%token	NAME ARGUMENTS OUTPUT MODIFIES RETURNS ASSUMPTIONS BUGS NOTES 
-%token  LAST_VAL
+%token  IDENTIFIER FILE_LBL AUTHOR START_COMMENT END_COMMENT VERSION
+%token  NAME ARGUMENTS OUTPUT MODIFIES RETURNS ASSUMPTIONS BUGS NOTES 
+%token  DATE PURPOSE LAST_VAL 
 %start program_body
 %%
 
@@ -113,15 +108,70 @@ header_label_name
     | PURPOSE   {header[PURPOSE] = 1;}
     ;
 
-%%   
+%%
+
+/*      
+ * Name:        main 
+ * Purpose:     calls yylex() to tokenize input.
+ * Arguments:   
+ * Output:      none.
+ * Modifies:    none.
+ * Returns:     none.
+ * Assumptions: 
+ * Bugs:        
+ * Notes:
+ */ 
+void 
+main(int argc, char **argv)
+{
+  yyparse();
+} 
 
 
+/*      
+ * Name:        yyerror 
+ * Purpose:     function called to report errors when check_comments is 
+ *              unable to parse received tokens.
+ * Arguments:   str ~ the string containing the received error message.
+ * Output:      prints to stdout
+ * Modifies:    none
+ * Returns:     1
+ * Assumptions: 
+ * Bugs:        
+ * Notes:
+ */ 
+void yyerror(const char *str)
+{
+    fprintf(stderr, "%d:\n\n%s\n\n", yylloc.first_line,
+        "Program appears to be missing a header comment.");
+}
+
+/*      
+ * Name:        check_header
+ * Purpose:     verifies that the header file is formatted correctly.
+ * Arguments:   none.
+ * Output:      call a separate function to produce error messages
+ *              if header labels are missing or malformed.
+ * Modifies:    none.
+ * Returns:     none.
+ * Assumptions: 
+ * Bugs:        
+ * Notes:
+ */ 
 void check_header()
 {
     static unsigned int mask[] = {1, 2, 4, 8, 16, 32};
     int i = 1;
     int k;
-        
+     
+    /* 
+     * checks which flags in the array have been triggered.\
+     * by shifting i by one and then adding in the value of
+     * header[<flag>] producing a string of 1's and 0's
+     *   101011 
+     *
+     */   
+     
     i = (i << 1) | header[FILE_LBL];
     i = (i << 1) | header[AUTHOR];
     i = (i << 1) | header[DATE];
@@ -137,19 +187,24 @@ void check_header()
             switch(k)
             {
               case 0:
-                print_comment_msg(comment_start, "\"header\"", "\"Purpose:\"");
+                print_comment_msg(comment_start, "\"header\"",
+                                  "\"Purpose:\"");
                 break;
               case 1:
-                print_comment_msg(comment_start, "\"header\"", "\"Version:\"");
+                print_comment_msg(comment_start, "\"header\"",
+                                  "\"Version:\"");
                 break;
               case 2:
-                print_comment_msg(comment_start, "\"header\"", "\"Date:\"");
+                print_comment_msg(comment_start, "\"header\"",
+                                  "\"Date:\"");
                 break;
               case 3:
-                print_comment_msg(comment_start, "\"header\"", "\"Author:\"");
+                print_comment_msg(comment_start, "\"header\"",
+                                  "\"Author:\"");
                 break;
               case 4:
-                print_comment_msg(comment_start, "\"header\"", "\"File:\"");
+                print_comment_msg(comment_start, "\"header\"",
+                                  "\"File:\"");
                 break;
               default:
                break;
@@ -158,13 +213,34 @@ void check_header()
     }
 }
 
-
-void check_function()
+/*      
+ * Name:        check_function
+ * Purpose:     verifies that any function file is formatted correctly.
+ * Arguments:   none.
+ * Output:      makes a call to print_comment_msg to produce error 
+ *              messages if header labels are missing or malformed.
+ * Modifies:    none.
+ * Returns:     none.
+ * Assumptions: function[] is large enough that token flags will not
+ *              cause an array index out of range.
+ * Bugs:        
+ * Notes:
+ */ 
+void 
+check_function()
 {
     static unsigned int mask[] = {256, 128, 64, 32, 16, 8, 4, 2, 1};
     int i = 1;
     int k;
 
+    /* 
+     * checks which flags in the array have been triggered.\
+     * by shifting i by one and then adding in the value of
+     * function[<flag>] producing a string of 1's and 0's
+     *   101011 
+     *
+     */ 
+    
     i = (i << 1) | function[NAME];
     i = (i << 1) | function[PURPOSE];
     i = (i << 1) | function[ARGUMENTS];
@@ -184,31 +260,40 @@ void check_function()
             switch(k)
             {
               case 0:
-                print_comment_msg(comment_start, "\"function\"", "\"Name:\"");
+                print_comment_msg(comment_start,
+                                  "\"function\"", "\"Name:\"");
                 break;
               case 1:
-                print_comment_msg(comment_start, "\"function\"", "\"Purpose:\"");
+                print_comment_msg(comment_start,
+                                  "\"function\"", "\"Purpose:\"");
                 break;
               case 2:
-                print_comment_msg(comment_start, "\"function\"", "\"Arguments:\"");
+                print_comment_msg(comment_start,
+                                  "\"function\"", "\"Arguments:\"");
                 break;
               case 3:
-                print_comment_msg(comment_start, "\"function\"", "\"Output:\"");
+                print_comment_msg(comment_start,
+                                  "\"function\"", "\"Output:\"");
                 break; 
               case 4:
-                print_comment_msg(comment_start, "\"function\"", "\"Modifies:\"");
+                print_comment_msg(comment_start, 
+                                  "\"function\"", "\"Modifies:\"");
                 break;
               case 5:
-                print_comment_msg(comment_start, "\"function\"", "\"Returns:\"");
+                print_comment_msg(comment_start,
+                                  "\"function\"", "\"Returns:\"");
                 break;
               case 6:
-                print_comment_msg(comment_start, "\"function\"", "\"Assumptions:\"");
+                print_comment_msg(comment_start,
+                                  "\"function\"", "\"Assumptions:\"");
                 break;
                 case 7:
-                print_comment_msg(comment_start, "\"function\"", "\"Bugs:\"");
+                print_comment_msg(comment_start,
+                                  "\"function\"", "\"Bugs:\"");
                 break;
                 case 8:
-                print_comment_msg(comment_start, "\"function\"", "\"Notes:\"");
+                print_comment_msg(comment_start,
+                                  "\"function\"", "\"Notes:\"");
                 break;
               default:
                 break;
@@ -216,4 +301,3 @@ void check_function()
         }
     }
 }
-

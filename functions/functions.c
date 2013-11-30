@@ -3,8 +3,8 @@
  * Author:   Bruce Dearing 100036623
  * Date:     30/11/2013
  * Version:  1.0
- * Purpose:  Program to handle functions common to all portions of
- *           C style checker.
+ * Purpose:  Program to handle functions common to a  number of 
+ *           components of the C style checker.
  */
 
 #include "functions.h"
@@ -22,15 +22,21 @@ int strpos = 0;
 
 
 /*
- * Name: print_bad_ident
- * Purpose: 
- * Arguments: 
- * Output: 
- * Modifies: 
- * Returns: 
- * Assumptions: 
+ * Name:         print_bad_ident
+ * Purpose:      Prints to stdout the error message associated with
+ *               a file containing a naming violation on a type name
+ *               or variable.
+ * Arguments:    line ~ the line number where the violation occurred.
+ *               column ~ the column position where the violation 
+ *               occurred.
+ *               str ~ the string representing the token which violated.
+ * Output:       prints to stdout the appropriate error message.
+ * Modifies:     none.
+ * Returns:      none
+ * Assumptions:  str is a valid char * pointer and the line contains 
+ *               characters other than white space.
  * 
- * Bugs: 
+ * Bugs:         none to date.
  * Notes:
  */
 void
@@ -57,15 +63,21 @@ print_bad_ident(int line, int column, char *str)
 
 /*
  * Name:        print_comment_msg
- * Purpose:     
- * Arguments:   
- * Output:      
- * Modifies:    
- * Returns:     
- * Assumptions: 
- *              
- * Bugs:       
- * Notes:       
+ * Purpose:     Prints to stdout the error message associated with
+ *              a file containing a poorly formatted or missing comment.
+ * Arguments:   line ~ the line number where the violation occurred.
+ *              type ~ the type of label that is missing, dependent on
+ *              comment type.
+ *              name ~ the string containing the comment type. "header"
+ *              or "function".
+ * Output:      prints to stdout the appropriate error message.
+ * Modifies:    none.
+ * Returns:     none.
+ * Assumptions: str is a valid char * pointer and the line contains 
+ *              characters other than white space.
+ * 
+ * Bugs:        none to date.
+ * Notes:
  */
 void
 print_comment_msg(int line, char *type, char *name)
@@ -77,16 +89,21 @@ print_comment_msg(int line, char *type, char *name)
 
 
 /*
- * Name:        trim
- * Purpose:     Trims the whitespace from the beggining of a string.
- * Arguments:   str ~ pointer to an array of chars to trim the whitespace.
- * Output:      none.
- * Modifies:    none.
- * Returns:     return a new string with whitespace trimmed from beginning.
- * Assumptions: The pointer is to a valid string.
- *              The string contains more than whitespace.
- * Bugs:        none found to date.
- * Notes:       
+ * Name:         print_magic_number
+ * Purpose:      Prints to stdout the error message associated with
+ *               a file containing a magic number.
+ * Arguments:    line ~ the line number where the violation occurred.
+ *               column ~ the column position where the violation 
+ *               occurred.
+ *               str ~ the string representing the token which violated.
+ * Output:       prints to stdout the appropriate error message.
+ * Modifies:     none.
+ * Returns:      none
+ * Assumptions:  str is a valid char * pointer and the line contains 
+ *               characters other than white space.
+ * 
+ * Bugs:         none to date.
+ * Notes:
  */
 void
 print_magic_number(int line, int column, char *str)
@@ -152,8 +169,6 @@ trim(char *str)
  * Bugs:        none found to date.
  * Notes:       
  */
-
-
 void
 print_msg(int line, int column, char *str)
 {
@@ -209,12 +224,14 @@ append(int line, char *str, int len)
 
 
 /*
- * Name:        trim
- * Purpose:     Trims the whitespace from the beggining of a string.
- * Arguments:   str ~ pointer to an array of chars to trim the whitespace.
+ * Name:        fix_string
+ * Purpose:     strips a trailing semi-colon from a string in the case
+ *              of a typedef the regular expression grabs the ';'.
+ * Arguments:   string ~ pointer to an array of chars to trim the 
+ *              semi-colon from.
  * Output:      none.
  * Modifies:    none.
- * Returns:     return a new string with whitespace trimmed from beginning.
+ * Returns:     return a new string stripped of the semicolon
  * Assumptions: The pointer is to a valid string.
  *              The string contains more than whitespace.
  * Bugs:        none found to date.
@@ -230,10 +247,10 @@ fix_string(char *string)
     for (i = 0; i < len; i++)
     {
         if (ret_str[i] == ';')
+        {
             ret_str[i] = '\0';
-
+            break;
+        }
     }       
     return ret_str;
 }
-
-
