@@ -285,9 +285,9 @@ int yycolumn = 1;
 
 
 /*
- * Name:      	yywrap
+ * Name:        yywrap
  * Purpose:     called at the end of input, in this case we do not
-				wrap, we terminate.
+                wrap, we terminate.
  * Arguments:   void.
  * Output:      none.
  * Modifies:    none.
@@ -303,7 +303,7 @@ int yywrap(void) /* called at end of input */
 
 
 /*
- * Name:      	check_type
+ * Name:        check_type
  * Purpose:     checks whether an identifier has been previously 
  *              entered into the symbol table. If not it adds it.
  * Arguments:   str ~ the string containing the identifier.
@@ -338,7 +338,7 @@ check_type(char *str)
 /* Symbol Table Implementation */
 
 /*
- * Name:      	add_entry
+ * Name:        add_entry
  * Purpose:     adds an identifier to the symbol table.
  * Arguments:   line_num ~ the line number the identifier was found.
  *              flag ~ the type of identifier located, enum, typedef, or
@@ -354,7 +354,6 @@ check_type(char *str)
 void
 add_entry(int line_num, int flag, char* str)
 {
-    printf("%s\n",str);
     char *rtnstr = fix_string(str);
     struct symbol *new_entry;
     struct symbol *cur_entry = lookup(rtnstr);
@@ -390,7 +389,7 @@ add_entry(int line_num, int flag, char* str)
 }
 
 /*
- * Name:      	get_hashval
+ * Name:        get_hashval
  * Purpose:     returns the hash of the entry string.
  * Arguments:   str ~ The string to hash and then return.
  * Output:      none
@@ -415,7 +414,7 @@ get_hashval(char *str)
 /*
  * Name:        lookup
  * Purpose:     Searches for the existence of a symbol in the 
- *				symbol_table array.
+ *              symbol_table array.
  * Arguments:   str ~ The string to search for in the symbol_table.
  * Output:      none
  * Modifies:    none
