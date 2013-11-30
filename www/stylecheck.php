@@ -42,7 +42,6 @@ $tmp = file_get_contents($_FILES['upload']['name']);
 /*$output = shell_exec('cp ./testcode/analyse.c test.c 2>&1');*/
 $count = count(explode(PHP_EOL, $tmp));
 $execute = sprintf("sh scruffy.sh %s 2>&1", $_FILES['upload']['name']);
-//echo "<pre>$output<pre>";
 $output = shell_exec($execute);
 
 $lines = explode(PHP_EOL, $output);
@@ -55,13 +54,13 @@ foreach($lines as $line)
     }
     else if (preg_match("/^indent.*/i", $line))
     {
-		$indent_num = preg_replace('/^[^\.]+\.c:/i', '', $line);
-		$indent_num = substr($indent_num, 0, strspn($indent_num, "0123456789"));
-		$linefix->set_index($indent_num);
-		$linefix->add_line_num($indent_num. ":\n" );
-		$linefix->add_code(preg_replace('/^[^\:]*\:[^\:]*\:[^\:]*:/i', '', $line));
-	}
-	else
+        $indent_num = preg_replace('/^[^\.]+\.c:/i', '', $line);
+        $indent_num = substr($indent_num, 0, strspn($indent_num, "0123456789"));
+        $linefix->set_index($indent_num);
+        $linefix->add_line_num($indent_num. ":\n" );
+        $linefix->add_code(preg_replace('/^[^\:]*\:[^\:]*\:[^\:]*:/i', '', $line));
+    }
+    else
         $linefix->add_code($line);
 }
 $linefix->print_code();
@@ -70,7 +69,7 @@ $linefix->print_code();
 </div>
 <div class = "skinny">
 <?php for ($i = 1; $i < $count; $i++)
-		echo $i . ":<br/>\n";
+        echo $i . ":<br/>\n";
 ?>
 </div>
 <div class="printoff">
