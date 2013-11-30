@@ -3,8 +3,6 @@
 % Version        : 0.3c
 % Created on     : 05.05.2013
 % Last Edited on : 16.05.2013
-% Modified on    : 28.11.2013
-% Modified by    : Bruce Dearing
 % Copyright      : Copyright (c) 2013 by Benjamin Weiss. All rights reserved.
 % License        : This file may be distributed and/or modified under the
 %                  GNU Public License.
@@ -21,6 +19,7 @@
 \usepackage{tabularx,ragged2e}
 \usepackage{booktabs}
 \usepackage{listings}
+\usepackage{hyperref}
 \lstset{ %
 language=[LaTeX]TeX,
 basicstyle=\normalsize\ttfamily,
@@ -63,7 +62,7 @@ xrightmargin=0.5em
 % Notes settings
 %--------------------------------------------------------------------------
 %\setbeameroption{show notes}
-\setbeameroption{show notes on second screen}
+%\setbeameroption{show notes on second screen=left}
 
 \begin{document}
 %--------------------------------------------------------------------------
@@ -101,12 +100,17 @@ xrightmargin=0.5em
 
 \begin{frame}{Problem Description}
         COMP 2103 students are required to format their programs according to a set of style guidelines.
-        \note{Currently no style checker for C has been in use. \\ 
-        The solution to this problem would require the
-        program to have as much flexibility as possible.
-        Ideally, the program would be used as the back end for a web page, so that someone could submit 
-        their program and the web server would return a either confirmation that the style meets the 
-        guidelines or a list of non-conforming constructs.}
+        
+\note
+{
+	Currently no style checker for C has been in use. \\ 
+    The solution to this problem would require a program
+    which \\ would maintain as much flexibility as possible while producing a detailed analysis of a students code. \\
+    Ideally, the program would be used as the back end for a web page, \\
+    so that someone could submit their program and the web server would return either confirmation that the style meets the 
+    guidelines.\\
+    or a list of non-conforming constructs.
+}
 \end{frame}
 
 %--------------------------------------------------------------------------
@@ -171,14 +175,11 @@ xrightmargin=0.5em
 %--------------------------------------------------------------------------
 % Flex and Bison Notes
 %--------------------------------------------------------------------------
-\note{
+\note
+{
     \begin{itemize}
         \item Flex is a fast lexical analyser generator. 
         \item It is a tool for generating programs that perform pattern-matching on text.
-        \item A flex program consists of three sections, separated by \%\% lines.
-        \item  The first section contains declarations and option settings. 
-        \item The second section is a list of patterns and actions, and 
-        \item the third section is C code that is copied to the generated scanner.
         \end{itemize}
 }
 
@@ -205,7 +206,14 @@ main(int argc, char **argv)
     printf("%8d%8d%8d\n", lines, words, chars);
 }
 \end{verbatim}}
-\end{frame}
+\note{
+    \begin{itemize}
+        \item  The first section contains declarations and option settings. 
+        \item The second section is a list of patterns and actions, and 
+        \item the third section is C code that is copied to the generated scanner.
+        \end{itemize}
+     }
+\end{frame}	
 
 
 %--------------------------------------------------------------------------
@@ -235,22 +243,26 @@ yyerror(char *s)
     fprintf(stderr, "error: %s\n", s);
 }
 \end{verbatim}}
+\note{
+    \begin{itemize}
+        \item Bison is a general-purpose parser generator that converts an 
+			annotated context-free grammar into a deterministic LR or generalized LR (GLR) parser.
+        \item The input file for the Bison utility is an annotated grammar file. 
+			The general form of a Bison grammar file is as follows:
+    \end{itemize}
+}
+
 \end{frame}
 
 %--------------------------------------------------------------------------
 % Bison Notes
 %--------------------------------------------------------------------------
-\note{
-    \begin{itemize}
-        \item Bison is a general-purpose parser generator that converts an annotated context-free grammar into a deterministic LR or generalized LR (GLR) parser.
-        \item The input file for the Bison utility is a Bison grammar file The general form of a Bison grammar file is as follows:
-    \end{itemize}
-}
 
 %--------------------------------------------------------------------------
 % Implementation Description 
 %--------------------------------------------------------------------------
 \section{Implementation Description}
+
 
 \begin{frame}{Style checker design}
     The C style checker is composed of four main components which perform the following
@@ -317,17 +329,18 @@ The \textcolor{hsrmSec2}{\texttt{check\_comments}} program is a combined scanner
 <COMMENT>"*/" { BEGIN(INITIAL); return(END_COMMENT);}
 
 \end{verbatim}
+\note{
+The starting comment character '/*' triggers the scanner to enter an 'exclusive' start state \texttt{<COMMENT>} to capture
+comment tokens and pass those tokens off to the parser.\\
+The parser then handles the tokens and verifies the comment is complete.
+}
 \end{frame}
 
 %--------------------------------------------------------------------------
 % Comments Design NOTES 
 %--------------------------------------------------------------------------
 
-\note{
-The starting comment character '/*' triggers the scanner to enter an 'exclusive' start state \texttt{<COMMENT>} to capture
-comment tokens and pass those tokens off to the parser.\\
-The parser then handles the tokens and verifies the comment is complete.
-}
+
 
 %--------------------------------------------------------------------------
 % Comments Design
@@ -413,13 +426,22 @@ The Common errors and style portion of the style checker consists of two compone
 %--------------------------------------------------------------------------
 \subsection{Format and white space}
 \begin{frame}{Format and white space}
+The format portion of the style checker utilizes the GNU indent program to verify the file has been correctly formatted.
+\note
+{
+	One problem that I ran into while using indent, is that it is not very flexible, there are a number of flags that can either be
+	turned on or off, there is no middle ground if either way is acceptable.
+	There are also some modifications that indent makes to code which cannot be turned off. No flag exists to change its implementation.
+	Due to this lack of flexibility, there are some style errors that it picks up that are acceptable, and a certain amount of redundancy
+	in reporting.
+}
 \end{frame}
 
+
+%--------------------------------------------------------------------------
+% Possible Extensions
+%--------------------------------------------------------------------------
 \section{Possible Extensions}
-\begin{frame}{Possible Extensions}
-\begin{description}
-	\item[C Preprocessor] \hfill \\
-		Construct the C style checker to first run the files through C preprocessor.
 	\note
 	{
 		I made an initial attempt to implement Preprocessing the files before checking for errors. 
@@ -428,16 +450,128 @@ The Common errors and style portion of the style checker consists of two compone
 		and line position can be easily recalculated with the linemarkers the preprocessor inserts into the outfile.
 		where I ran into problems with implementation is when the C file included local header files. 
 		In order to implement the preprocessor portion a multiple file upload portion would be required.
-		 
 		This would also eliminate the need for a GLR parser in the Common Errors and Style portion.
     }
-    \item
+\begin{frame}{Possible Extensions}
+\begin{description}
+	\item[C Preprocessor] \hfill \\
+		Construct the C style checker to first run the files through the C preprocessor.
+
+    \item[Continue Productions] \hfill \\
+		Continue constructing grammar productions to produce checks for additional style errors.
+
+	\item[Eliminate or extend indent] \hfill \\
+		Extend or modify indent's source code to enhance its flexibility.
+	\note
+	{
+		I initially made a list of all the checks that checkstyle for java was able to perform.\\
+		After removing the java specific items and any which conflicted with the style guidelines \\
+		I was left with a baseline list of 39 checks. \\
+		I was to able code checks for 28 of them.\\
+		
+		\texttt{the source code for indent 2.2.10 could be modified and combined into a future version of this 
+		program which could eliminate some of the redundancy caused by indents lack of flexibility.} 
+	
+	}
 \end{description}
+
+	
 \end{frame}
+
+%--------------------------------------------------------------------------
+% Summary and Conclusions
+%--------------------------------------------------------------------------
 \section{Summary and Conclusions}
-\subsection{Demonstration}
+\begin{frame}{Available Checks}
+    The C style checker provides the following checks.
+    \begin{multicols}{2}
+    \scriptsize{\begin{enumerate}
+        \item Array Trailing Comma
+        \item Type Name
+        \item Default Comes Last
+        \item Empty Block
+        \item Empty Statement 
+        \item Fall Through
+        \item File Length
+        \item Indentation
+        \item Left Curly
+        \item Line Length
+        \item Local Variable Name
+        \item Magic Number
+        \item Method Name
+        \item Method Param Pad 
+        \item Missing Switch Default
+        \item Modified Control Variable
+        \item One Statement Per Line
+        \item Parameter Name
+        \item Paren Pad
+        \item Right Curly
+        \item Type Name
+        \item Type cast Paren Pad
+        \item Header comment
+        \item White space After
+        \item White space Around
+        \item Multiple variable declarations with initializations
+        
+    \note{
+    
+    \tiny{\begin{itemize}
+        \item Array Trailing Comma - Checks if array initialization contains optional trailing comma.
+        \item Type Name - Checks that type names conform to a format specified by the style guide. 
+        \item Default Comes Last - Check that the \texttt{default} case is after all the cases in a switch statement.
+         \item Empty Block - Checks for empty code blocks.
+        \item Empty Statement - Detects empty statements (standalone ';'). 
+        \item Fall Through - Checks for fall through in \texttt{switch} statements Finds locations where a case contains code 
+        but lacks a \texttt{break}, \texttt{return}, or \texttt{continue} statement.
+        \item File Length - Checks for long source files.
+        \item Indentation - Checks correct indentation of C Code.
+        \item Left Curly - Checks the placement of left curly braces on types, functions and other blocks. 
+        \item Line Length - Checks for long lines.
+        \item Local Variable Name - Checks that local, variable names conform to a format specified by the style guide.
+        \item Magic Number - Checks for magic numbers.
+        \item Method Name - Checks that method names conform to a format specified by the style guide.
+        \item Method Param Pad - Checks the padding between the identifier of a method definition and the 
+        left parenthesis of the parameter list.
+        \item Missing Switch Default - Checks that switch statement has \texttt{default} case.
+    \end{itemize}}}
+    \note{
+    \tiny{\begin{itemize}
+        \item One Statement Per Line - Checks there is only one statement per line.
+        \item Parameter Name - Checks that parameter names conform to a format specified by the format property.
+        \item Paren Pad - Checks the padding of parentheses; that is whether a space is required after a 
+        left parenthesis and before a right parenthesis.
+        \item Right Curly - Checks the placement of right curly braces.
+        \item Type Name - Checks that type names conform to a format specified by the style guide.
+        \item Type cast Paren Pad - Checks the padding of parentheses for typecasts.
+        \item Header comment - Detects files missing header comments.
+        \item White space After - Checks that a token is followed by whitespace.
+        \item White space Around Checks that a token is surrounded by whitespace.
+        \item Multiple variable declarations with initializations - Checks that an initialization of a variable is on its own line.
+    \end{itemize}}
+     }
+
+\end{enumerate}}
+\end{multicols}
+\end{frame}
+
 \subsection{Required Software}
-\subsection{Questions?}
+	\begin{frame}
+	Required Software:
+		\begin{itemize}
+			\item VIM - Vi IMproved - version 7.3.547
+			\item flex 2.5.35
+			\item bison (GNU Bison) 2.7.12-4996 (any version above 2.5).
+			\item GNU indent 2.2.11
+			\item gcc 4.7.2
+		\end{itemize}
+	\end{frame}
+
+\subsection{Demonstration}
+\begin{frame}{Demonstration}
+\href{http://localhost/uploader.php}{Demonstration}
+\end{frame}
+
+\section{Questions?}
 
 
 \end{document}

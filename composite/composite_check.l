@@ -206,9 +206,9 @@ int yycolumn = 1;
 
 {L}{A}*                    { return check_type(yytext); }
 
-{HP}{H}+{IS}?              { return I_CONSTANT; }
+{HP}{H}+{IS}?              { return I_CONSTANT; } // HEX
 {NZ}{D}*{IS}?              { return I_CONSTANT; }
-"0"{O}*{IS}?               { return I_CONSTANT; }
+"0"{O}*{IS}?               { return I_CONSTANT; } // OCTAL
 {CP}?"'"([^'\\\n]|{ES})+"'" { return I_CONSTANT; }
 
 {D}+{E}{FS}?               { return F_CONSTANT; }

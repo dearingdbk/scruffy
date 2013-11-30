@@ -167,12 +167,12 @@ print_msg(int line, int column, char *str)
 
 
 /*
- * Name:        trim
- * Purpose:     Trims the whitespace from the beggining of a string.
- * Arguments:   str ~ pointer to an array of chars to trim the whitespace.
+ * Name:        append
+ * Purpose:     sets the current full line of code to the line buffer
+ * Arguments:   str ~ pointer to an array of chars to add to linebuf.
  * Output:      none.
  * Modifies:    none.
- * Returns:     return a new string with whitespace trimmed from beginning.
+ * Returns:     none.
  * Assumptions: The pointer is to a valid string.
  *              The string contains more than whitespace.
  * Bugs:        none found to date.

@@ -521,7 +521,7 @@ direct_abstract_declarator
 
 initializer
     : '{' initializer_list '}'
-    | '{' initializer_list ',' '}' { print_msg(yylloc.first_line, 0, LCC );}
+    | '{' initializer_list ',' '}' { print_msg(yylloc.first_line, yylloc.last_column - 1, LCC );}
     | assignment_expression
     ;
 

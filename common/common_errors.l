@@ -81,6 +81,10 @@ int yycolumn = 0;
 ^"#"[ \t]*"pragma".*         |
 ^"#"                         ; /* Eat up preprocessor directives. */
 
+\t+                          { printf("%d:\n\n%s\n\n",
+                                  yylineno,
+                                  "Line contains a tab character."); }                          
+
 ^[ \t]*                      /* Eat up white space at the start of a line. */
 
 "while"                      | 

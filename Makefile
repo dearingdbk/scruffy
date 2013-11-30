@@ -2,15 +2,11 @@
 all: indentR common_errors composite_check check_comments
 
 indentR: indent/check_indent.yy.c
-	gcc  indent/check_indent.yy.c indent/check_indent.tab.c \
+	gcc  indent/check_indent.yy.c\
 		-lfl -o indentR
 
-indent/check_indent.yy.c: indent/check_indent.tab.h 
+indent/check_indent.yy.c: 
 	lex -o indent/check_indent.yy.c indent/check_indent.l
-
-indent/check_indent.tab.h: 
-	bison --defines=indent/check_indent.tab.h \
-		--output=indent/check_indent.tab.c  indent/check_indent.y
 
 common_errors: common/common_errors.yy.c functions/functions.o
 	gcc  common/common_errors.yy.c  \

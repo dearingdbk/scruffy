@@ -17,19 +17,13 @@ int yycolumn = 0;
 /* END Include files. */
 
 /* START Definitions. */
-#define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
-yylloc.first_column = yycolumn; yylloc.last_column = yycolumn+yyleng-1; \
-yycolumn += yyleng;
+#define YY_USER_ACTION yycolumn += yyleng;
 
 #define RESET(x) x = 0
 #define MAX_LENGTH 80
 #define DECIMAL 10
 
 #include <string.h>
-#ifndef CHECK_INDENT_TAB_H
-#define CHECK_INDENT_TAB_H
-#include "check_indent.tab.h"
-#endif
 
 typedef struct 
 {

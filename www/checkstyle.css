@@ -1,0 +1,108 @@
+div
+{
+    -moz-column-count:1; /* Firefox */
+    -webkit-column-count:1; /* Safari and Chrome */
+    column-count:1;
+} 
+
+
+html 
+{
+    height:100%; 
+}
+
+body
+{
+    background-color:lightgray;
+}
+#left_col 
+{
+    float:left; 
+    width:100%; 
+    margin-left:-100%; 
+    text-align:left;
+    clear:both;
+}
+
+#left_col_inner 
+{
+    padding:10px;
+} 
+
+#right_col 
+{
+}
+
+#right_col_inner 
+{
+    padding:10px; 
+}
+
+#p 
+{
+    font-size:16px;
+    line-height:24px;
+}
+
+.block
+{
+    box-shadow: 10px 10px 5px #888888;
+    margin-left:10px;
+    width:42%;
+    margin-bottom:20px;
+    background-color:white;
+    padding-left:10px;
+}
+
+pre
+{
+    font-size:0.8vw;
+    overflow:auto;
+}
+
+.printoff
+{
+	position:absolute;
+	right:20px;
+	top:70px;
+    box-shadow: 10px 10px 5px #888888;
+    width:50%;
+    background-color:white;
+    padding-left:10px;
+    padding-top:-10px;
+    margin-bottom:0px;
+}
+
+.skinny
+{
+	position:absolute;
+	right:50%;
+	top:70px;
+	font-size:0.8vw;
+	text-align:center;
+    width:auto;
+    height:auto;
+    background-color:white;
+    margin-right:30px;
+    margin-top:0px;
+    z-index:2;
+}
+
+#codeblock 
+{
+   margin-top:0px;
+   margin-bottom:0px;
+
+}
+
+#saveButton{
+    position:fixed;
+    right:30px;
+    top:20px;
+
+}
+.divider{
+    position:absolute;
+    height:100%;
+    border-left:1px solid black;
+}
