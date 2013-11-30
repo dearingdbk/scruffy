@@ -24,7 +24,7 @@ if [ $# -eq 0 ]
         echo 'No file name specified.'
         exit 1
 else
-    if [ ! -e $1 ]
+    if [ ! -f $1 ]
         then
             echo 'File supplied does not exist.'
             exit 1
