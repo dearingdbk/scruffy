@@ -1,3 +1,12 @@
+/*
+ * File:     functions.c
+ * Author:   Bruce Dearing 100036623
+ * Date:     30/11/2013
+ * Version:  1.0
+ * Purpose:  Program to handle functions common to all portions of
+ *           C style checker.
+ */
+
 #include "functions.h"
 #include <stdio.h>
 #include <string.h>
@@ -27,21 +36,20 @@ int strpos = 0;
 void
 print_bad_ident(int line, int column, char *str)
 {
-    char *rtnstr = strdup((const char*)&linebuf);
+    char *rtnstr = strdup((const char *)&linebuf);
     int orig_len = strlen(rtnstr);
     rtnstr = trim(rtnstr);
     int new_len = strlen(rtnstr);
     int delta = orig_len - new_len;
     column = column - delta;
     int len = strlen(str) + BAD_IDENT_MSG;
-    char *msg = (char*) malloc(sizeof(char*) * len);
+    char *msg = (char *) malloc(sizeof(char *) * len);
 
     msg = strcat(msg, "Name '");
     msg = strcat(msg, str);
     msg = strcat(msg, "' must match pattern '^[a-z][a-zA-Z0-9_]*$'.");
 
-    printf("%d:\n\n\t%s\n\t%*s%s\n%s\n\n", line, rtnstr, column, " ", "^", msg);
-
+    printf("%d:\n\n\t%s\n\t%*s%s\n%s\n\n", <br>           line, rtnstr, column, " ", "^", msg);
     free(msg);
 }
 
@@ -63,7 +71,7 @@ print_comment_msg(int line, char *type, char *name)
 {
 
     printf("%d:\n\n%s %s %s %s %s.\n\n", line, "Missing", name, "label inside",
-           type ,"comment");
+           type, "comment");
 }
 
 
@@ -82,7 +90,7 @@ print_comment_msg(int line, char *type, char *name)
 void
 print_magic_number(int line, int column, char *str)
 {
-    char *rtnstr = strdup((const char*)&linebuf);
+    char *rtnstr = strdup((const char *)&linebuf);
     int orig_len = strlen(rtnstr);
     rtnstr = trim(rtnstr);
     int new_len = strlen(rtnstr);
@@ -90,13 +98,13 @@ print_magic_number(int line, int column, char *str)
     column = column - delta;
 
     int len = strlen(str) + MAGIC_NUM_MSG;
-    char *msg = (char*) malloc(sizeof(char*) * len);
+    char *msg = (char *) malloc(sizeof(char *) * len);
 
     msg = strcat(msg, "Warning: '");
     msg = strcat(msg, str);
     msg = strcat(msg, "' might be a magic number.");
 
-    printf("%d:\n\n\t%s\n\t%*s%s\n%s\n\n", line, rtnstr, column, " ", "^", msg);
+    printf("%d:\n\n\t%s\n\t%*s%s\n%s\n\n",<br>           line, rtnstr, column, " ", "^", msg);
 
     free(msg);
 }
@@ -120,7 +128,7 @@ trim(char *str)
     char *newstr;
     newstr = strdup(str);
 
-    while(isspace(*newstr))
+    while (isspace(*newstr))
         newstr++;
 
     return newstr;
@@ -154,7 +162,7 @@ print_msg(int line, int column, char *str)
     int delta = orig_len - new_len;
     column = column - delta;
 
-    if ( column >= 0 )
+    if (column >= 0)
     {
         printf("%d:\n\n\t%s\n\t%*s%s\n%s\n\n", line, rtnstr, column, " ", "^", str);
     }
@@ -214,7 +222,7 @@ fix_string(char* string)
 {
     int i;
     int len = strlen(string);
-    char* ret_str = strdup(string);
+    char *ret_str = strdup(string);
 
     for (i = 0; i < len; i++)
     {

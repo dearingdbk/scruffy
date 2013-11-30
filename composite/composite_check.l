@@ -6,6 +6,11 @@
  * Purpose:  Flex tokenizer specification which supplies tokens to 
  *           composite_check parser in an effort to parse a file to 
  *           locate errors in code.
+ * Bugs:     1. If a files first line contains a style violation which requires
+ *              column position indication '^' before a newline has been 
+ *              read the resulting code indication in the error msg 
+ *              will be blank.
+ *
  */
 
 %e 1019
@@ -309,7 +314,8 @@ int yywrap(void) /* called at end of input */
  * Bugs:        unfound.
  * Notes:
  */
-static int check_type(char *str)
+static int 
+check_type(char *str)
 {
     struct symbol *cur_entry = lookup(str);
 
@@ -348,6 +354,7 @@ static int check_type(char *str)
 void
 add_entry(int line_num, int flag, char* str)
 {
+    printf("%s\n",str);
     char *rtnstr = fix_string(str);
     struct symbol *new_entry;
     struct symbol *cur_entry = lookup(rtnstr);

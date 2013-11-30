@@ -12,6 +12,7 @@
       var note = document.getElementById('codeblock').innerHTML;
       note = note.replace(/<\/[^>]*>/g, '');
       note = note.replace(/<div>/g, '');
+      note = note.replace(/<br>/g, '\n');
       /* replaces some html entities */
       note = note.replace(/&nbsp;/g, ' ');
       note = note.replace(/&amp;/g, '&');
