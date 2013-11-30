@@ -273,7 +273,7 @@ int yycolumn = 1;
 "?"                        { return '?'; }
 
 {WS}                       { /* white space separates tokens */ }
-\n.*                       { append(yylineno, yytext, yyleng - 1);
+\n.*                       { append(yylineno, yytext, yyleng);
                              yyless(1);
                              RESET(yycolumn);
                            }

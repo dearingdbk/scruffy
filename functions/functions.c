@@ -216,7 +216,8 @@ append(int line, char *str, int len)
         linebuf[i] = str[i];
     }
     linebuf[i] = '\0';
-    if (len > MAX_LINE_LEN)
+    /* reduce len by one because we have added in '\n' character. */
+    if ((len - 1) > MAX_LINE_LEN)
     {
         print_msg(line, 0, "Line is longer than 79 characters");
     }

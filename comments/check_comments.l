@@ -26,9 +26,9 @@ MM  ((0[1-9])|(1[0-2|])|([0-9]))
     /* Year format */
 YY  (20|19)?[0-9]{2}
     /* Date time format. */
-DT  (({YY}{SP}{MM}{SP}{DD})|({DD}{SP}{MM}{SP}{YY})|({MM}{SP}{DD}{SP}{YY}))
+DT  (({YY}{SP}{MM}{SP}{DD})|({DD}{SP}{MM}{SP}{YY})|({MM}{SP}{DD}{SP}{YY})|({YY}{SP}{DD}{SP}{MM}))
     /* Separator format */
-SP  [\/\-. ]
+SP  [\/\-\. ]
     /* File name */
 FN  [a-zA-Z_0-9]+(\.(c|h))?
     /* Student number */
