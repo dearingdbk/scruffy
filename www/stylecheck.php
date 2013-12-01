@@ -1,6 +1,5 @@
 <!DOCTYPE HTML >
 
-
 <head>  
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="stylesheet" type="text/css" href="checkstyle.css" />
@@ -27,7 +26,6 @@
 <title> Style Checker Uploader</title>
 </head>
 
-
 <body>
 
 <h2> C Style checker Local edition </h2>
@@ -36,18 +34,23 @@
 <?php
 
 $linefix = new line_sort();
+$tmpname = tempnam('/tmp', 'wcin') . '.c';
 
-copy($_FILES['upload']['tmp_name'], $_FILES['upload']['name']);
-$tmp = file_get_contents($_FILES['upload']['name']);
-/*$output = shell_exec('cp ./testcode/analyse.c test.c 2>&1');*/
+if (!move_uploaded_file($_FILES['upload']['tmp_name'], $tmpname))
+    die('Failed to move uploaded file.');
+
+$tmp = file_get_contents($tmpname);
+
 $count = count(explode(PHP_EOL, $tmp));
-$execute = sprintf("sh scruffy.sh %s 2>&1", $_FILES['upload']['name']);
+
+$execute = sprintf("sh scruffy.sh %s 2>&1", $tmpname);
+
 $output = shell_exec($execute);
 
 $lines = explode(PHP_EOL, $output);
 foreach($lines as $line)
 {
-    if (preg_match("/^[0-9]/i", $line)) 
+    if (preg_match("/^[0-9]/i", $line)) // check for line number.
     {
         $linefix->set_index(substr($line, 0, strspn($line, "0123456789")));
         $linefix->add_line_num($line);
