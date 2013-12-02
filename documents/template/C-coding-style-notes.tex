@@ -1,0 +1,307 @@
+\chapter{C coding style notes}
+\label{chap:C-coding-style-notes}
+This document gives the basic information about acceptable coding
+style for C programs in COMP 2103.
+Written by Jim Diamond, Acadia University
+Last updated October 2, 2013.
+\begin{description}
+\item[Header comment] \hfill
+
+    Your program should start with a header comment similar to the following\:
+\begin{verbatim}
+    /*
+     * File:     A2P1.c
+     * Author:   Jim Diamond   000123456
+     * Date:     2011/09/12
+     * Version:  1.0
+     *
+     * Purpose:
+     * ...
+     */
+\end{verbatim}
+    Note the following points:
+    \begin{enumerate}
+    \item[(a)] The '/*' and '*/' are on lines by themselves.
+    \item[(b)] There is (at least) one space between other '*'s and the
+        following word(s), if any.
+    \item[(c)] You need ALL of the indicated items above, although, of
+        course, you will use your own name and ID, and you will use
+        appropriate values for the file name, the date, and the version.
+    \item[(d)] The purpose should give a reasonable concise description of
+        the program.  Not as much detail as the assignment question
+        itself, but enough detail so that someone who knows nothing
+        about the assignment or your program could get a very good idea 
+        of what the program's purpose is by reading the comment.
+    \item[(e)]The "File:" name is the actual name of the file.  The example
+        above is a C program file (as evidenced by the ".c");
+        a shell program would not normally have any file name extension.
+\end{enumerate}
+
+\item[Line length] \hfill
+
+    Lines must not be longer than 79 characters.
+    Should you need to break a "logical" line up into two or more
+    "physical" lines in order to keep the line length from being too
+    long,
+\begin{enumerate}
+    \item[(a)] choose reasonable places in the line (from a syntactic point
+        of view) to break the line, and
+    \item[(b)] indent the continuation lines an amount which makes it clear
+        to the reader where the continued text "fits in".
+    \end{enumerate}
+    For example:
+\begin{verbatim}
+        if (some_long_variable_name != some_long_function_name(value)
+            && short_var_nm == something_else)
+        {
+            ...
+        }
+\end{verbatim}
+    Note that the "\&\&" is at the beginning of the continuation line,
+    rather than at the end of the previous line, making it very
+    obvious that that is a continuation line.
+\clearpage
+    For functions with long argument lists, a common style (which I
+    expect you to use) is to have the arguments on the second and
+    subsequent lines lined up with the first argument on the first line.
+\begin{verbatim}
+    printf("The number of snarfles is %d, %d, %d and sometimes %d\n",
+           tuesday_snarfles, weekly_special_snarfles + 43,
+           speciality_snarfles, other_snarfles);
+\end{verbatim}
+\item[Variable naming conventions] \hfill
+
+    If you use any information that is a so-called "magic number", you
+    should \#define a macro whose name is composed of upper case
+    letters and, optionally, the underscore character ('\_'). 
+    For example,
+\begin{verbatim}
+        #define   DAYS_IN_WEEK   7
+\end{verbatim}
+    "Ordinary" variables should have names composed of lower case
+    letters and, optionally, digits and underscore.  If you like
+    variables where mixed case is used for readability, such as
+      \verb|numberOfEmployees|
+    that is acceptable, but consider whether something like
+      \verb|number_of_employees|
+    is more readable or not.
+
+\item[Variable declaration conventions] \hfill
+
+    You may declare multiple variables on one line:
+    int i, j, k;
+    But if you initialize any variables in a declaration statement,
+    the initialized variable must be the only declared variable in
+    that statement.  For example:
+\begin{verbatim}    
+    BAD   int i, j = 0, k;
+
+    GOOD  int i, k;
+          int j = 0;
+
+\end{verbatim}
+\clearpage
+\item[Indentation] \hfill
+
+    Your code MUST be properly indented.  I suggest (extremely strongly)
+    that you use 4 spaces per indentation level.  Further, 8 is really
+    too many because with only a few levels of indentation, you may
+    have difficulty writing lines that don't exceed 79 characters in
+    length.  Regardless of what you use, be consistent!  Here is a
+    sample of properly indented code:
+\begin{verbatim}
+    if (answer == 3  ||  answer < 0)
+    {
+        for (i = 0; i < n; i++)
+        {
+            switch (i % 2)
+            {
+              case 0:
+                printf("%d is even\n", i);
+                break;
+                
+              case 1:
+                printf("%d is odd\n", i);
+                break;
+                
+              default:
+                printf("%d is extremely odd\n", i);
+            }
+        }
+    }
+\end{verbatim}
+    Note that the "case" labels are indented by only two spaces.
+    This allows them to stick out noticeably without causing the
+    code to get indented too far.
+
+\clearpage
+\item[Tab characters] \hfill
+
+    You may use tab characters to indent your code, but only if each
+    tab character is equivalent to 8 characters.  (More specifically,
+    the character following a tab character is in column number 8n+1
+    for some n.)
+
+    This means that your indentation could consist of a mix of tab
+    characters and spaces.  But repeat after me: "Tab stops are every
+    8 spaces, as God intended."
+
+
+\item[Syntactic elements and line structure] \hfill
+
+    At Acadia we expect C and Java programs to have the open brace
+    ('\{') of a code block or function/method definition on a line by
+    itself.  The close brace must also be on its own line, except in
+    these cases
+    \begin{enumerate}
+    \item[(a)] do-while statements:
+\begin{verbatim}
+    do
+    {
+        ...
+    } while (a < b);
+\end{verbatim}
+    \item[(b)] typedef'ing a struct:
+\begin{verbatim}
+    typedef struct
+    {
+        ...
+    } mytype_T;
+\end{verbatim}
+    \item[(c)] combining a struct definition with a variable declaration:
+\begin{verbatim}
+    struct mystruct
+    {
+        ...
+    } ms1, ms2;
+\end{verbatim}
+\end{enumerate}
+    Finally, these rules don't apply to braces when used to initialize
+    arrays, such as in
+    \verb|int time_units[] = {60, 60, 24, 365};|
+
+\clearpage
+\item[Comments] \hfill
+
+    Aside from the header comment above, you should use comments when
+    a few words of wisdom would enlighten a reasonably competent
+    programmer who is reading your code.  If you have done something
+    particularly clever or devious, explain it.  Also, if you have
+    done something which makes use of some fact(s) that even a
+    reasonably competent programmer wouldn't know, then explain it.
+    But never, ever use comments like this:
+ \begin{verbatim}       /* set i to 0 */
+        i = 0;
+\end{verbatim}
+    If you have multi-line comments, make sure that all the '*'s of
+    the same comment line up vertically.
+
+    Note: gcc (in C90 mode) allows you to use // comments, but this is
+    not portable to all C90 compilers, so if you do this, your program
+    won't be as portable as if you use /* ... */ comments.
+    Since we are using the C99 standard, you are welcome to use // for
+    comments, but be aware that if you use a non-gcc C90 compiler, you
+    may have to edit your code.
+
+
+\item[White space]\hfill
+
+    The keywords "if", "while", "for" and so on must be followed by a
+    space, before the open parenthesis.  See the sample code above in
+    "(4) Indentation" for examples of this style.
+
+    Use extra white space when you think it will make a statement
+    easier to read.  For example, if you compare
+\begin{verbatim}
+        if (answer==3||answer<0)
+\end{verbatim}
+    to
+\begin{verbatim}
+        if (answer == 3 || answer < 0)
+\end{verbatim}    
+    or even
+\begin{verbatim}
+        if (answer == 3  ||  answer < 0)
+ \end{verbatim}
+    you might agree the white space makes it easier to separate the
+    tokens.
+
+    Use blank lines between (relatively) unrelated blocks of code.
+    For example, if some function (main() or other) has to do
+    three things, but each one is more or less independent of the
+    others, then separate those blocks of code with a blank line.
+    For example:
+\begin{verbatim}
+        some code to do the first thing
+        in a sequence of things to do
+        for some program or function.
+
+        some code which does some stuff that is, by itself,
+        more or less independent of the stuff above.
+
+        yet another block of code which does
+        stuff not directly related to either
+        of the above two blocks of code, except, of course,
+        that all three blocks are used inside the same program.
+\end{verbatim}
+    Having said that:
+\begin{itemize}
+            \item[(a)] don't use white space between a function name and the \verb|'('|: \hfill
+            
+            \verb|z = sqrt(y);  // Not   z = sqrt (y);|
+            \item[(b)] don't use white space after the \verb|')'| when casting: \hfill
+            
+            \verb|i = (int)f;   // Not   i = (int) f;|
+            \end{itemize}
+\clearpage
+\item[Functions] \hfill
+
+    Using functions allows you to manage the complexity of your
+    program, making it easier to write in the first place, easier to
+    test and debug, and quicker to finish.
+
+    The body of a function should be indented.  For example:
+\begin{verbatim}
+    int
+    my_func(...args...)
+    {
+        some code;
+        some code;
+        some code;
+        ...
+    }
+\end{verbatim}
+    I like putting the return type of a function on the previous line
+    like that, because I can then do a regexp search for
+        \verb|^my_func|
+    which will take me to the definition of the function, not some
+    place where it is used.  But putting the type of the function on
+    the same line is fine if you want.
+    \clearpage
+\item[Function comments] \hfill
+
+    A function should be preceded by a short comment describing the
+    purpose, the inputs (if any), the outputs (if any), side effects
+    (if any), and any other information which would allow a reader to
+    quickly understand the purpose and use of the function.  Here is a
+    comment which contains all of the items that are normally relevant.
+    If you have something that you think should be said which isn't
+    in one of these categories, go ahead and add it.
+\begin{verbatim}
+  /*
+   * Name:        my_func
+   * Purpose:     add up the sizes, in bytes, of all the files given
+   *              as arguments
+   * Arguments:   zero or more filenames
+   * Output:      sum of the sizes of those files
+   * Modifies:    writes sum of sizes to stdout
+   * Returns:     0 on success, 1 if there were files whose sizes 
+   *              could not be determined
+   * Assumptions: none
+   * Bugs:        none
+   * Notes:       any interesting comments about this function,
+   *              whether they deal with the arguments, the 
+   *              algorithm employed, or the format of the output.
+   */
+\end{verbatim}
+\end{description}

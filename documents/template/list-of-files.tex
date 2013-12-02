@@ -1,0 +1,69 @@
+\chapter{File Listing}
+\label{chap:File Listing}
+
+\newpage
+\makeatletter
+\newcount\dirtree@lvl
+\newcount\dirtree@plvl
+\newcount\dirtree@clvl
+\def\dirtree@growth{%
+  \ifnum\tikznumberofcurrentchild=1\relax
+  \global\advance\dirtree@plvl by 1
+  \expandafter\xdef\csname dirtree@p@\the\dirtree@plvl\endcsname{\the\dirtree@lvl}
+  \fi
+  \global\advance\dirtree@lvl by 1\relax
+  \dirtree@clvl=\dirtree@lvl
+  \advance\dirtree@clvl by -\csname dirtree@p@\the\dirtree@plvl\endcsname
+  \pgf@xa=1cm\relax
+  \pgf@ya=-1cm\relax
+  \pgf@ya=\dirtree@clvl\pgf@ya
+  \pgftransformshift{\pgfqpoint{\the\pgf@xa}{\the\pgf@ya}}%
+  \ifnum\tikznumberofcurrentchild=\tikznumberofchildren
+  \global\advance\dirtree@plvl by -1
+  \fi
+}
+
+\tikzset{
+  dirtree/.style={
+    growth function=\dirtree@growth,
+    every node/.style={anchor=north},
+    every child node/.style={anchor=west},
+    edge from parent path={(\tikzparentnode\tikzparentanchor) |- (\tikzchildnode\tikzchildanchor)}
+  }
+}
+\makeatother
+
+\begin{tikzpicture}[scale=0.90, dirtree]
+\node {scruffy}
+    child { node {comments}
+            child { node {check\_comments.dot} }
+            child { node {check\_comments.l} }
+            child { node {check\_comments.y} }
+    } 
+    child { node {common}
+            child { node {common\_errors.l} }
+    }
+    child { node {composite}
+            child { node {composite\_check.dot} }
+            child { node {composite\_check.l} }
+            child { node {composite\_check.y} }
+    }
+    child { node {functions}
+        child { node {functions.c} }
+        child { node {functions.h} }
+    }
+    child { node {indent}
+            child { node {check\_indent.l} }
+            child { node {vim\_commands.scr} }
+    }
+    child { node {www}
+        child { node {checkstyle.css} }
+        child { node {line\_sort.php} }
+        child { node {stylecheck.php} }
+        child { node {uploader.php} }
+    }
+    child { node {scruffy.sh}}
+    child { node {ANSI\_C\_Grammar}}
+    child { node {ANSI\_C\_Lex\_description}}
+    child { node {Makefile}};
+\end{tikzpicture}

@@ -78,12 +78,11 @@ $linefix->print_code();
 <div class="printoff">
 
 <pre id = "codeblock" contenteditable>
-<?php echo $tmp; ?>
+<?php echo $tmp;?>
 </pre>
 <a id="saveButton" target="" download=<?php echo "\"". $_FILES['upload']['name'] ."\""; ?> href="#" onclick="save();">Save file changes</a>
 </div>
 </body>
-
 </html>
 
 

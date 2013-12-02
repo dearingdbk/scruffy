@@ -1,0 +1,527 @@
+% Acadia University Honours thesis template, based on Acadia
+% M.Sc. thesis template, which was originally based on the Stanford
+% University Ph.D. thesis style, updated as described below:
+
+% People are free to borrow as long as they change the name and date
+% in the \typeout lines, the name of the file, and acknowledge the
+% work that has been done by previous people.  Ideally they should
+% comment their changes.
+
+% Original version by Joseph Pallas back in 1989
+% Modified by Emma Pease 5/7/92
+%   added singlespace environment from doublespace.sty
+%   added switches for variant title pages
+%   modified the figure environment according to changes in latex.tex
+%   corrected the signature page due to University rule changes
+%   added an optional third reader to signature page
+% Corrected a spacing problem with style changes 5/14/92 - Emma
+% Modified by Emma Pease 1/10/95
+% Modified for latex2e  5/17/95
+%   changed \@xfloat and \@footnotetext to reflect latex2e changes
+% Modified for latex2e 6/22/95 (Emma Pease)
+%   changed singlespace environment so it would work (taken from
+%   doublespace.sty)
+% Modified 9/8/95 (Emma Pease)
+%   removed doublespace.sty commands and explicitly inputted
+%   doublespace
+% Modified 12/17/96 (Emma Pease)
+%   added optional \coprincipaladvisor (\coprincipaladviser)
+% Modified 5/29/98
+%   replaced the required doublespace.sty by setspace.sty
+% Modified 8/21/98
+%   added a \businessthesis for the school of business
+% Modified 8/22/98 
+%   added a \lawthesis
+% Modified 8/23/98
+%   spelling error in \businessthesis def corrected
+% Modified 5/14/1999 by Emma Pease
+%   'By' dropped from title page
+% Modified 7/26/1999 by Emma Pease
+%   copyright page fixed
+% Modified 9/28/99 by Emma Pease
+%   more copyright page fixings
+% Modified 10/28/99 by Emma Pease
+%   and more copyright page fixings plus a minor mod on bibliography
+%   need to start thinking of overhauling to standard package format
+% Modified 11/26/99
+%   fixed copyrightyear so that all Fall quarter theses are next
+%   year's copyright
+
+% Modified 5/31/01 by Emma Pease
+%   fixed certification statement.  Setup for twoside option.
+% Modified 6/4/01 by Emma Pease
+%   emphasized that it is unofficial
+% Modified 8/3/01 by Emma Pease
+%   setup so that on twoside if the intro material (page numbered with
+%   Roman numerals) ends on an odd page an extra blank page is included so
+%   the main body (page numbered with Arabic numbers) starts on an odd
+%   absolute page  (explanation modified 5/28/02)
+% Modified 5/28/02 by Emma Pease
+%   made first and second reader optional (not that the first reader
+%   should ever be missing but someone managed to avoid a second reader)
+%   If they aren't defined, they won't appear
+% Modified 7/13/2003 by Emma Pease
+%   dropped signature line for ``Approved for the University Committee
+%   on Graduate Studies'' on signature page.  Also made sure the next
+%   section starts on an odd page if two sided.
+% Modified 11/19/03 by Emma Pease
+%   fixed the bibliography so the addcontentsline works correctly with
+%   hyperref.  Thanks to Peter Sturdza for pointing out this
+
+
+% Changed for Acadia University Master of Science (Computer Science).
+% Karim Rahim Spring 2004
+
+% Acadia University Master of Science (Computer Science) template, updated
+% July 18, 2005 by Greg Leighton
+%   modified Approval of Thesis (page 2) to conform with new guidelines
+%   added field for co-supervisor on signature page
+%   removed unnecessary and outdated macros
+
+% Updated November 30, 2006 by Brian Demmings
+%    Removed field for co-supervisor on signature page and changed from acting
+%               director to director
+%    Added a table of listings (requires the lstlistings package)
+%    Added library permissions pages
+
+% Modified February 12, 2007 by Jim Diamond
+% - various cleanup/optimizations
+
+% Modified June 24, 2007 by Jim Diamond
+% - yet more cleanup/optimizations
+% - made default page dimensions suitable for Acadia theses.
+
+% Modified winter/spring 2012 by Alex Sanford and Jim Diamond to make
+% it implement Acadia honours thesis requirements.
+
+
+
+%%%%%
+%%%%%   PRELIMS
+%%%%%
+
+\typeout{Document Style Option `acadiahonthesis' for latex2e <$Date: 2012/05/31$>.}
+\typeout{Note that this apparently fulfills the (2011/12) Acadia University
+  honours thesis requirements.}
+
+% First thing we do is make sure that report has been loaded.  A
+% common error is to try to use acadiahonthesis as a document style.
+\@ifundefined{chapter}{\@latexerr{The `acadiahonthesis' option should be used
+with the `report' document style}{You should probably read the
+acadiahonthesis documentation.}}{}
+
+%%%%%
+%%%%%   DOCUMENTATION
+%%%%%
+
+\long\def\comment#1{}
+\comment{
+
+NOTE TO ACADIA USERS:
+These comments, which were present in the original style file which
+from Way Back When, may be of interest if you have to do something
+which the template doesn't already give you, but you should really
+also look at header.tex and preliminaries.tex.  Notice that the
+comments don't all make sense vis-a-vis acadiahonthesis.sty.
+
+Example of use:
+    \documentclass{report}
+
+    \usepackage{acadiahonthesis}
+    \usepackage{tikz}
+    \usepackage{listings}
+    \usepackage[toc]{glossaries}
+    \dept{YOUR DEPARTMENT}
+
+    \begin{document}
+    \title{How to Write Theses\\
+            With Two Line Titles}
+    \author{John Henry Candidate}
+    \principaladviser{John Parker}
+    \firstreader{John Green}
+    \secondreader{John BigBooty\\(Another Department)}
+    \thirdreader{Jane Supernumerary} %if needed
+ 
+    \beforepreface
+    \prefacesection{Preface}
+        This thesis tells you all you need to know about\dots
+    \prefacesection{Acknowledgements}
+        I would like to thank\dots
+    \afterpreface
+ 
+    \chapter{Introduction}
+         \dots
+    \chapter{Conclusions}
+         \dots
+    \appendix
+    \chapter{A Long Proof}
+         \dots
+    \bibliographystyle{plain}
+    \bibliography{mybib}
+    \end{document}
+
+Documentation: 
+    This style file modifies the standard report style to follow the
+    Graduate Degree Support Section of the Registrar's Office's
+    "Directions for Preparing Doctoral Dissertations".  It sets the
+    margins and inter-line spacing and disallows page breaks at
+    hyphens.
+
+    The \beforepreface command creates the title page, a copyright page
+    (optionally), and a signature page.  Then the user should put
+    preface section(s), using the \prefacesection{section title}
+    command.  The \afterpreface command then produces the tables of
+    contents, tables and figures, and sets things up to start
+    the main body (on Arabic page 1).
+    
+    The following commands can control what goes in the front matter
+    material:
+    
+        \title{thesis title}
+        \author{author's name}
+        \dept{author's department}
+                - Computer Science if omitted
+The following switches allow for special title pages
+        \committeethesis - for a thesis in a committee (no dept.)
+                           use \dept{committee name}
+        \programthesis - for a thesis in a program (no dept.)
+                           use \dept{program name}
+        \educationthesis - for the School of Education. \dept doesn't matter
+        \specialthesis  - for a Graduate Special thesis
+        \industrialthesis - for a thesis in Industrial Engineering
+        \dualthesis     - for a thesis in a dual language department.
+                          Also define \language{language}.
+
+        \principaladviser{the principal advisor's name}
+           (or \principaladvisor, if you prefer advisor spelled with o)
+        \coprincipaladviser{optional second principal advisor's name}
+           (or \coprincipaladvisor, use only if you have two principal
+           advisors only for the second one)
+        \firstreader{the first reader's name}
+        \secondreader{the second reader's name}
+        \thirdreader{optional third reader's name}
+        \submitdate{month year in which submitted to GPO}
+                - date LaTeX'd if omitted
+        \copyrightyear{year degree conferred (next year if submitted
+          in Fall quarter)}
+                - year LaTeX'd (or next year, in December) if omitted
+        \copyrighttrue or \copyrightfalse
+                - produce or don't produce a copyright page (true by default)
+        \thesiscopyrighttrue or \thesiscopyrightfalse
+                - produces the style of copyright page listed by the
+                Thesis Office or the style that everyone else uses
+                (Thesis office by default).
+        \figurespagetrue or \figurespagefalse
+                - produce or don't produce a List of Figures page
+                  (true by default)
+        \tablespagetrue or \tablespagefalse
+                - produce or don't produce a List of Tables page
+                  (true by default)
+
+This style uses inter-line spacing that is 1.3 times normal, except
+in the figure and table environments where normal spacing is used.
+That can be changed by doing:
+    \renewcommand{\baselinestretch}{1.6}
+(or whatever you want instead of 1.6)
+Unfortunately, that command probably won't take effect unless it comes
+before the \begin{document} or is followed by something like \small
+\normalsize. 
+
+You can also set any particular section in single-spacing mode by using
+the singlespace environment.  For example
+
+\begin{quote}
+\begin{singlespace}
+\dots
+\end{singlespace}
+\end{quote}
+
+makes the quote single spaced.
+
+The example at the beginning shows the 12pt sub-style being used.  This
+seems to give acceptable looking results, but it may be omitted to get
+smaller print.
+}
+
+%%%%%
+%%%%%   SETUP DOUBLE SPACING
+%%%%%
+
+% include doublespace.sty for some of the stuff below
+\RequirePackage{setspace}
+
+% Use 1.3 times the normal baseline-to-baseline skip
+\setstretch{1.3}
+
+%%%%%
+%%%%%   SETUP MARGINS AND PENALTIES NEEDED FOR STANFORD THESIS
+%%%%%
+
+% We need 1" margins except on the binding edge, where it is 1 1/2"
+% Theses may be either single or double sided
+\if@twoside
+    \setlength\evensidemargin  {0 in}
+\else
+    \setlength\evensidemargin  {0.5 in}
+\fi
+
+\setlength\oddsidemargin   {0.5in}
+\setlength\marginparwidth  {40\p@}
+
+\topmargin 0.0in
+\headsep .5in
+\textheight 8.1in
+\textwidth 6in
+
+
+% Disallow page breaks at hyphens (this will give some under-full vbox's,
+% so an alternative is to use \brokenpenalty=100 and manually search
+% for and fix such page breaks)
+\brokenpenalty=10000
+
+%%%%%
+%%%%%   SETUP COMMANDS PECULIAR TO THESES
+%%%%%
+
+\newif\if@cosupervised
+\@cosupervisedfalse
+
+% \author, \title are defined in report; here are the rest of the
+% front matter defining macros
+\def\dept#1{\gdef\@dept{#1}}
+\def\deptOrSchool#1{\gdef\@deptOrSchool{#1}}
+\def\degree#1{\gdef\@degree{#1}}
+\def\principaladviser#1{\gdef\@principaladviser{#1}}
+\def\submissionMonth#1{\gdef\@submissionmonth{#1}}
+\def\submissionYear#1{\gdef\@submissionyear{#1}}
+\def\cosupervisor#1{\@cosupervisedtrue\gdef\@cosupervisor{#1}}
+\def\supervisor#1{\gdef\@supervisor{#1}}
+\def\headOrDirector#1{\gdef\@director{#1}}
+\def\actingdirector#1{\gdef\@actingdirector{#1}}
+\def\copyrightYear#1{\gdef\@copyrightyear{#1}} % \author, \title in report
+
+\def\@title{}
+\def\@author{}
+\def\@dept{}
+\def\@deptOrSchool{}
+\def\@degree{}
+
+\newif\ifcopyright      \copyrighttrue
+\newif\iffigurespage        \figurespagetrue
+\newif\iftablespage     \tablespagetrue
+\newif\ifthesiscopyright    \thesiscopyrighttrue
+
+% Add support for "List of Listings" and "List of Algorithms" pages in
+% the frontmatter of your thesis:
+%\newif\iflistingspage \newif\ifalgorithmspage
+% Those pages are turned off by default; to get them remove the % from
+% either or both of the next two lines, according to which ones you want.
+% \listingspagetrue
+% \algorithmspagetrue
+
+\def\titlep{%
+    %\sffamily\large
+    \thispagestyle{empty}%
+    \null\vskip1in%
+    \begin{center}
+    \bf{\uppercase\expandafter{\@title}}
+    \end{center}
+    \begin{center}
+    \expandafter{by}\\
+    \end{center}
+    \begin{center}
+    \@author\\
+    \end{center}
+    \vfill
+    \begin{center}
+    %Paper submitted in partial fulfillment of the \\
+    %requirements for the Degree of\\
+    %Bachelor of \@degree\\
+    %\vfill
+    Acadia University\\
+    \@submissionmonth\ \@submissionyear\\
+    \copyright{} \@author, \@copyrightyear
+    \end{center}
+    \newpage
+}
+
+\def\signaturepage{%
+    \sffamily\large
+    \noindent
+    This thesis by \@author{} was defended successfully in an oral
+    examination on \@defensedate. \\
+
+    \noindent The examining committee for the thesis was: \\
+    \linebreak
+    %\begin{makebox}[3in][h]
+
+    \noindent\rule{2.5in}{1pt}\\
+    \@chair, Chair
+    \vspace{0.45 in}
+
+    \noindent\rule{2.5in}{1pt}\\
+    \@externalreader, External Reader
+    \vspace{0.45 in}
+
+    \noindent\rule{2.5in}{1pt}\\
+    \@internalreader, Internal Reader
+    \vspace{0.45 in}
+
+    \noindent\rule{2.5in}{1pt}\\
+    \@supervisor, Supervisor
+    \vspace{0.45 in}
+
+    \noindent\rule{2.5in}{1pt}\\
+    \@director, Director
+    \vspace{0.45 in}
+
+    \vspace{0.25in}
+
+    \noindent
+    This project is accepted in its present form by the Division of
+    Research and Graduate Studies as satisfying the
+    requirements for the degree Master of Science (Computer
+    Science).
+    \vspace{0.5in}
+
+    \noindent\hbox to 2.5 in{\dotfill}
+}
+
+\def\copyrightpage{%
+    %\sffamily
+    \begin{spacing}{0.8}
+    \noindent
+    %\begin{center}
+    \linespread{1}%
+    \noindent I, \@author{}, grant permission to the University Librarian at
+    Acadia University to reproduce, loan, or distribute copies of my project in
+    micro form, paper or electronic formats on a non-profit basis. I, however,
+    retain the copyright in my project.
+    %\end{center}
+
+    \vspace{0.25 in}
+
+    \begin{center}
+        \par
+    \noindent\rule{2.5in}{1pt}\\
+    Signature of Author \\
+
+    \vspace{0.25 in}
+
+    \par
+    \noindent\rule{2.5in}{1pt}\\
+    Date \\
+    \end{center}
+    \end{spacing}
+}
+
+\def\approvalpage{
+    %\sffamily
+    \begin{center}
+    This project by \@author{}\\
+    is accepted in its present form by the\\
+    \@deptOrSchool\ of \@dept\\
+    as satisfying the requirements for the degree of\\
+    Bachelor of \@degree\
+
+    \vspace{0.85in}
+
+    \if@cosupervised
+    Approved by the project Supervisors\\
+    \else
+    Approved by the project Supervisor\\
+    \fi
+    \vspace{0.25in}
+    \noindent\rule{2.5in}{1pt}\hskip .1in
+    \noindent\rule{2.5in}{1pt}\\
+    \noindent\hbox{\hbox to 2.5 in{\hss\@supervisor\hss}%
+    \hskip .1in\hbox to 2.5 in{\hss Date\hss}}
+
+    \if@cosupervised
+        \vspace{0.25in}
+        \noindent\rule{2.5in}{1pt}\hskip .1in
+        \noindent\rule{2.5in}{1pt}\\
+        \noindent\hbox{\hbox to 2.5 in{\hss\@cosupervisor\hss}%
+        \hskip .1in\hbox to 2.5 in{\hss Date\hss}}
+    \fi
+
+    \vspace{0.25in}
+
+    % As of June 1, 2012 the regulations don't talk about this case.
+    % Shortcoming in the regulations?  I sent a Q in to head of honours
+    % committee (Pritam Ranjan) but implemented this anyway.
+    \def\@Skule{School}
+    \ifx\@Skule\@deptOrSchool
+    Approved by the Director of the School\\
+    \else
+    Approved by the Head of the Department\\
+    \fi
+    \vspace{0.25in}
+    \noindent\rule{2.5in}{1pt}\hskip .1in
+    \noindent\rule{2.5in}{1pt}\\
+    \noindent\hbox{\hbox to 2.5 in{\hss\@director\hss}%
+    \hskip .1in\hbox to 2.5 in{\hss Date\hss}}
+
+    \vspace{0.25in}
+
+   % Approved by the Honours Committee\\
+    %\vspace{0.25in}
+    %\noindent\rule{2.5in}{1pt}\hskip .1in
+    %\noindent\rule{2.5in}{1pt}\\
+    %\noindent\hbox{\hbox to 2.5 in{}%
+    %\hskip .1in\hbox to 2.5 in{\hss Date\hss}}
+
+    \end{center}
+}
+
+\def\beforepreface{%
+    \pagenumbering{roman}
+    \pagestyle{plain}
+    \titlep
+    %\signaturepage
+    \newpage
+    %\thispagestyle{empty}
+    %\addtocounter{page}{-1}
+    %\mbox{}
+    %\newpage
+    \approvalpage
+    \newpage
+    \copyrightpage
+    \newpage
+    \rmfamily
+    \tableofcontents
+    %\iftablespage
+     %   \listoftables
+    %\fi
+    %\iffigurespage
+     %   \listoffigures
+    %\fi
+    %\iflistingspage
+     %   \lstlistoflistings
+    %\fi
+    %\ifalgorithmspage
+     %   \listofalgorithms
+    %\fi
+}
+        
+
+\def\prefacesection#1{%
+    \chapter*{#1}
+    \addcontentsline{toc}{chapter}{#1}
+}
+
+\def\afterpreface{%
+    \cleardoublepage
+    \pagenumbering{arabic}
+    \pagestyle{headings}
+}
+
+% Redefine \thebibliography to go to a new page and put an entry in the
+% table of contents
+\let\@ldthebibliography\thebibliography
+\renewcommand{\thebibliography}[1]{\newpage
+                \@ldthebibliography{#1}%
+\addcontentsline{toc}{chapter}{\bibname}}
+
+% Start out normal
+\pagestyle{headings}

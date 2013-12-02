@@ -1,0 +1,32 @@
+
+%-----------------------------------------------------------------------------
+% Chapter: Introduction
+%-----------------------------------------------------------------------------
+
+\chapter{Introduction}
+\label{chap:INTRO}
+
+Despite the seemingly endless supply of code beautifiers available for use, 
+I was unable to locate an open source solution that provided a method of 
+identifying errors to the user. Code beautifiers or formatters are typically 
+designed to only re-format the code that they are supplied with. The initial 
+problem with having students use a code beautifier to format their code, is 
+that by design code beautifiers are vastly configurable and could not provide 
+us with a method of enforcing a strict coding standard. Therefore the only 
+reasonable solution to the unavailability of a C style checker would be to 
+construct one based on existing models for other languages. The model which my 
+program was blueprinted from is checkstyle. Checkstyle is a development tool 
+designed to help programmers write Java code that adheres to a coding standard 
+by identifying errors in their code and reporting them to the user.
+
+The main objective of the project was to provide a C style checker similar to 
+checkstyle that students could use to verify their code before submission. 
+The program will check student code against a set of available checks. 
+The program will then generate a report of the errors for the student to 
+action. The feedback provided by the program to the user will allow the student
+to learn from their mistakes and provide a method of enforcing a uniform coding
+standard.
+
+In the remainder of this report I will discuss the tools that I used to 
+construct a C style checker program, my implementation, and any extensions 
+that would prove beneficial.

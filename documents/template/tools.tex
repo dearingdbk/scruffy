@@ -1,0 +1,296 @@
+\chapter{Description of tools}
+\label{chap:TOOLS}
+
+
+%-----------------------------------------------------------------
+% Section: Flex
+%-----------------------------------------------------------------
+\section{Flex}
+
+The {\Large\textbf{F}}ast {\Large\textbf{Lex}}ical analyzer generator is a tool
+for generating scanners. A \emph{scanner} is a program which recognizes
+regular expression patterns in text and then performs an action.
+ \begin{quote}
+The flex program reads user-specified input files for a description 
+of a scanner to generate. The description is in the form of 
+pairs of regular expressions and C code, called rules. Flex generates a C 
+source file named, "lex.yy.c", which defines the function yylex(). The file 
+"lex.yy.c" can be compiled and linked to produce an executable. When the 
+executable is run, it analyzes its input for occurrences of text matching the 
+regular expressions for each rule. Whenever it finds a match, it executes the 
+corresponding C code.\citep*{FLEX}
+\end{quote}
+
+\subsection{Flex input file}
+
+A flex scanner description file consist of three main parts, which are 
+separated from each other by \emph{\%\%} lines.
+
+\subsubsection{Options and Declarations}
+
+\begingroup
+    \fontsize{8pt}{8pt}\selectfont
+\begin{verbatim}
+\%e 1019  /* number of parsed tree nodes */
+\%p 2807  /* number of positions */
+\%n 371   /* number of states /*
+\%k 284   /* number of packed character classes */
+\%a 1213  /* number of transitions */
+\%o 1117  /* size of output array */
+O [0-7]
+D [0-9]
+NZ [1-9]
+L [a-zA-Z_]
+A [a-zA-Z_0-9]
+H [a-fA-F0-9]
+ES (\\(['"\?\\abfnrtv]|[0-7]{1,3}|x[a-fA-F0-9]+))
+WS [ \t\v\f]
+\%option yylineno
+
+/* START Exclusive Start State definitions. */
+\%x COMMENT
+/* END Exclusive Start State definitions. */
+
+/* START Inclusive Start State definitions. */
+\%s TYPE\_DEF
+/* END Inclusive Start State definitions. */
+
+%{
+#define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
+#include "check_comments.tab.h"
+
+int yycolumn = 1;
+
+void add_entry(int line_num, int flag, char* str);
+
+%}
+
+\end{verbatim}
+\endgroup
+
+\noindent This is where we can define the options that we want flex to include 
+in the scanner Flex offers several hundred options most can be written as\\
+\%option name \\
+This section is also where we would define any inclusive or exclusive start
+states that we might require in the scanner, as well as any regular expression
+simplifications. We can also include any 
+header files or macro definitions inside \emph{\%\{ \}\%} blocks.
+
+
+\subsubsection{Token Action section} 
+\noindent The second section is where we construct our list of regular expression and 
+action pairs.
+
+\begingroup
+    \fontsize{8pt}{8pt}\selectfont
+\begin{verbatim}
+"/*"                           { BEGIN(COMMENT); 
+                                 return(START_COMMENT); 
+                               }
+"//".*                         { /* consume //-comment */ }
+<COMMENT>"*/"                  { BEGIN(INITIAL); return(END_COMMENT);}
+<COMMENT>\n                    { }
+<COMMENT>^{BG}{F}{WS}+{FN}     { return(FILE_LBL);}
+<COMMENT>^{BG}{A}{TH}{WS}+{BN} { return(AUTHOR); }
+<COMMENT>^{BG}{V}              { return(VERSION); }
+<COMMENT>^{BG}{D}{WS}+{DT}     { return(DATE); }
+<COMMENT>^{BG}{P}              { return(PURPOSE);}
+<COMMENT>^{BG}{N}{ME}          { return(NAME); }
+<COMMENT>^{BG}{A}{RG}          { return(ARGUMENTS); }
+<COMMENT>^{BG}{O}              { return(OUTPUT); }
+<COMMENT>^{BG}{M}              { return(MODIFIES); }
+<COMMENT>^{BG}{R}              { return(RETURNS); }
+<COMMENT>^{BG}{A}{SS}          { return(ASSUMPTIONS); }
+<COMMENT>^{BG}{B}              { return(BUGS); }
+<COMMENT>^{BG}{N}{OT}          { return(NOTES); }
+<COMMENT>[^*\n]|.              { }
+{WS}                           { /* white space separates tokens */ }
+.                              { /* discard bad characters */ }
+\end{verbatim}
+\endgroup
+
+\noindent We have to be careful in the construction and ordering of our regular 
+expressions in this portion, as flex uses a greedy match, and any regular 
+expressions below a larger match will never receive token matches. Fortunately 
+Flex is intelligent enough to let us know when we make a mistake like this.\\
+\verb|  check_comments.l:142: warning, rule cannot be matched|
+
+\subsubsection{C code section}
+\noindent The third section is C code that is copied to the generated scanner.
+In the declaration section, code inside of \emph{\%\{} and \emph{\%\}} is copied near the 
+beginning of the generated C source file. 
+\begingroup
+    \fontsize{8pt}{8pt}\selectfont
+\begin{verbatim}
+
+void
+add_entry(int line_num, int flag, char* str)
+{
+    char *rtnstr = fix_string(str);
+}
+
+
+\end{verbatim}
+\endgroup
+\noindent In this section we can place small subroutines that may be required
+as part of the action on a regular expression match.\\
+
+\subsubsection{Flex summary}
+By utilizing flex's ability to match regular expressions paired with exclusive 
+and inclusive start states we can easily construct a highly configurable 
+scanner for use in a C style checker. 
+
+%-----------------------------------------------------------------
+% Section: Bison
+%-----------------------------------------------------------------
+\section{Bison}
+GNU Bison parser generator is a tool for generating LR or GLR parsers.
+A \emph{parser} is a program which takes input provided to it from a scanner
+and takes that input and constructs an abstract syntax tree and checks the 
+syntax based on supplied rules.
+\begin{quote}
+Bison is the gnu general-purpose parser generator that converts an annotated 
+context-free grammar into a deterministic LR or generalized LR (GLR) parser.
+\citep*{BISON} 
+\end{quote}
+
+
+\subsection{Bison input file}
+
+\subsubsection{Options and Declarations}
+
+Similar to a flex scanner description file a Bison grammar rule file consists 
+of three main parts, which are separated from each other by \emph{\%\%} lines.
+\begingroup
+    \fontsize{8pt}{8pt}\selectfont
+\begin{verbatim}
+%locations
+%glr-parser
+%expect 2
+%expect-rr 0
+
+%{
+
+/* START Include files. */
+#include <stdio.h>
+#include <string.h>
+/* END Include files. */
+
+/* START Program variables */
+extern char *yytext;
+/* End Program variables */
+
+
+/* START Definitions. */
+#define YYERROR_VERBOSE
+#define MAX_TRYS 1000
+/* End Definitions. */
+
+/* START Function Definitions */
+void yyerror(const char *str);
+/* START Function Definitions */
+%}
+
+%token BIDENTIFIER IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL
+%start program_body
+
+\end{verbatim}
+\endgroup
+\noindent This is where we can define the additional options, tokens and 
+starting token that we want Bison to include in the parser. This section is 
+also where we would include any header files or macro definitions inside 
+\emph{\%\{ \}\%} blocks.
+
+
+\subsubsection{Rule Declarations} 
+\noindent The second section contains simplified BNF rules.
+\begingroup
+    \fontsize{8pt}{8pt}\selectfont
+\begin{verbatim}
+generic_selection
+    : GENERIC '(' assignment_expression ',' generic_assoc_list ')'
+    ;
+
+generic_assoc_list
+    : generic_association
+    | generic_assoc_list ',' generic_association
+    ;
+
+generic_association
+    : type_name ':' assignment_expression
+    | DEFAULT ':' assignment_expression { check_list(); }
+    ;
+\end{verbatim}
+\endgroup
+\noindent This is where we supply the rules for productions and reductions of 
+program input. C code can also be supplied inside the structure of a rule 
+inside curly brackets.
+
+\subsubsection{C code section}
+\noindent The third section is C code that is copied to the generated parser.
+In the declaration section, code inside of \emph{\%\{} and \emph{\%\}} is 
+copied near the beginning of the generated C source file. 
+\begingroup
+    \fontsize{8pt}{8pt}\selectfont
+\begin{verbatim}
+
+void
+add_entry(int line_num, int flag, char* str)
+{
+    char *rtnstr = fix_string(str);
+}
+
+
+
+\end{verbatim}
+\endgroup
+\noindent In this section we can place small subroutines that may be required
+as part of the action on a regular expression match.\\
+
+\subsubsection{Bison summary}
+A Bison grammar input file can be carefully constructed to allow parsing of 
+incredibly complex languages. The combination of Flex and Bison generator tools
+provide the required functionality to implement a C style checker. 
+
+
+%-----------------------------------------------------------------
+% Section: Indent
+%-----------------------------------------------------------------
+\section{Indent}
+
+GNU Indent is a code formatter which modifies C code by inserting or deleting
+white space, based on a set of flags supplied by the user on the command line.
+For a reference on available flags see \citep*{INDENT}
+Constructing a grammar which parses a complex language like C would quickly 
+become too complex if we required it to handle all the possible combinations of
+white space tokens. Therefore \emph{indent} is employed to handle the required 
+white space changes within the C style checker. 
+
+\subsubsection{Indent summary}
+The \emph{indent} portion of the program originally proved very useful in 
+formatting code to the required settings, however, as the project progressed 
+\emph{indent} was more of a hindrance than a help. In future designs I hope to 
+improve \emph{indent}s source code or replace it with an alternate solution.
+
+
+%-----------------------------------------------------------------
+% Section: Vim
+%-----------------------------------------------------------------
+
+
+\section{Vim}
+
+As the name suggests gnu \emph{indent} can handle indentation, however, it is not 
+very flexible in implementing different levels of indentation.
+\emph{Vim} or Vi IMproved is a non-toy editor which has numerous useful features.
+One of them being \emph{cindent}, with it's ability to flexibly re-indent code 
+according to a set of flags supplied to it through a variable 
+\emph{cinoptions}. \autoref{chap:cinoptions}
+
+\subsubsection{Vim summary}
+\emph{Vim} has proven to be very useful strictly as a flexible indentation 
+component of the style checker, however, during the course of looking for a 
+replacement program for \emph{indent}, a possible solution has been found that 
+could effectively replace \emph{Vim} and \emph{indent}. 
+
+

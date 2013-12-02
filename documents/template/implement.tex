@@ -1,0 +1,210 @@
+\chapter{Implementation Description}
+\label{chap:IMPLEMENT}
+
+The core components of the C style checker are composed of four translator 
+based programs, which with the help of indent and Vim provide the 
+ability to perform a number of checks on submitted files for a list of 
+available checks see \autoref{chap:Available Checks}. The reasoning behind 
+using translator based programs is based in the fact that they would be highly 
+configurable and each module could be easily updated or extended by modifying 
+the scanner description and parser grammar if required. 
+
+\section{Comments}
+
+For code comments the C style checker is required to verify code comments 
+conform to the style guide as well as verify that files minimally contain a 
+header comment identifying all the required data for the file, for more 
+information on acceptable comment style see 
+\autoref{chap:C-coding-style-notes}. The format and placement of comments is
+currently handled by indent. As in all parts related to indent, the file is 
+passed through indent and then compared against the original file to display 
+required changes to the user. 
+
+\subsection{indent's modification of comments}
+
+indent formats both C and C++ comments. \emph{indent} attempts to leave 
+properly formatted \emph{boxed comments} unmodified.\\
+
+\texttt{--comment-delimiters-on-blank-lines}
+    
+\noindent This option places the comment delimiters on blank lines.
+Thus, a single line comment like \verb|/* Loving hug */| can be
+transformed into:
+\begin{verbatim}
+/*
+   Loving hug
+ */
+\end{verbatim}
+
+\texttt{--star-left-side-of-comments} \\
+\noindent This options causes stars to be placed at the beginning of multi-line
+comments. Thus, the single-line comment above can be transformed into:
+\begin{verbatim}
+/*
+ * Loving hug
+ */
+\end{verbatim}
+
+\noindent \emph{indent} can also fix an existing comments style transforming 
+the top comment to the bottom. 
+\begin{verbatim}
+/*A different kind of scent,
+            for a different kind
+    of comment.*/
+ 
+/*
+ * A different kind of scent,
+ * for a different kind of comment.
+ */
+\end{verbatim}
+ 
+Where indent is capable of handling the structure of comments, we require an 
+additional component to handle the contents of the comment and enforce that a 
+header comment is present.
+\newpage
+\subsection{Check Comments module}
+
+The check comments module is a combination scanner parser.
+The scanner ignores all characters until it matches the initial \texttt{/*}
+indicating the start of a multi-line comment. The scanner then enters an 
+exclusive start state in which it attempts to parse common comment labels which
+would be present in either header or function comment blocks. The scanner then
+passes off the tokens to the parser which verifies the syntax of the tokens and
+prints to stdout in the case where the tokens do not parse correctly. upon 
+matching \texttt{*/} while in the exclusive start state it will then return to
+the scanners initial start state.
+
+\scriptsize{\begin{verbatim}
+    HEADER COMMENT                     FUNCTION COMMENT
+ /*                                     /*
+  * File:     A2P1.c                     * Name:        my_func
+  * Author:   My Name 100123456          * Purpose:     ...
+  * Date:     2011/09/12                 * Arguments:   ...
+  * Version:  1.0                        * Output:      ...
+  *                                      * Modifies:    ...
+  * Purpose:                             * Returns:     ...
+  * ...                                  * Assumptions: ...
+  */                                     * Bugs:        ...
+                                         * Notes:       ...
+                                         */
+\end{verbatim}}
+
+\section{Indentation}
+
+For code indentation the C style checker is required to check for correct 
+indentation for many different levels of indentation. Unfortunately indent was 
+not capable of this level of flexibility. Enter Vim's cindent to save the day.
+Using Vim in ex mode we are able to pass the file in and indent it against a 
+set of values specified in cinoptions. The set of values that the C style 
+checker uses to adhere to the C style guidlines are:\\
+\verb|        e0,n0,f0,{0,}0,:2,=2,l1,b0,t0,+4,c4,C1,(0,w1| \\
+for a full listing or description of how these flags effect indentation see 
+\autoref{chap:cinoptions}
+\newpage
+\subsection{Check Indent module}
+After the file has been re-indented it is then compared against the original 
+file using diff with a custom output format set.
+\begin{verbatim}
+diff \
+    --old-line-format='%l
+' \
+    --new-line-format='%l
+' \
+    --old-group-format='%df%(f=l?:,%dl)d%dE
+%<' \
+    --new-group-format='%dea%dF%(F=L?:,%dL)
+%>' \
+    --changed-group-format='%df%(f=l?:,%dl)c%dF%(F=L?:,%dL)
+%<---
+%>$$$
+' \
+    --unchanged-group-format=""
+\end{verbatim}
+
+\noindent The output of the comparison is passed through a scanner program 
+\texttt{indentR} which for each line that the two files differ it calculates 
+the indentation level of the original file and the indentation level of the 
+re-indented file, it then prints to stdout the line number that the difference 
+occurred, or the range in the case where multiple lines are incorrectly 
+indented, the code on that line, the current level of 
+indentation, and the proper level of indentation.
+\begin{verbatim}
+   38:
+       printf("do nothing\n");
+
+   Code at indentation level [4] not at correct indentation [8].
+\end{verbatim}
+
+
+
+\section{Common Errors and Style}
+
+In order to keep the composite checks scanner from becoming too complex a 
+separate module for common errors was created to provide checks for some common
+errors which are easily discovered with the use of a scanner program. The 
+program checks conditional, loop and struct statements for white space after 
+the token and left curly location on a separate line. It additional checks for 
+tab and carriage return characters on a line. Once errors are identified it 
+prints to stdout the line number that the error occurred, the code on that 
+line, and the appropriate warning message.
+
+
+\section{Composite Check}
+
+The bulk of the complex checks are performed by the composite checks module 
+which is a General LR parser. The code for the module is based on modified 
+versions of the ANSI C lex specification, and the ANSI C yacc grammar 
+description. \citep{ANSI}.
+
+\subsection{Ignored statements}
+The scanner specification has been modified to 
+ignore preprocessor directives, include files, define statements, and comments.
+This greatly simplifies the parsing of the files and reduces the number of 
+errors the parser encounters. The scanner is capable of ignoring complex 
+statements by entering an exclusive start state when it matches a particular
+token.
+
+\subsection{typedef statements}
+When the scanner matches a typedef token the scanner enters an inclusive start
+state, this means all tokens outside of the inclusive state are still matched,
+however, tokens inside the inclusive state have priority. The inclusive state 
+allows for typedef statements to consist of multiple identifier tokens without 
+having to make another set of actions for those tokens. For example in the case
+of \texttt{typedef int banana} on matching typedef it enters the 
+\verb|<TYPEDEF>| inclusive start state, then upon matching the \texttt{int} 
+token it performs the action associated with \texttt{int}. The same method of 
+using inclusive start states exists for struct, and enum statements.
+
+\subsection{Recurring variables}
+When the scanner encounters variables that it will need to parse in the future 
+like the name of a typedef, enumeration constant, or identifier name, it has to
+store the variable name locally so that it will be able to look it up if it 
+occurs again and return the appropriate token to the scanner. This is 
+accomplished by maintaining a hash table of symbol values, when a variable name
+is encountered the symbol table is checked for existence of the name and if it 
+is not already in the table it is added.
+
+\subsection{Grammar modifications and Extensions}
+The ANSI C yacc grammar description has been modified to include extra 
+production rules or in some cases small C routines, to initiate checks for 
+style errors within a C file. 
+
+\section{Format and white space}
+The format and white space portion of the program is currently handled by 
+indent. As in all parts related to indent, the file is passed through indent 
+and then compared against the original file to display required changes to the 
+user. Although indent is inflexible it does perform well in correcting errors
+pertaining to white space and the format of the document.
+
+\section{Web based interface}
+The web based interface was a last minute upgrade to the project. It consists 
+of three PHP files and one css stylesheet. The PHP files contain an uploader
+script which allows the student to upload a file to the server, a PHP class 
+file line\_sort.php which handles the sorting of the program output, and 
+printing the output to the screen. Finally the stylecheck.php handles moving 
+the files to a temporary location and passing the files as input to scruffy.sh
+as well as handing the output of scruffy.sh to an instance of the line\_sort 
+class. 
+The web interface provides a clean output of the reported errors and a code 
+view portion to the right which displays the users code in an editable view 
+pane.

@@ -1,0 +1,68 @@
+
+%--------------------------------------------------------------------------
+% THESIS: The MAIN thesis file from which all other things are included.
+%--------------------------------------------------------------------------
+
+% Include the header which includes packages, the Acadia style and definitions.
+\include{header}
+
+\lstset{frame=tb,
+  language=C,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true
+  tabsize=3
+}
+
+\begin{document}
+    %% START NOTE: In your real thesis, DO NOT include these lines.
+    %% Using your text editor, delete all the lines from ``START NOTE''
+    %% just above to ``END OF START NOTE'' way down below.
+
+    %% END OF START NOTE: INCLUDE THE REST!
+    % PRELIMINARIES: This is the file you will use to setup your
+    % name, date, advisor, etc. 
+    \include{preliminaries}
+
+    % CHAPTER CONTENT START
+    % Replace all the lines from here down to ``CHAPTER CONTENT END''
+    % with a collection of ``\include{XYZ}'' lines, where each XYZ
+    % is the name of a text file holding (for example) one chapter of
+    % your thesis.
+    % If you have appendices you need that ``\appendix'' line BEFORE
+    % you \include your appendices.
+    \include{introduction}
+    \include{tools}
+    \include{problem}
+    \include{solution}
+    \include{implement}
+    \include{extension}
+    \include{summary}
+    %\include{graphics-info}
+    %\include{figures-and-tables}
+    %\include{fine-points}
+    %\include{algorithms-and-listings}
+    %\include{packages}
+    % APPENDICES
+    \appendix
+    \include{list-of-files}
+    \include{userman}
+    \include{C-coding-style-notes}
+    \include{available_checks}
+    \include{software}
+    \include{cinoptions}
+    \nocite{*}
+    % \include{an_APPENDIX}
+    % \include{another_APPENDIX}
+    % CHAPTER CONTENT END
+    \bibliography{thesisbib}
+\end{document}

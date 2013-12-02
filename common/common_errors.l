@@ -4,7 +4,7 @@
  * Date:     2013/20/11
  * Version:  1.0
  * Purpose:  Flex tokenizer and functions to handle common 
- * 			 white space errors and bracket position. 
+ *           white space errors and bracket position. 
  */
 
 %{
@@ -98,7 +98,9 @@ int yycolumn = 0;
                              }
 
 \n                           { RESET(yycolumn); }
-
+\r                           { printf("%d:\n\n%s\n\n",
+                                  yylineno,
+                                  "This Line contains a carriage return."); }
 .                            /* Eat up bad characters. */
 
 %%

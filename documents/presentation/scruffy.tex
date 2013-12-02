@@ -3,6 +3,8 @@
 % Version        : 0.3c
 % Created on     : 05.05.2013
 % Last Edited on : 16.05.2013
+% Modified by    : Bruce Bearing 100036623
+% Modified on    : 27.11.2013
 % Copyright      : Copyright (c) 2013 by Benjamin Weiss. All rights reserved.
 % License        : This file may be distributed and/or modified under the
 %                  GNU Public License.
@@ -103,7 +105,7 @@ xrightmargin=0.5em
         
 \note
 {
-	Currently no style checker for C has been in use. \\ 
+    Currently no style checker for C has been in use. \\ 
     The solution to this problem would require a program
     which \\ would maintain as much flexibility as possible while producing a detailed analysis of a students code. \\
     Ideally, the program would be used as the back end for a web page, \\
@@ -213,7 +215,7 @@ main(int argc, char **argv)
         \item the third section is C code that is copied to the generated scanner.
         \end{itemize}
      }
-\end{frame}	
+\end{frame} 
 
 
 %--------------------------------------------------------------------------
@@ -246,9 +248,9 @@ yyerror(char *s)
 \note{
     \begin{itemize}
         \item Bison is a general-purpose parser generator that converts an 
-			annotated context-free grammar into a deterministic LR or generalized LR (GLR) parser.
+            annotated context-free grammar into a deterministic LR or generalized LR (GLR) parser.
         \item The input file for the Bison utility is an annotated grammar file. 
-			The general form of a Bison grammar file is as follows:
+            The general form of a Bison grammar file is as follows:
     \end{itemize}
 }
 
@@ -392,12 +394,12 @@ vim -e -s $temp_in < indent/vim_commands.scr
 
 \note{
 
-	The program begins by correctly indenting a temporary copy of the supplied file
-	by passing the file into vim in execute mode and supplying a set of script commands.
+    The program begins by correctly indenting a temporary copy of the supplied file
+    by passing the file into vim in execute mode and supplying a set of script commands.
 
-	The temporary file is then compared against the original and the diff output
-	is run through a lexical analyzer to report error messages
-	when differences in indentation exist.  
+    The temporary file is then compared against the original and the diff output
+    is run through a lexical analyzer to report error messages
+    when differences in indentation exist.  
 }
 
 
@@ -408,14 +410,14 @@ vim -e -s $temp_in < indent/vim_commands.scr
 \begin{frame}{Common Errors and Style}
 The Common errors and style portion of the style checker consists of two components.
 \begin{enumerate}
-	\item  \textcolor{hsrmSec2}{\texttt{common\_errors}} program which initiates checks for:
-		\begin{itemize}
-			\item Common white space errors. and
-			\item Code block bracket location.
-		\end{itemize}
-	\item  \textcolor{hsrmSec2}{\texttt{composite\_check}} program which combines the \\
-			ANSI C grammar specification with a combination of additional 
-			grammar productions to produce style error checks.  
+    \item  \textcolor{hsrmSec2}{\texttt{common\_errors}} program which initiates checks for:
+        \begin{itemize}
+            \item Common white space errors. and
+            \item Code block bracket location.
+        \end{itemize}
+    \item  \textcolor{hsrmSec2}{\texttt{composite\_check}} program which combines the \\
+            ANSI C grammar specification with a combination of additional 
+            grammar productions to produce style error checks.  
 \end{enumerate}
 
 \end{frame}
@@ -429,11 +431,11 @@ The Common errors and style portion of the style checker consists of two compone
 The format portion of the style checker utilizes the GNU indent program to verify the file has been correctly formatted.
 \note
 {
-	One problem that I ran into while using indent, is that it is not very flexible, there are a number of flags that can either be
-	turned on or off, there is no middle ground if either way is acceptable.
-	There are also some modifications that indent makes to code which cannot be turned off. No flag exists to change its implementation.
-	Due to this lack of flexibility, there are some style errors that it picks up that are acceptable, and a certain amount of redundancy
-	in reporting.
+    One problem that I ran into while using indent, is that it is not very flexible, there are a number of flags that can either be
+    turned on or off, there is no middle ground if either way is acceptable.
+    There are also some modifications that indent makes to code which cannot be turned off. No flag exists to change its implementation.
+    Due to this lack of flexibility, there are some style errors that it picks up that are acceptable, and a certain amount of redundancy
+    in reporting.
 }
 \end{frame}
 
@@ -442,40 +444,40 @@ The format portion of the style checker utilizes the GNU indent program to verif
 % Possible Extensions
 %--------------------------------------------------------------------------
 \section{Possible Extensions}
-	\note
-	{
-		I made an initial attempt to implement Preprocessing the files before checking for errors. 
-		Running through the C preprocessor proved very useful in eliminating portions of the file which are difficult to parse without it.
-		It can be implemented to replaces macro definitions and join broken strings and variable together.
-		and line position can be easily recalculated with the linemarkers the preprocessor inserts into the outfile.
-		where I ran into problems with implementation is when the C file included local header files. 
-		In order to implement the preprocessor portion a multiple file upload portion would be required.
-		This would also eliminate the need for a GLR parser in the Common Errors and Style portion.
+    \note
+    {
+        I made an initial attempt to implement Preprocessing the files before checking for errors. 
+        Running through the C preprocessor proved very useful in eliminating portions of the file which are difficult to parse without it.
+        It can be implemented to replaces macro definitions and join broken strings and variable together.
+        and line position can be easily recalculated with the linemarkers the preprocessor inserts into the outfile.
+        where I ran into problems with implementation is when the C file included local header files. 
+        In order to implement the preprocessor portion a multiple file upload portion would be required.
+        This would also eliminate the need for a GLR parser in the Common Errors and Style portion.
     }
 \begin{frame}{Possible Extensions}
 \begin{description}
-	\item[C Preprocessor] \hfill \\
-		Construct the C style checker to first run the files through the C preprocessor.
+    \item[C Preprocessor] \hfill \\
+        Construct the C style checker to first run the files through the C preprocessor.
 
     \item[Continue Productions] \hfill \\
-		Continue constructing grammar productions to produce checks for additional style errors.
+        Continue constructing grammar productions to produce checks for additional style errors.
 
-	\item[Eliminate or extend indent] \hfill \\
-		Extend or modify indent's source code to enhance its flexibility.
-	\note
-	{
-		I initially made a list of all the checks that checkstyle for java was able to perform.\\
-		After removing the java specific items and any which conflicted with the style guidelines \\
-		I was left with a baseline list of 39 checks. \\
-		I was to able code checks for 28 of them.\\
-		
-		\texttt{the source code for indent 2.2.10 could be modified and combined into a future version of this 
-		program which could eliminate some of the redundancy caused by indents lack of flexibility.} 
-	
-	}
+    \item[Eliminate or extend indent] \hfill \\
+        Extend or modify indent's source code to enhance its flexibility.
+    \note
+    {
+        I initially made a list of all the checks that checkstyle for java was able to perform.\\
+        After removing the java specific items and any which conflicted with the style guidelines \\
+        I was left with a baseline list of 39 checks. \\
+        I was to able code checks for 28 of them.\\
+        
+        \texttt{the source code for indent 2.2.10 could be modified and combined into a future version of this 
+        program which could eliminate some of the redundancy caused by indents lack of flexibility.} 
+    
+    }
 \end{description}
 
-	
+    
 \end{frame}
 
 %--------------------------------------------------------------------------
@@ -555,16 +557,16 @@ The format portion of the style checker utilizes the GNU indent program to verif
 \end{frame}
 
 \subsection{Required Software}
-	\begin{frame}
-	Required Software:
-		\begin{itemize}
-			\item VIM - Vi IMproved - version 7.3.547
-			\item flex 2.5.35
-			\item bison (GNU Bison) 2.7.12-4996 (any version above 2.5).
-			\item GNU indent 2.2.11
-			\item gcc 4.7.2
-		\end{itemize}
-	\end{frame}
+    \begin{frame}
+    Required Software:
+        \begin{itemize}
+            \item VIM - Vi IMproved - version 7.3.547
+            \item flex 2.5.35
+            \item bison (GNU Bison) 2.7.12-4996 (any version above 2.5).
+            \item GNU indent 2.2.11
+            \item gcc 4.7.2
+        \end{itemize}
+    \end{frame}
 
 \subsection{Demonstration}
 \begin{frame}{Demonstration}
