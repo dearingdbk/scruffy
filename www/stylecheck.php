@@ -83,6 +83,7 @@ $linefix->print_code();
 <a id="saveButton" target="" download=<?php echo "\"". $_FILES['upload']['name'] ."\""; ?> href="#" onclick="save();">Save file changes</a>
 </div>
 </body>
+<?php unlink($tmpname);?>
 </html>
 
 

@@ -75,7 +75,10 @@ class Line_sort
                     foreach ($this->line_num_array[$i] as $num)
                     {
                         if (preg_match("/^\s+\^/i", $num))
-                            echo "<pre style=\" color:red \"><strong>$num</strong></pre>\n";
+                        {
+                            echo "<pre style=\" color:red \">";
+                            echo "<strong>$num</strong></pre>\n";
+                        }
                         else if (preg_match("/^\s*$/i", $num))
                             echo $num. "\n";
                         else

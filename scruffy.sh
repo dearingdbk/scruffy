@@ -35,12 +35,15 @@ fi
 # Check that indentR, common_errors, and composite_check exist.
 # If they do not create them.
 
-if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check -o ! -e check_comments ]
+if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check \
+-o ! -e check_comments ]
 then
-    make --quiet || { echo 'Failed to build required programs!' >&2; rm -f $1; exit 1; }
+    make --quiet || { echo 'Failed to build required programs!' >&2;\
+     rm -f $1; exit 1; }
     make --quiet clean
 
-    if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check -o ! -e check_comments ]
+    if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check\
+     -o ! -e check_comments ]
     then
         echo 'Failed to build required programs!'
         rm -f $1
@@ -98,15 +101,15 @@ fi
 # and function comments have the appropriate tags if included.
 #
 #  HEADER COMMENT                                 FUNCTION COMMENT
-#	/*                                     /*
-#	 * File:     A2P1.c                     * Name:        my_func
-#	 * Author:   My Name 100123456          * Purpose:     ...
-#	 * Date:     2011/09/12                 * Arguments:   ...
-#	 * Version:  1.0                        * Output:      ...
-#	 *                                      * Modifies:    ...
-#	 * Purpose:                             * Returns:     ...
-#	 * ...                                  * Assumptions: ...
-#	 */                                     * Bugs:        ...
+#   /*                                     /*
+#    * File:     A2P1.c                     * Name:        my_func
+#    * Author:   My Name 100123456          * Purpose:     ...
+#    * Date:     2011/09/12                 * Arguments:   ...
+#    * Version:  1.0                        * Output:      ...
+#    *                                      * Modifies:    ...
+#    * Purpose:                             * Returns:     ...
+#    * ...                                  * Assumptions: ...
+#    */                                     * Bugs:        ...
 #                                           * Notes:       ...
 #                                           */
 
@@ -199,8 +202,7 @@ expand $temp_in | diff \
 # and enables the check of 
 # multi-line comments for proper spacing and format.
 
-expand $1 | sed 's/\/\/.*//g' | sed 's/\/\*.*\*\///g' > $temp_in
-
+expand $1 | sed 's?//.*??g' | sed 's?/\*.*\*/??g' > $temp_in
 if [ `which indent` ]
 then
     indent --no-blank-lines-after-declarations\
@@ -263,7 +265,7 @@ else
     exit 1
 fi
 
-rm $temp_in $temp_out $1
+rm $temp_in $temp_out
 
 exit 0
 

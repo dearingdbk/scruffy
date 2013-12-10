@@ -4,29 +4,31 @@
 \section{Preprocessor}
 
 A multipart extension idea would be to extend the web based uploader to handle 
-multiple file uploads, this will allow the C style checker to be extended to 
-have it's files run through the C preprocessor before parsing starts, this will
-have the added benefit of no longer requiring a GLR parser for composite check.
-I made an initial attempt to implement Preprocessing the files before checking 
-for errors. Running through the C preprocessor proved very useful in 
-eliminating portions of the file which are difficult to parse without it. It 
-can be implemented to replaces macro definitions and join broken strings and 
-variables together. Original line position can be easily recalculated with the 
-linemarkers the preprocessor inserts into the outfile. where I ran into 
-problems with implementation is when the C file included local header files. 
-In order to implement the preprocessor portion a multiple file upload portion 
-would be required.
-\section{Additional productions}
+multiple file uploads. This addition would allow the C style checker to be 
+extended to have it's files run through the C preprocessor before parsing 
+starts. This implementation will have the added benefit of no longer requiring
+a GLR parser for composite check. I made an initial attempt to implement 
+preprocessing of the files before checking for errors. Running through the C 
+preprocessor proved very useful in eliminating portions of the file which are 
+difficult to parse without it. It can be implemented to replaces macro 
+definitions and join broken strings and variables together. 
+Original line position can be easily recalculated with the linemarkers the 
+preprocessor inserts into the outfile. Where I ran into problems with 
+implementation is when the C file included local header files. In order to 
+implement the preprocessor portion a multiple file upload portion would be 
+required.
+
+\section{Additional Productions}
 
 Continue constructing grammar productions to produce checks for additional 
 style errors as they are identified.
 
-\section{Replace indent and Vim}
+\section{Replace Indent and Vim}
 
 A program was identified that could potentially replace indent. The program 
 \emph{Astyle} on initial inspection appears to have the flexibility to be able 
 to replace indent and possibly Vim's indentation capabilities as well.
-\newpage
+
 \section{Javascript}
 
 It may be possible to construct a more dynamic and user friendly web 
@@ -43,7 +45,7 @@ This may be asking to much of the system and the possibilities of accidentally
 deleting your original file might outweigh the benefits.
 
 
-\section{Comments extension}
+\section{Comments Extension}
 
 The current version of the check comments module uses regular expression to 
 parse header and function comments. The tokens the comments scanner provides 

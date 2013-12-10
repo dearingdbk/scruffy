@@ -159,7 +159,7 @@ int yycolumn = 1;
 <ENUM>{L}{A}*              { add_entry(yylineno, IDENTIFIER, yytext); }
 
 <ENUM_BLOCK>"}"            { BEGIN(ENUM); }
-<ENUM_BLOCK>{L}{A}*        { add_entry(yylineno, ENUMERATION_CONSTANT, yytext); }
+<ENUM_BLOCK>{L}{A}*        { add_entry(yylineno, ENUMERATION_CONSTANT, yytext);}
 
 
 "auto"                     { return(AUTO); }

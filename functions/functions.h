@@ -1,3 +1,12 @@
+/*
+ * File:     functions.h
+ * Author:   Bruce Dearing 100036623
+ * Date:     30/11/2013
+ * Version:  1.0
+ * Purpose:  Header file to define functions common to a  number of 
+ *           components of the C style checker.
+ */
+
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 

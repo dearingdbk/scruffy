@@ -1,17 +1,17 @@
 \chapter{cinoptions}
 \label{chap:cinoptions}
 
-The 'cinoptions' option sets how Vim performs indentation.  In the list below,
+The `cinoptions' option sets how Vim performs indentation.  In the list below,
 N represents a number of your choice (the number can be negative).  When
-there is an 's' after the number, Vim multiplies the number by 'shiftwidth':
-1s is 'shiftwidth' 2s is two times 'shiftwidth', etc.  You can use a
-decimal point, too: "-0.5s" is minus half a 'shiftwidth'.  The examples below
-assume a 'shiftwidth' of 4.
+there is an `s' after the number, Vim multiplies the number by `shiftwidth':
+1s is `shiftwidth' 2s is two times `shiftwidth', etc.  You can use a
+decimal point, too: ``-0.5'' is minus half a `shiftwidth'.  The examples below
+assume a `shiftwidth' of 4.
 
 \begin{description}
-    \item[$>$N] Amount added for "normal" indent.  Used after a line that should
-          increase the indent (lines starting with "if", an opening brace,
-          etc.).  (default 'shiftwidth').
+    \item[$>$N] Amount added for ``normal'' indent.  Used after a line that should
+          increase the indent (lines starting with ``if'', an opening brace,
+          etc.) (default `shiftwidth').
 \begin{verbatim}
         cino=            cino=>2        cino=>2s
           if (cond)        if (cond)      if (cond)
@@ -23,8 +23,8 @@ assume a 'shiftwidth' of 4.
     \item[eN] Add N to the prevailing indent inside a set of braces if the
           opening brace at the End of the line (more precise: is not the
           first character in a line).  This is useful if you want a
-          different indent when the '\{' is at the start of the line from
-          when '\{' is at the end of the line.  (default 0).
+          different indent when the `\{' is at the start of the line from
+          when `\{' is at the end of the line  (default 0).
 \begin{verbatim}
         cino=            cino=e2        cino=e-2
           if (cond) {      if (cond) {    if (cond) {
@@ -35,10 +35,10 @@ assume a 'shiftwidth' of 4.
               bar;             bar;           bar;
           }                }              }
  \end{verbatim} 
-    \item[nN] Add N to the prevailing indent for a statement after an "if",
-          "while", etc., if it is NOT inside a set of braces.  This is
-          useful if you want a different indent when there is no '\{'
-          before the statement from when there is a '\{' before it.
+    \item[nN] Add N to the prevailing indent for a statement after an ``if'',
+          ``while'', etc., if it is NOT inside a set of braces.  This is
+          useful if you want a different indent when there is no `\{'
+          before the statement from when there is a `\{' before it
           (default 0).
 \begin{verbatim}
         cino=          cino=n2          cino=n-2
@@ -53,7 +53,7 @@ assume a 'shiftwidth' of 4.
     \item[fN] Place the first opening brace of a function or other block in
           column N.  This applies only for an opening brace that is not
           inside other braces and is at the start of the line.  What comes
-          after the brace is put relative to this brace.  (default 0).
+          after the brace is put relative to this brace (default 0).
 \begin{verbatim}
         cino=          cino=f.5s          cino=f1s
           func()         func()             func()
@@ -62,7 +62,7 @@ assume a 'shiftwidth' of 4.
 \end{verbatim}
     \item[\{N] Place opening braces N characters from the prevailing indent.
           This applies only for opening braces that are inside other
-          braces.  (default 0).
+          braces  (default 0).
 \begin{verbatim}
         cino=            cino={.5s            cino={1s
           if (cond)        if (cond)            if (cond)
@@ -70,7 +70,7 @@ assume a 'shiftwidth' of 4.
               foo;             foo;                 foo;
  \end{verbatim}
     \item[\}N] Place closing braces N characters from the matching opening
-          brace.  (default 0).
+          brace  (default 0).
 \begin{verbatim}
         cino=            cino={2,}-0.5s     cino=}2
           if (cond)        if (cond)          if (cond)
@@ -82,7 +82,7 @@ assume a 'shiftwidth' of 4.
     \item[\^{}N] Add N to the prevailing indent inside a set of braces if the
           opening brace is in column 0.  This can specify a different
           indent for whole of a function (some may like to set it to a
-          negative number).  (default 0).
+          negative number)  (default 0).
 \begin{verbatim}
          cino=              cino=^-2          cino=^-s
            func()             func()            func()
@@ -95,7 +95,7 @@ assume a 'shiftwidth' of 4.
  \end{verbatim}
     \item[LN] Controls placement of jump labels. If N is negative, the label
           will be placed at column 1. If N is non-negative, the indent of
-          the label will be the prevailing indent minus N.  (default -1).          
+          the label will be the prevailing indent minus N  (default -1).          
 \begin{verbatim}
         cino=               cino=L2             cino=Ls
           func()              func()              func()
@@ -107,8 +107,8 @@ assume a 'shiftwidth' of 4.
           }                   }                   }
  \end{verbatim}
  \clearpage
-    \item[:N] Place case labels N characters from the indent of the switch().
-          (default 'shiftwidth').
+    \item[:N] Place case labels N characters from the indent of the switch()
+          (default `shiftwidth').
 \begin{verbatim}
         cino=              cino=:0
           switch (x)         switch(x)
@@ -120,7 +120,7 @@ assume a 'shiftwidth' of 4.
  \end{verbatim}
  
     \item[=N] Place statements occurring after a case label N characters from
-          the indent of the label.  (default 'shiftwidth').
+          the indent of the label  (default `shiftwidth').
 \begin{verbatim}
         cino=            cino==10
           case 11:         case 11:  a = a + 1;
@@ -137,9 +137,9 @@ assume a 'shiftwidth' of 4.
                       }                        }
  \end{verbatim}
  \clearpage
-    \item[bN] If N != 0 Vim will align a final "break" with the case label,
-          so that case..break looks like a sort of block.  (default: 0).
-          When using 1, consider adding "0=break" to cinkeys.
+    \item[bN] If N != 0 Vim will align a final ``break'' with the case label,
+          so that case..break looks like a sort of block  (default: 0).
+          When using 1, consider adding ``0=break'' to cinkeys.
 
 \begin{verbatim}
         cino=              cino=b1
@@ -156,8 +156,8 @@ assume a 'shiftwidth' of 4.
  \end{verbatim}
  
     \item[gN] Place C++ scope declarations N characters from the indent of the
-          block they are in.  (default 'shiftwidth').  A scope declaration
-          can be "public:", "protected:" or "private:".
+          block they are in  (default `shiftwidth').  A scope declaration
+          can be ``public:'', ``protected:'' or ``private:''.
 \begin{verbatim}
         cino=              cino=g0
           {                  {
@@ -168,8 +168,8 @@ assume a 'shiftwidth' of 4.
 \end{verbatim}
 
     \item[hN] Place statements occurring after a C++ scope declaration N
-          characters from the indent of the label.  (default
-          'shiftwidth').
+          characters from the indent of the label  (default
+          `shiftwidth').
 \begin{verbatim}
         cino=               cino=h10
            public:            public:   a = a + 1;
@@ -177,8 +177,8 @@ assume a 'shiftwidth' of 4.
  
  \end{verbatim}
     \item[pN] Parameter declarations for K\&R-style function declarations will
-          be indented N characters from the margin.  (default
-          'shiftwidth').
+          be indented N characters from the margin  (default
+          `shiftwidth').
 \begin{verbatim}
         cino=               cino=p0         cino=p2s
           func(a, b)          func(a, b)      func(a, b)
@@ -186,7 +186,7 @@ assume a 'shiftwidth' of 4.
               char b;         char b;                 char b;
  \end{verbatim}
     \item[tN] Indent a function return type declaration N characters from the
-          margin.  (default 'shiftwidth').
+          margin  (default `shiftwidth').
 \begin{verbatim}
         cino=            cino=t0        cino=t7
               int          int                    int
@@ -194,8 +194,8 @@ assume a 'shiftwidth' of 4.
  \end{verbatim}
     \item[iN] Indent C++ base class declarations and constructor
           initializations, if they start in a new line (otherwise they
-          are aligned at the right side of the ':').
-          (default 'shiftwidth').
+          are aligned at the right side of the `:')
+          (default `shiftwidth').
 \begin{verbatim}
         cino=                       cino=i0
           class MyClass :             class MyClass :
@@ -207,8 +207,8 @@ assume a 'shiftwidth' of 4.
  \end{verbatim}
  \clearpage
     \item[+N] Indent a continuation line (a line that spills onto the next)
-              inside a function N additional characters.  (default
-              'shiftwidth').
+              inside a function N additional characters  (default
+              `shiftwidth').
               Outside of a function, when the previous line ended in a
               backslash, the 2 * N is used.
 \begin{verbatim}
@@ -218,7 +218,7 @@ assume a 'shiftwidth' of 4.
  \end{verbatim}
     \item[cN] Indent comment lines after the comment opener, when there is no
           other text with which to align, N characters from the comment
-          opener.  (default 3).
+          opener  (default 3).
 \begin{verbatim}
         cino=              cino=c5
           /*                 /*
@@ -227,15 +227,15 @@ assume a 'shiftwidth' of 4.
  \end{verbatim}
     \item[CN] When N is non-zero, indent comment lines by the amount specified
           with the c flag above even if there is other text behind the
-          comment opener.  (default 0).
+          comment opener  (default 0).
 \begin{verbatim}
         cino=c0              cino=c0,C1
           /********            /********
             text.              text.
           ********/            ********/
-           (Example uses ":set comments & comments-=s1:/* comments^=s0:/*")
+ (Example uses ":set comments & comments-=s1:/* comments^=s0:/*")
 \end{verbatim}
-    \item[/N]    Indent comment lines N characters extra.  (default 0).
+    \item[/N]    Indent comment lines N characters extra  (default 0).
 \begin{verbatim}
         cino=              cino=/4
           a = b;            a = b;
@@ -244,11 +244,11 @@ assume a 'shiftwidth' of 4.
  \end{verbatim}
  
     \item[(N]    When in unclosed parentheses, indent N characters from the line
-          with the unclosed parentheses.  Add a 'shiftwidth' for every
+          with the unclosed parentheses.  Add a `shiftwidth' for every
           unclosed parentheses.  When N is 0 or the unclosed parentheses
           is the first non-white character in its line, line up with the
-          next non-white character after the unclosed parentheses.
-          (default 'shiftwidth' * 2).
+          next non-white character after the unclosed parentheses
+          (default `shiftwidth' * 2).
 \begin{verbatim}
         cino=                     cino=(0
           if (c1 && (c2 ||          if (c1 && (c2 ||
@@ -258,7 +258,7 @@ assume a 'shiftwidth' of 4.
                   (c2 || c3))           (c2 || c3))
              {                         {
  \end{verbatim}
-    \item[uN] Same as (N, but for one level deeper.  (default 'shiftwidth').
+    \item[uN] Same as (N, but for one level deeper  (default `shiftwidth').
 \begin{verbatim}
         cino=                      cino=u2
           if (c123456789             if (c123456789
@@ -266,8 +266,8 @@ assume a 'shiftwidth' of 4.
                       || c3))                  || c3))
  \end{verbatim}
     \item[UN] When N is non-zero, do not ignore the indenting specified by
-          ( or u in case that the unclosed parentheses is the first
-          non-white character in its line.  (default 0).
+          `(' or `u' in case that the unclosed parentheses is the first
+          non-white character in its line (default 0).
 \begin{verbatim}
         cino= or cino=(s      cino=(s,U1
           c = c1 &&             c = c1 &&
@@ -278,10 +278,10 @@ assume a 'shiftwidth' of 4.
  \end{verbatim}
   \clearpage
     \item[wN] When in unclosed parentheses and N is non-zero and either
-          using "(0" or "u0", respectively, or using "U0" and the unclosed
+          using ``(0'' or ``u0'', respectively, or using ``U0'' and the unclosed
           parentheses is the first non-white character in its line, line
           up with the character immediately after the unclosed parentheses
-          rather than the first non-white character.  (default 0).
+          rather than the first non-white character (default 0).
 \begin{verbatim}
         cino=(0                  cino=(0,w1
           if (   c1                if (   c1
@@ -290,11 +290,11 @@ assume a 'shiftwidth' of 4.
               foo;                     foo;
  \end{verbatim}
     \item[WN] When in unclosed parentheses and N is non-zero and either
-          using "(0" or "u0", respectively and the unclosed parentheses is
+          using ``(0'' or ``u0'', respectively and the unclosed parentheses is
           the last non-white character in its line and it is not the
           closing parentheses, indent the following line N characters
           relative to the outer context (i.e. start of the line or the
-          next unclosed parentheses).  (default: 0).
+          next unclosed parentheses)  (default: 0).
 \begin{verbatim}
         cino=(0                      cino=(0,W4
           a_long_line(                 a_long_line(
@@ -306,7 +306,7 @@ assume a 'shiftwidth' of 4.
  \clearpage
     \item[mN] When N is non-zero, line up a line starting with a closing
           parentheses with the first character of the line with the
-          matching opening parentheses.  (default 0).
+          matching opening parentheses  (default 0).
 \begin{verbatim}
         cino=(s              cino=(s,m1
           c = c1 && (          c = c1 && (
@@ -319,7 +319,7 @@ assume a 'shiftwidth' of 4.
               foo;                 foo;
  \end{verbatim}
     \item[MN] When N is non-zero, line up a line starting with a closing
-          parentheses with the first character of the previous line.
+          parentheses with the first character of the previous line
           (default 0).
 \begin{verbatim}
         cino=                   cino=M1
@@ -329,16 +329,16 @@ assume a 'shiftwidth' of 4.
  \end{verbatim}
  
     \item[)N] Vim searches for unclosed parentheses at most N lines away.
-          This limits the time needed to search for parentheses.  (default
+          This limits the time needed to search for parentheses  (default
           20 lines).
 
     \item[*N]    Vim searches for unclosed comments at most N lines away.  This
-          limits the time needed to search for the start of a comment.
+          limits the time needed to search for the start of a comment
           (default 70 lines).
 
     \item[\#N]    When N is non-zero recognize shell/Perl comments, starting with
-          '\#'.  Default N is zero: don't recognizes '\#' comments.  Note
-          that lines starting with \# will still be seen as preprocessor
+          `\#'.  Default N is zero: don't recognizes `\#' comments.  Note
+          that lines starting with `\#' will still be seen as preprocessor
           lines.
 
 \end{description}
@@ -349,16 +349,16 @@ The defaults, spelled out in full, are:
             c3,C0,/0,(2s,us,U0,w0,W0,m0,j0,J0,)20,*70,#0
 \end{verbatim}
 
-The options used to obtain correct indentation for \verb|'scuffy'| are:
+The options used to obtain correct indentation for `\emph{scuffy}' are:
 \begin{verbatim}
     cinoptions=e0,n0,f0,{0,}0,:2,=2,l1,b0,t0,+4,c4,C1,(0,w1
 \end{verbatim}
 
 Vim puts a line in column 1 if:
 \begin{itemize}
-    \item It starts with '\#' (preprocessor directives), if cinkeys contains '\#'.
-    \item It starts with a label (a keyword followed by ':', other than "case" and
-  "default") and 'cinoptions' does not contain an 'L' entry with a positive
+    \item It starts with `\#' (preprocessor directives), if cinkeys contains `\#'.
+    \item It starts with a label (a keyword followed by `:', other than ``case'' and
+  ``default'') and `cinoptions' does not contain an `L' entry with a positive
   value.
   \item Any combination of indentations causes the line to have less than 0
   indentation.
