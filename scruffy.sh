@@ -141,7 +141,7 @@ vim -e -s $temp_in < indent/vim_commands.scr
 # into a usable form.
 # the diff setup here is similar to the normal output from diff with a few
 # exceptions the line format has been edited to output only the text, and
-# a end statement "$$$" has been added to signal to indentR that it has 
+# an end statement "$$$" has been added to signal to indentR that it has 
 # reached the end of output for an instance of difference.
 
 expand $temp_in | diff \
