@@ -1,8 +1,8 @@
 #! /bin/sh
 # File:     scruffy.sh
 # Author:   Bruce Dearing   100036623
-# Date:     2013/09/25
-# Version:  1.0
+# Date:     2014/06/15
+# Version:  2.0 (astyle)
 
 # Purpose:  Main script runs the multipart process  of formatting and 
 #           checking of files. Initially it creates two temp files 
