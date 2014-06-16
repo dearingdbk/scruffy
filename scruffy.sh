@@ -51,11 +51,13 @@ then
     fi
 fi
 
-# Temp files created here.
+# Temp files created here. Depending on system the creation of tmp files may
+# need to be altered to faciltate.
 
-temp_in=$(mktemp -t 'XXXXXXXXXXX.c')
-temp_out=$(mktemp -t 'XXXXXXXXXXX.out')
-
+#temp_in=$(mktemp -t 'XXXXXXXXXXX.c')     #Worked in Debian based systems
+#temp_out=$(mktemp -t 'XXXXXXXXXXX.out')  #Worked in Debian based systems
+temp_in=`mktemp -t in.XXXXXX`             #Worked in slackware based
+temp_out=`mktemp -t out.XXXXXX`           #Worked in slackware based
 
 # Verify the tmp files were created.
 
@@ -261,11 +263,11 @@ then
 
 else
     echo 'indent program not available!'
-    rm $temp_in $temp_out $1
+    rm $temp_in $temp_out
     exit 1
 fi
 
 rm $temp_in $temp_out
-
+echo Scruffy's gonna die the way he lived. Mmhm.
 exit 0
 
