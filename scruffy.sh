@@ -268,5 +268,4 @@ else
 fi
 
 rm $temp_in $temp_out
-echo Scruffy\'s gonna die the way he lived. Mmhm.
 exit 0
