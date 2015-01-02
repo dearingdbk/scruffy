@@ -2,7 +2,7 @@
 # File:     scruffy.sh
 # Author:   Bruce Dearing   100036623
 # Date:     2013/09/25
-# Version:  1.0
+# Version:  1.2
 
 # Purpose:  Main script runs the multipart process  of formatting and 
 #           checking of files. Initially it creates two temp files 
@@ -12,6 +12,23 @@
 #           
 #           use case 'sh scruffy.sh <file_to_be_checked>'
 #
+# Mods:     2014/09/01 Jim Diamond
+#	    Run the input through expand so that the line length check
+#	    takes tabs into account.
+#	    Also pick a mktemp binary so that this script works on Slackware.
+#
+#	    2014/09/11 Jim Diamond
+#	    Use my customized version of indent which does The Right Thing
+#	    with pointer declarations.
+#	    Add a sed kludge to deal with casts to data types which it
+#           doesn't know about.
+
+if [ -e /usr/bin/mktemp-gnu ]
+then
+    MKTEMP=/usr/bin/mktemp-gnu
+else
+    MKTEMP=mktemp
+fi
 
 
 # GLOBAL VARIABLE DEFINITIONS
@@ -36,14 +53,14 @@ fi
 # If they do not create them.
 
 if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check \
--o ! -e check_comments ]
+    -o ! -e check_comments ]
 then
-    make --quiet || { echo 'Failed to build required programs!' >&2;\
+    make --quiet || { echo 'Failed to build required programs!' >&2; \
      rm -f $1; exit 1; }
     make --quiet clean
 
-    if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check\
-     -o ! -e check_comments ]
+    if [ ! -e indentR -o ! -e common_errors  -o ! -e composite_check \
+	-o ! -e check_comments ]
     then
         echo 'Failed to build required programs!'
         rm -f $1
@@ -53,8 +70,8 @@ fi
 
 # Temp files created here.
 
-temp_in=$(mktemp -t 'XXXXXXXXXXX.c')
-temp_out=$(mktemp -t 'XXXXXXXXXXX.out')
+temp_in=$($MKTEMP -t 'XXXXXXXXXXX.c')
+temp_out=$($MKTEMP -t 'XXXXXXXXXXX.out')
 
 
 # Verify the tmp files were created.
@@ -174,7 +191,7 @@ expand $temp_in | diff \
 ./common_errors < $1
 
 # composite_check has a number of checks it performs against a modified 
-# ANSI C grammar. The code is tokenized and parsed as it normally would
+# ANSI C grammar.  The code is tokenized and parsed as it normally would
 # be, however, grammar rules and reductions have been added to make it 
 # possible to check for:
 #   - Variable declarations on a multi-variable definition statement.
@@ -187,7 +204,9 @@ expand $temp_in | diff \
 #             int A, NumOfCats, Num_dogs; is not.
 #   - Line length > 79.
 
-./composite_check < $1
+# Jim Diamond mod: for it to get correct line lengths, expand the file
+#orig ./composite_check < $1
+expand $1 | ./composite_check
 
 
 ##############################################################################
@@ -202,63 +221,76 @@ expand $temp_in | diff \
 # and enables the check of 
 # multi-line comments for proper spacing and format.
 
+# NOTE: the sed string removes the space between casts and the following
+# item, but will mangle strings and comments.  So I took it back out.
+
+# Note: JD removed the diff args   -b   and    --suppress-blank-empty
+# in the hope that some missing complaints would show up.  
+# With luck there won't be many spurious messages.
+
 expand $1 | sed 's?//.*??g' | sed 's?/\*.*\*/??g' > $temp_in
-if [ `which indent` ]
+INDENT=./indent.zsd
+if [ ! -x $INDENT ]
 then
-    indent --no-blank-lines-after-declarations\
-        --blank-lines-after-procedures\
-        --no-blank-lines-after-commas\
-        --break-before-boolean-operator\
-        --braces-after-if-line\
-        --braces-after-struct-decl-line\
-        --comment-indentation33\
-        --declaration-comment-column33\
-        --dont-cuddle-else\
-        --cuddle-do-while\
-        --continuation-indentation4\
-        --case-indentation2\
-        --case-brace-indentation0\
-        --leave-optional-blank-lines\
-        --continue-at-parentheses\
-        --break-before-boolean-operator\
-        --indent-level4\
-        --honour-newlines\
-        --no-space-after-casts\
-        --line-comments-indentation1\
-        --declaration-indentation0\
-        --no-space-after-function-call-names\
-        --procnames-start-lines\
-        --space-after-for\
-        --space-after-while\
-        --struct-brace-indentation0\
-        --space-special-semicolon\
-        --no-tabs\
-        --format-first-column-comments\
-        --comment-delimiters-on-blank-lines\
-        --format-all-comments\
-        --start-left-side-of-comments\
-        --brace-indent0\
-        --indent-label0\
-        --line-length79\
-        --no-space-after-parentheses\
+    INDENT=`which indent 2>/dev/null`
+fi
+if [ "z$INDENT" != "z" ]
+then
+    $INDENT --blank-lines-after-declarations \
+        --blank-lines-after-procedures \
+        --no-blank-lines-after-commas \
+        --break-before-boolean-operator \
+        --braces-after-if-line \
+        --braces-after-struct-decl-line \
+        --comment-indentation33 \
+        --declaration-comment-column33 \
+        --dont-cuddle-else \
+        --cuddle-do-while \
+        --continuation-indentation4 \
+        --case-indentation2 \
+        --case-brace-indentation0 \
+        --leave-optional-blank-lines \
+        --continue-at-parentheses \
+        --break-before-boolean-operator \
+        --indent-level4 \
+        --honour-newlines \
+        --no-space-after-casts \
+        --line-comments-indentation1 \
+        --declaration-indentation0 \
+        --no-space-after-function-call-names \
+        --procnames-start-lines \
+        --space-after-for \
+        --space-after-while \
+        --struct-brace-indentation0 \
+        --space-special-semicolon \
+        --no-tabs \
+        --format-first-column-comments \
+        --comment-delimiters-on-blank-lines \
+        --format-all-comments \
+        --start-left-side-of-comments \
+        --brace-indent0 \
+        --indent-label0 \
+        --line-length79 \
+        --no-space-after-parentheses \
         $temp_in -o $temp_out
 
+#        $temp_in -st \
+#	| sed -e "s/\(([a-zA-Z_0-9]\+)\) \([a-zA-Z0-9._]\)/\1\2/g" \
+#	> $temp_out
 
     diff \
         --old-line-format='%l
 ' \
         --new-line-format='%l
 ' \
-        --old-group-format=''\
-        --new-group-format=''\
+        --old-group-format='' \
+        --new-group-format='' \
         --changed-group-format='%df:
 %<---
 %>
-'\
-        --unchanged-group-format=""\
-        -b --suppress-blank-empty\
+' \
+        --unchanged-group-format="" \
         $temp_in $temp_out
-
 else
     echo 'indent program not available!'
     rm $temp_in $temp_out $1

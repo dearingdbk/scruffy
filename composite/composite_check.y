@@ -2,12 +2,15 @@
  * File: composite_check.y
  * Author: Bruce Dearing 100036623
  * Date: 2013/10/27
- * Version: 1.0
+ * Version: 1.1
  *
  * Purpose: ANSI C Yacc grammar, to parse tokens received from the
  *          flex scanner composite_check.l
  *          Grammar has been re-written to identify common style errors
  *          present in C code and alert the user.
+ *
+ * Mods:    2014/09/01 Jim Diamond.  Remove some compiler warnings,
+ *          do a bit of reformatting.
  */
 
 %locations
@@ -22,6 +25,7 @@
     #define COMPOSITE_CHECK_TAB_H
     #include "composite_check.tab.h"
 #endif
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -36,26 +40,27 @@ extern char *yytext;
 
 /* START Definitions. */
 #define YYERROR_VERBOSE
-#define MAX_TRYS 1000
-#define MULTI_DEF "Variable initialized in a multi-variable declaration."
-#define ES "Empty statement."
-#define ECB "Empty code block."
-#define DCL "\"default\" case should appear after all the cases in a switch\
- statement."
-#define SWD "switch without a \"default\" case."
-#define NEBC "Do not include executable statements before the first case\
- label."
-#define MBS "Missing Break statement."
-#define LCC "Array initialization contains optional trailing comma."
+#define MAX_TRYS	1000
+#define MULTI_DEF	"Variable initialized in a multi-variable declaration."
+#define ES 		"Empty statement."
+#define ECB 		"Empty code block."
+#define DCL 		"\"default\" case should appear after all " \
+			"the cases in a switch statement."
+#define SWD		"switch without a \"default\" case."
+#define NEBC		"Do not include executable statements before " \
+			"the first case label."
+#define MBS		"Missing Break statement."
+#define LCC		"Array initialization contains optional trailing comma."
 /* End Definitions. */
 
 /* START Function Definitions */
-void yyerror(const char *str);
+void yyerror(const char * str);
 /* START Function Definitions */
 
 %}
 
-%token        BIDENTIFIER IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
+%token        BIDENTIFIER IDENTIFIER I_CONSTANT F_CONSTANT
+%token	      STRING_LITERAL FUNC_NAME SIZEOF
 %token        PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token        AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token        SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
@@ -734,9 +739,10 @@ declaration_list
  * Assumptions: 
  * Bugs:        
  * Notes:
- */  
+ */
+
 void 
-yyerror(const char *str)
+yyerror(const char * str)
 {
    /*
     * Purposely do nothing here, we want to error quietly
@@ -755,22 +761,27 @@ yyerror(const char *str)
  * Assumptions: 
  * Bugs:        none to date.
  * Notes:
- */ 
+ */
+
+int
 main()
 {
-   /*
-    * The parser returns a value of zero if the parse succeeds
-    * and nonzero if the parse fails.
-    * Here we continue parsing even on error up to
-    * MAX_TRYS.
-    */
-   int index = 0;
-   while(index < MAX_TRYS)
-   {
-       if (yyparse())
-          index++;
-       else
-            break;
-   }
+    /*
+     * The parser returns a value of zero if the parse succeeds
+     * and nonzero if the parse fails.
+     * Here we continue parsing even on error up to
+     * MAX_TRYS.
+     */
 
+    int errors = 0;
+
+    while (errors < MAX_TRYS)
+    {
+	if (yyparse())
+	    errors++;
+	else
+	    break;
+    }
+
+    return errors;
 }

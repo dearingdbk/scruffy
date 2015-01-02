@@ -2,7 +2,7 @@
  * File:     composite_check.l
  * Author:   Bruce Dearing 100036623
  * Date:     2013/20/11
- * Version:  1.0
+ * Version:  1.1
  * Purpose:  Flex tokenizer specification which supplies tokens to 
  *           composite_check parser in an effort to parse a file to 
  *           locate errors in code.
@@ -11,6 +11,8 @@
  *              read the resulting code indication in the error msg 
  *              will be blank.
  *
+ * Mods:     2014/09/01 Jim Diamond.  Remove some compiler warnings,
+ *           do a bit of reformatting.  Fix an incorrect comment or two.
  */
 
 %e 1019
@@ -39,6 +41,7 @@ WS [ \t\v\f]
 %{
 
 /* START Include files. */
+#include <ctype.h>
 #include <stdio.h>
 #ifndef COMPOSITE_CHECK_TAB_H
     #define COMPOSITE_CHECK_TAB_H
@@ -50,10 +53,10 @@ WS [ \t\v\f]
 
 
 /* START Function Definitions */
-static int check_type(char *str);
-struct symbol *lookup(char* str);
-void add_entry(int line_num, int flag, char* str);
-static unsigned get_hashval(char *sym);
+static int check_type(char * str);
+struct symbol * lookup(char * str);
+void add_entry(int line_num, int flag, char * str);
+static unsigned get_hashval(char * sym);
 char linebuf[500];
 /* END Function Definitions */
 
@@ -69,7 +72,7 @@ char linebuf[500];
 
 
 /* START Program variables */
-typedef struct symbol
+struct symbol
 {
     char *name;
     int flag;
@@ -293,10 +296,12 @@ int yycolumn = 1;
  * Modifies:    none.
  * Returns:     1
  * Assumptions: 
- * Bugs:        unfound.
+ * Bugs:        None found.
  * Notes:
  */
-int yywrap(void) /* called at end of input */
+
+int
+yywrap(void) /* called at end of input */
 {
     return 1; /* terminate now */
 }
@@ -304,25 +309,25 @@ int yywrap(void) /* called at end of input */
 
 /*
  * Name:        check_type
- * Purpose:     checks whether an identifier has been previously 
- *              entered into the symbol table. If not it adds it.
- * Arguments:   str ~ the string containing the identifier.
+ * Purpose:     Checks whether an identifier has been previously 
+ *              entered into the symbol table; if not add it.
+ * Arguments:   str: the string containing the identifier.
  * Output:      none.
  * Modifies:    symbol_table.
- * Returns:     void.
+ * Returns:     The type (or EOF on error).
  * Assumptions: 
- * Bugs:        unfound.
+ * Bugs:        None found.
  * Notes:
  */
-static int 
-check_type(char *str)
+
+static int
+check_type(char * str)
 {
-    struct symbol *cur_entry = lookup(str);
+    struct symbol * cur_entry = lookup(str);
 
     if (cur_entry == NULL)
-    {
         return EOF;
-    }
+
     switch (cur_entry->flag)
     {
       case TYPEDEF_NAME:              /* previously defined */
@@ -340,28 +345,28 @@ check_type(char *str)
 /*
  * Name:        add_entry
  * Purpose:     adds an identifier to the symbol table.
- * Arguments:   line_num ~ the line number the identifier was found.
- *              flag ~ the type of identifier located, enum, typedef, or
+ * Arguments:   line_num: the line number where the identifier was found.
+ *              flag: the type of identifier located: enum, typedef, or
  *              identifier.
- *              str ~ the string containing the identifier.
- * Output:      none.
+ *              str: the string containing the identifier.
+ * Output:      None.
  * Modifies:    symbol_table.
  * Returns:     void.
  * Assumptions: 
- * Bugs:        unfound.
+ * Bugs:        None found.
  * Notes:
  */ 
-void
-add_entry(int line_num, int flag, char* str)
-{
-    char *rtnstr = fix_string(str);
-    struct symbol *new_entry;
-    struct symbol *cur_entry = lookup(rtnstr);
 
-    if (isupper(rtnstr[0]) || isdigit(rtnstr[0]))
-    {
+void
+add_entry(int line_num, int flag, char * str)
+{
+    char * rtnstr = fix_string(str);
+    struct symbol * new_entry;
+    struct symbol * cur_entry = lookup(rtnstr);
+
+    if (isupper(rtnstr[0]) || isdigit(rtnstr[0]) || '_' == rtnstr[0])
         print_bad_ident(line_num, yycolumn, rtnstr);
-    }
+
     if (cur_entry == NULL)
     {
         fprintf(stderr, "Unable to enter value into table: %s \n", str);
@@ -369,9 +374,7 @@ add_entry(int line_num, int flag, char* str)
     }
    
     if (cur_entry->line_num == line_num)
-    {
         return;
-    }
 
     if (cur_entry->line_num == 0)
     {
@@ -388,65 +391,72 @@ add_entry(int line_num, int flag, char* str)
     }
 }
 
+
+
 /*
  * Name:        get_hashval
  * Purpose:     returns the hash of the entry string.
- * Arguments:   str ~ The string to hash and then return.
+ * Arguments:   str: The string to hash and then return.
  * Output:      none
  * Modifies:    none
  * Returns:     hash of string parameter.
  * Assumptions: 
- * Bugs:        unfound.
+ * Bugs:        None found.
  * Notes:
  */ 
+
 static unsigned
-get_hashval(char *str)
+get_hashval(char * str)
 {
     unsigned int hash = 0;
     unsigned c;
-    while(c = *str++)
-    {
+
+    while ((c = *str++) != 0)
         hash = c + (hash << 6) + (hash << 16) - hash;
-    }
+
     return hash;
 }
+
+
 
 /*
  * Name:        lookup
  * Purpose:     Searches for the existence of a symbol in the 
  *              symbol_table array.
- * Arguments:   str ~ The string to search for in the symbol_table.
+ *		Adds this entry if not found (partially; add_entry
+ *		does the rest).
+ * Arguments:   str: The string to search for in the symbol_table.
  * Output:      none
- * Modifies:    none
- * Returns:     symbol struct.
+ * Modifies:    The symbol table.
+ * Returns:     struct symbol *.
  * Assumptions: 
  * Bugs:        none
  * Notes:
  */ 
-struct symbol*
-lookup(char* str)
+
+struct symbol *
+lookup(char * str)
 {
     unsigned int index = get_hashval(str) % NUM_HASH;
-    struct symbol *cur_entry = &symbol_table[index];
+    struct symbol * cur_entry = &symbol_table[index];
     int scount = NUM_HASH;
 
-    while(--scount >= 0) // search though symbol_table array. 
+    while (--scount >= 0) // search though symbol_table array. 
     {
-        if(cur_entry->name && !strcmp(cur_entry->name, str))
+        if (cur_entry->name && !strcmp(cur_entry->name, str))
             return cur_entry;
-        if(!cur_entry->name)
+
+        if (!cur_entry->name)
         {
             cur_entry->name = strdup(str);
             cur_entry->next = NULL;
             return cur_entry;
         }
 
-        if(++cur_entry >= symbol_table + NUM_HASH)
-        {
+        if (++cur_entry >= symbol_table + NUM_HASH)
             cur_entry = symbol_table;
-        }
     }
+
     fprintf(stderr, "Symbol table overflow\n");
     abort();
 }
-

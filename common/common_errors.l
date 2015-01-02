@@ -2,15 +2,20 @@
  * File:     common_errors.l
  * Author:   Bruce Dearing 100036623
  * Date:     2013/20/11
- * Version:  1.0
+ * Version:  1.1
  * Purpose:  Flex tokenizer and functions to handle common 
  *           white space errors and bracket position. 
+ *
+ * Mods:     2014/09/01 Jim Diamond.  Remove some compiler warnings,
+ *           do a bit of reformatting.
+ *	     Allow tab characters.
  */
 
 %{
 
 
 /* START Include files. */
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include "../functions/functions.h"
@@ -81,9 +86,9 @@ int yycolumn = 0;
 ^"#"[ \t]*"pragma".*         |
 ^"#"                         ; /* Eat up preprocessor directives. */
 
-\t+                          { printf("%d:\n\n%s\n\n",
+\t+                          { /*printf("%d:\n\n%s\n\n",
                                   yylineno,
-                                  "Line contains a tab character."); }                          
+                                  "Line contains a tab character."); */ }                          
 
 ^[ \t]*                      /* Eat up white space at the start of a line. */
 
@@ -93,7 +98,7 @@ int yycolumn = 0;
 "if"                         { handle_conditional(yytext, yyleng); }
 
 .*"struct"[^\n=]*"{"         { printf("%d:\n\n\t%s\n\n'{' %s\n\n",
-                                  yylineno, trim(yytext), 
+                                  yylineno, first_non_white(yytext), 
                                   "should be on a new line.");
                              }
 
@@ -117,10 +122,11 @@ int yycolumn = 0;
  * Bugs:        
  * Notes:
  */ 
-void 
-main(int argc, char **argv)
+
+int
+main(int argc, char * argv[])
 {
-    yylex();
+    return yylex();
 }
 
 
