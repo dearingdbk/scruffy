@@ -1,13 +1,31 @@
+
 /*
  * File:     check_comments.y
  * Author:   Bruce Dearing 100036623
  * Date:     2013/11/27
- * Version:  1.0
+ * Version:  1.1
  *
  * Purpose:  ANSI C Yacc grammar, to parse tokens received from the
  *           flex scanner check_comments.l
  *           Grammar has been re-written to identify common style errors
  *           present in C code comments according to style guide.
+ *
+ * Mods:     2014/09/01 Along with mods in lex file, broke "no ID"
+ *	     case out from "no name" case.
+ *           A bit of gratuitous reformatting.
+ *
+ * Notes:    The original code from Bruce crashed if there were no
+ *	     valid header lines in the first comment.  JD modified
+ *           the code to allow parsing to continue in this case.
+ *	     Similarly, the original code gave a bogus complaint of
+ *	     invalid header if there was no other /* comment in the
+ *	     file.  I introduced a new rule (p_b -> p_s) which hopefully
+ *	     does not introduce bugs.  Alternatively, the code in yyerror()
+ *	     could check and see if any of the watched-for header lines
+ *	     have been set and only complain if none have.
+ *
+ * Mods:     2014/09/01 Jim Diamond.  Remove some compiler warnings,
+ *           do a bit of reformatting.
  */
 
 %locations
@@ -21,14 +39,27 @@
 #endif
 #include <stdio.h>
 #include <string.h>
+
+#include "../functions/functions.h"
+
 /* END Include files. */
 
 /* START Definitions. */
 #define YYERROR_VERBOSE
 /* END Definitions. */
 
+/* Uncomment this out for debugging purposes: */
+// #define DEBUG
+
+#ifdef DEBUG
+#define D_PRNT(format, ...) fprintf(stderr, format, ## __VA_ARGS__)
+#else
+#define D_PRNT(format, ...)
+#endif
+
+
 /* START Program variables */
-extern char *yytext;
+extern char * yytext;
 extern int comment_start;
 unsigned int header[LAST_VAL] = {0};
 unsigned int function[LAST_VAL] = {0};
@@ -37,40 +68,67 @@ unsigned int function[LAST_VAL] = {0};
 /* START Function Definitions */
 void check_header();
 void check_function();
-void yyerror(const char *s);
+void yyerror(const char * s);
 /* END Function Definitions */
 
 
 %}
 %token  IDENTIFIER FILE_LBL AUTHOR START_COMMENT END_COMMENT VERSION
 %token  NAME ARGUMENTS OUTPUT MODIFIES RETURNS ASSUMPTIONS BUGS NOTES 
-%token  DATE PURPOSE LAST_VAL 
+%token  DATE PURPOSE AUTHOR_AND_ID AUTHOR_WITHOUT_ID LAST_VAL
 %start program_body
 %%
 
 program_body
     : program_start program_comments
-    ;
-
-program_comments
-    : comment_start
-    | program_comments comment_start
+			{ D_PRNT("**** p_b -> p_s p_c\n"); }
+    | program_start
+			{ D_PRNT("**** p_b -> p_s\n"); }
     ;
 
 program_start
-    : START_COMMENT header_comment END_COMMENT {check_header();}
-    ;
-
-comment_start
-    : START_COMMENT comment_body END_COMMENT 
-
-comment_body
-    : function_comment  { check_function(); } 
-    | /* regular comments */ 
+    : START_COMMENT header_comment END_COMMENT
+			{ D_PRNT("****p_s -> S_C h_c E_C\n");
+			  check_header(); }
     ;
 
 header_comment
-    : header_list 
+    : header_list
+			{ D_PRNT("**** h_c -> h_l\n"); }
+    |
+    			{ D_PRNT("**** h_c -> <nil>\n"); }
+    ;
+
+header_list
+    : header_label_name
+    | header_list header_label_name
+    ;
+
+header_label_name
+    : FILE_LBL          { header[FILE_LBL] = 1; }
+    | AUTHOR_AND_ID     { header[AUTHOR] = 1; }
+    | AUTHOR_WITHOUT_ID { header[AUTHOR] = 2; }
+    | VERSION           { header[VERSION] = 1; }
+    | DATE              { header[DATE] = 1; }
+    | PURPOSE           { header[PURPOSE] = 1; }
+    ;
+
+program_comments
+    : comment_start 
+			{ D_PRNT("**** p_c -> c_s\n"); }
+    | program_comments comment_start
+			{ D_PRNT("**** p_c -> p_c c_s\n"); }
+    ;
+
+comment_start
+    : START_COMMENT comment_body END_COMMENT
+			{ D_PRNT("**** c_s -> S_C c_b E_C\n"); }
+
+comment_body
+    : function_comment
+			{ D_PRNT("**** c_b -> f_c\n");
+			  check_function(); } 
+    | /* regular comments */ 
     ;
 
 function_comment
@@ -94,138 +152,99 @@ function_label_name
     | NOTES       { function[NOTES] = 1; }
     ;
 
-
-header_list
-    : header_label_name
-    | header_list header_label_name
-    ;
-
-header_label_name
-    : FILE_LBL  {header[FILE_LBL] = 1;}
-    | AUTHOR    {header[AUTHOR] = 1;}
-    | VERSION   {header[VERSION] = 1;}
-    | DATE      {header[DATE] = 1;}
-    | PURPOSE   {header[PURPOSE] = 1;}
-    ;
-
 %%
+
+
 
 /*      
  * Name:        main 
- * Purpose:     calls yylex() to tokenize input.
+ * Purpose:     Calls yyparse() to parse input.
  * Arguments:   
- * Output:      none.
- * Modifies:    none.
- * Returns:     none.
+ * Output:      None.
+ * Modifies:    None.
+ * Returns:     None.
  * Assumptions: 
  * Bugs:        
  * Notes:
- */ 
-void 
-main(int argc, char **argv)
+ */
+
+int
+main(int argc, char * argv[])
 {
-  yyparse();
+    return yyparse();
 } 
+
 
 
 /*      
  * Name:        yyerror 
- * Purpose:     function called to report errors when check_comments is 
+ * Purpose:     Function called to report errors when check_comments is 
  *              unable to parse received tokens.
- * Arguments:   str ~ the string containing the received error message.
- * Output:      prints to stdout
- * Modifies:    none
+ * Arguments:   str: the string containing the received error message.
+ * Output:      Prints to stdout.
+ * Modifies:    None.
  * Returns:     1
  * Assumptions: 
  * Bugs:        
  * Notes:
  */ 
-void yyerror(const char *str)
+
+void
+yyerror(const char * str)
 {
     fprintf(stderr, "%d:\n\n%s\n\n", yylloc.first_line,
-        "Program appears to be missing a header comment.");
+	    "Program appears to be missing a valid header comment.");
 }
+
+
 
 /*      
  * Name:        check_header
- * Purpose:     verifies that the header file is formatted correctly.
- * Arguments:   none.
- * Output:      call a separate function to produce error messages
+ * Purpose:     Verifies that the header file is formatted correctly.
+ * Arguments:   None.
+ * Output:      Call a separate function to produce error messages
  *              if header labels are missing or malformed.
- * Modifies:    none.
- * Returns:     none.
+ * Modifies:    None.
+ * Returns:     None.
  * Assumptions: 
  * Bugs:        
  * Notes:
  */ 
-void check_header()
+
+void
+check_header()
 {
-    static unsigned int mask[] = {1, 2, 4, 8, 16, 32};
-    int i = 1;
-    int k;
-     
-    /* 
-     * checks which flags in the array have been triggered.\
-     * by shifting i by one and then adding in the value of
-     * header[<flag>] producing a string of 1's and 0's
-     *   101011 
-     *
-     */   
-     
-    i = (i << 1) | header[FILE_LBL];
-    i = (i << 1) | header[AUTHOR];
-    i = (i << 1) | header[DATE];
-    i = (i << 1) | header[VERSION];
-    i = (i << 1) | header[PURPOSE];
-    
-    memset(header,0,sizeof(header));
-    
-    for (k = 0; k < 5; k++)
-    {
-        if ((i & mask[k]) == 0)
-        {
-            switch(k)
-            {
-              case 0:
-                print_comment_msg(comment_start, "\"header\"",
-                                  "\"Purpose:\"");
-                break;
-              case 1:
-                print_comment_msg(comment_start, "\"header\"",
-                                  "\"Version:\"");
-                break;
-              case 2:
-                print_comment_msg(comment_start, "\"header\"",
-                                  "\"Date:\"");
-                break;
-              case 3:
-                print_comment_msg(comment_start, "\"header\"",
-                                  "\"Author:\"");
-                break;
-              case 4:
-                print_comment_msg(comment_start, "\"header\"",
-                                  "\"File:\"");
-                break;
-              default:
-               break;
-            }
-        }    
-    }
+    if (header[FILE_LBL] == 0)
+	print_comment_msg(comment_start, "\"header\"", "\"File:\"");
+    if (header[AUTHOR] == 0)
+	print_comment_msg(comment_start, "\"header\"", "\"Author:\"");
+    else if (header[AUTHOR] == 2)
+	print_comment_msg(comment_start, "\"header\"",
+			  "ID number in \"Author:\"");
+    if (header[DATE] == 0)
+	print_comment_msg(comment_start, "\"header\"", "\"Date:\"");
+    if (header[VERSION] == 0)
+	print_comment_msg(comment_start, "\"header\"", "\"Version:\"");
+    if (header[PURPOSE] == 0)
+	print_comment_msg(comment_start, "\"header\"", "\"Purpose:\"");
 }
+
+
 
 /*      
  * Name:        check_function
- * Purpose:     verifies that any function file is formatted correctly.
- * Arguments:   none.
- * Output:      makes a call to print_comment_msg to produce error 
+ * Purpose:     Verifies that any function file is formatted correctly.
+ * Arguments:   None.
+ * Output:      Makes a call to print_comment_msg to produce error 
  *              messages if header labels are missing or malformed.
- * Modifies:    none.
- * Returns:     none.
+ * Modifies:    None.
+ * Returns:     None.
  * Assumptions: function[] is large enough that token flags will not
  *              cause an array index out of range.
  * Bugs:        
  * Notes:
  */ 
+
 void 
 check_function()
 {
@@ -251,7 +270,7 @@ check_function()
     i = (i << 1) | function[BUGS];
     i = (i << 1) | function[NOTES];
 
-    memset(function,0,sizeof(function));
+    memset(function, 0, sizeof(function));
 
     for (k = 0; k < 9; k++)
     {
@@ -287,11 +306,11 @@ check_function()
                 print_comment_msg(comment_start,
                                   "\"function\"", "\"Assumptions:\"");
                 break;
-                case 7:
+	      case 7:
                 print_comment_msg(comment_start,
                                   "\"function\"", "\"Bugs:\"");
                 break;
-                case 8:
+	      case 8:
                 print_comment_msg(comment_start,
                                   "\"function\"", "\"Notes:\"");
                 break;
