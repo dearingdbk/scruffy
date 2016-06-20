@@ -1,6 +1,6 @@
 /*
  * File:     composite_check.l
- * Author:   Bruce Dearing 100036623
+ * Author:   BD
  * Date:     2013/20/11
  * Version:  1.1
  * Purpose:  Flex tokenizer specification which supplies tokens to 
