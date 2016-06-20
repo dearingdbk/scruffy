@@ -1,7 +1,7 @@
 
 /*
  * File:     check_comments.y
- * Author:   Bruce Dearing 100036623
+ * Author:   BD
  * Date:     2013/11/27
  * Version:  1.1
  *
