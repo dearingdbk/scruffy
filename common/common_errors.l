@@ -1,6 +1,6 @@
 /*
  * File:     common_errors.l
- * Author:   Bruce Dearing 100036623
+ * Author:   BD 100036623
  * Date:     2013/20/11
  * Version:  1.1
  * Purpose:  Flex tokenizer and functions to handle common 
